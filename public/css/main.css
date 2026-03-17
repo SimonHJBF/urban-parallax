@@ -838,7 +838,7 @@ body {
   width: 100%;
   overflow: hidden;
   will-change: height, opacity;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.20);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.55);
   cursor: pointer;
   /* transitions applied dynamically by JS */
 }
