@@ -13,10 +13,17 @@ const ACCOUNTS = [
 let adminData   = [];   // full comparisons array
 let editingIdx  = null; // null = new, number = index being edited
 let currentUser = '';
+let pendingImages = []; // { path, data: ArrayBuffer, type, objectUrl }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 async function hashPassword(pw) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function sha1Hex(data) {
+  const ab = data instanceof ArrayBuffer ? data : data.buffer || data;
+  const buf = await crypto.subtle.digest('SHA-1', ab);
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
@@ -45,6 +52,7 @@ function showAdmin(userName) {
   gate.classList.add('fade-out');
   setTimeout(() => { gate.hidden = true; }, 400);
   document.getElementById('admin-ui').hidden = false;
+  window.scrollTo(0, 0);
   document.querySelector('.admin-title').textContent = `Admin — ${userName}`;
   initAdmin(userName);
 }
@@ -150,6 +158,24 @@ function initEditor(userName) {
   });
   document.getElementById('f-right-img').addEventListener('input', e => {
     updateImagePreview('right', e.target.value.trim());
+  });
+
+  // Image file upload — stores file locally, includes in Netlify deploy
+  ['left', 'right'].forEach(side => {
+    document.getElementById(`upload-${side}-img`).addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const slug = document.getElementById('f-slug').value.trim() || 'untitled';
+      const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
+      const path = `images/comparisons/${slug}/${side}.${ext}`;
+      const data = await file.arrayBuffer();
+      const objectUrl = URL.createObjectURL(file);
+      pendingImages = pendingImages.filter(p => p.path !== `images/comparisons/${slug}/${side}.${ext}`);
+      pendingImages.push({ path, data, type: file.type, objectUrl });
+      document.getElementById(`f-${side}-img`).value = path;
+      updateImagePreview(side, objectUrl);
+      e.target.value = '';
+    });
   });
 
   // Live body previews
@@ -364,13 +390,103 @@ function getQuickFacts() {
 
 // ── Publish tab ───────────────────────────────────────────────────────────────
 function initPublish() {
+  // Pre-fill saved credentials
+  const savedToken  = localStorage.getItem('up-netlify-token')   || '';
+  const savedSiteId = localStorage.getItem('up-netlify-site-id') || '';
+  if (savedToken)  document.getElementById('netlify-token').value   = savedToken;
+  if (savedSiteId) document.getElementById('netlify-site-id').value = savedSiteId;
+
+  document.getElementById('btn-publish').addEventListener('click', publishToNetlify);
+
   document.getElementById('btn-download-json').addEventListener('click', () => {
     const json = JSON.stringify(adminData, null, 2);
     downloadBlob(new Blob([json], { type: 'application/json' }), 'comparisons.json');
-    const el = document.getElementById('publish-status');
-    el.style.color   = '#2a7a4a';
-    el.textContent   = '✓ Downloaded. Replace public/data/comparisons.json and redeploy.';
   });
+}
+
+async function publishToNetlify() {
+  const token  = document.getElementById('netlify-token').value.trim();
+  const siteId = document.getElementById('netlify-site-id').value.trim();
+  if (!token || !siteId) {
+    setPublishStatus('Enter your Netlify token and Site ID first.', 'error');
+    return;
+  }
+  localStorage.setItem('up-netlify-token',   token);
+  localStorage.setItem('up-netlify-site-id', siteId);
+
+  const btn = document.getElementById('btn-publish');
+  btn.disabled = true;
+
+  try {
+    setPublishStatus('Computing file hashes…');
+
+    const jsonBytes = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
+    const files = {};
+    files['/data/comparisons.json'] = await sha1Hex(jsonBytes);
+    for (const img of pendingImages) {
+      files['/' + img.path] = await sha1Hex(img.data);
+    }
+
+    setPublishStatus('Creating deploy on Netlify…');
+    const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${siteId}/deploys`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files }),
+    });
+    if (!deployRes.ok) {
+      const e = await deployRes.json().catch(() => ({}));
+      throw new Error(e.message || `HTTP ${deployRes.status}`);
+    }
+    const deploy = await deployRes.json();
+    const required = deploy.required || [];
+
+    setPublishStatus(`Uploading ${required.length} file(s)…`);
+    for (const filePath of required) {
+      let fileData;
+      if (filePath === '/data/comparisons.json') {
+        fileData = jsonBytes;
+      } else {
+        const img = pendingImages.find(i => '/' + i.path === filePath);
+        if (img) fileData = new Uint8Array(img.data);
+      }
+      if (!fileData) continue;
+      const up = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}/files${filePath}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+        body: fileData,
+      });
+      if (!up.ok) throw new Error(`Upload failed for ${filePath}: HTTP ${up.status}`);
+    }
+
+    setPublishStatus('Waiting for site to go live…');
+    await waitForDeploy(deploy.id, token);
+
+    pendingImages = [];
+    setPublishStatus('✓ Published! Site is live.', 'success');
+  } catch (err) {
+    setPublishStatus('✗ ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function waitForDeploy(deployId, token, attempts = 30) {
+  for (let i = 0; i < attempts; i++) {
+    await new Promise(r => setTimeout(r, 2000));
+    const res    = await fetch(`https://api.netlify.com/api/v1/deploys/${deployId}`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const deploy = await res.json();
+    if (deploy.state === 'ready') return;
+    if (deploy.state === 'error') throw new Error('Netlify reported a deploy error');
+  }
+  throw new Error('Deploy timed out after 60 seconds');
+}
+
+function setPublishStatus(msg, type) {
+  const el = document.getElementById('publish-status');
+  el.textContent = msg;
+  el.className = 'export-status' + (type ? ' status--' + type : '');
 }
 
 // ── Utilities ─────────────────────────────────────────────────────────────────

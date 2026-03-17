@@ -32,10 +32,13 @@ body {
 
 /* ─── Auth Gate ──────────────────────────────────────────────────────────── */
 .auth-gate {
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: var(--bg);
   transition: opacity 0.4s ease;
 }
 
@@ -43,6 +46,55 @@ body {
   opacity: 0;
   pointer-events: none;
 }
+
+/* ─── Image upload button ────────────────────────────────────────────────── */
+.image-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.image-input-group input[type="text"] { flex: 1; }
+.upload-btn {
+  flex-shrink: 0;
+  padding: 7px 12px;
+  background: var(--slate);
+  color: #fff;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.upload-btn:hover { background: var(--ink); }
+.upload-file-input { display: none; }
+
+/* ─── Netlify publish section ────────────────────────────────────────────── */
+.netlify-setup {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+.netlify-setup h3 {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.netlify-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.netlify-hint a { color: var(--accent); }
+
+.status--success { color: #2a7a4a; }
+.status--error   { color: var(--accent); }
 
 .auth-box {
   background: var(--panel);
