@@ -389,16 +389,33 @@ function getQuickFacts() {
 }
 
 // ── Publish tab ───────────────────────────────────────────────────────────────
-// Publishes by committing directly to GitHub, which triggers Netlify auto-deploy.
-// This is reliable because Netlify always deploys from the repo — no conflicts.
+// Two-step publish:
+//   1. Commit changes to GitHub (version history, future-proofs GitHub→Netlify link)
+//   2. Deploy to Netlify Files API immediately (no GitHub→Netlify connection needed)
+// Both tokens are saved to localStorage after first entry.
 
-const GITHUB_REPO = 'SimonHJBF/urban-parallax';
+const GITHUB_REPO    = 'SimonHJBF/urban-parallax';
+const NETLIFY_SITE   = 'aa0631e3-22bd-49ed-96c2-01fef494b233';
+
+// All static paths that must be present in every Netlify deploy.
+// Netlify Files API treats the manifest as the complete site — missing = deleted.
+const STATIC_PATHS = [
+  '/index.html', '/about.html', '/admin.html',
+  '/css/main.css', '/css/admin.css', '/css/fonts.css',
+  '/js/app.js', '/js/admin.js', '/js/blur-engine.js', '/js/theme.js',
+  '/images/site/favicon.svg',
+  '/images/placeholder/1A.jpg', '/images/placeholder/1B.jpg',
+  '/images/placeholder/2A.jpg', '/images/placeholder/2B.jpg',
+  '/images/placeholder/3A.jpg', '/images/placeholder/3B.jpg',
+];
 
 function initPublish() {
-  const savedToken = localStorage.getItem('up-github-token') || '';
-  if (savedToken) document.getElementById('github-token').value = savedToken;
+  const ghToken = localStorage.getItem('up-github-token')  || '';
+  const nlToken = localStorage.getItem('up-netlify-token') || '';
+  if (ghToken) document.getElementById('github-token').value  = ghToken;
+  if (nlToken) document.getElementById('netlify-token').value = nlToken;
 
-  document.getElementById('btn-publish').addEventListener('click', publishToGitHub);
+  document.getElementById('btn-publish').addEventListener('click', publishAll);
 
   document.getElementById('btn-download-json').addEventListener('click', () => {
     const json = JSON.stringify(adminData, null, 2);
@@ -406,20 +423,27 @@ function initPublish() {
   });
 }
 
-// Returns the current SHA of a file in the repo (needed to update it), or null if new.
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function arrayBufferToBase64(buf) {
+  const bytes = new Uint8Array(buf instanceof ArrayBuffer ? buf : (buf.buffer || buf));
+  let b = '';
+  for (let i = 0; i < bytes.byteLength; i++) b += String.fromCharCode(bytes[i]);
+  return btoa(b);
+}
+
+// Returns the Git blob SHA of a file in the repo (needed to update), or null if new.
 async function githubGetSHA(token, path) {
   const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
     headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' },
   });
   if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub: could not read ${path} (HTTP ${res.status})`);
-  const data = await res.json();
-  return data.sha;
+  if (!res.ok) throw new Error(`GitHub read failed for ${path} (HTTP ${res.status})`);
+  return (await res.json()).sha;
 }
 
-// Creates or updates a file in the repo with base64-encoded content.
-async function githubPutFile(token, path, contentBase64, message, sha) {
-  const body = { message, content: contentBase64 };
+async function githubPutFile(token, path, base64, message, sha) {
+  const body = { message, content: base64 };
   if (sha) body.sha = sha;
   const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
     method: 'PUT',
@@ -432,59 +456,147 @@ async function githubPutFile(token, path, contentBase64, message, sha) {
   });
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));
-    throw new Error(e.message || `GitHub: write failed for ${path} (HTTP ${res.status})`);
+    throw new Error(e.message || `GitHub write failed for ${path} (HTTP ${res.status})`);
   }
 }
 
-function arrayBufferToBase64(buffer) {
-  const bytes = new Uint8Array(buffer instanceof ArrayBuffer ? buffer : buffer.buffer || buffer);
-  let binary = '';
-  for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
+// ── Main publish ──────────────────────────────────────────────────────────────
 
-async function publishToGitHub() {
-  const token = document.getElementById('github-token').value.trim();
-  if (!token) {
-    setPublishStatus('Enter your GitHub token first.', 'error');
+async function publishAll() {
+  const ghToken = document.getElementById('github-token').value.trim();
+  const nlToken = document.getElementById('netlify-token').value.trim();
+
+  if (!nlToken) {
+    setPublishStatus('Enter your Netlify token — it\'s required to update the live site.', 'error');
     return;
   }
-  localStorage.setItem('up-github-token', token);
+
+  if (ghToken) localStorage.setItem('up-github-token', ghToken);
+  localStorage.setItem('up-netlify-token', nlToken);
 
   const btn = document.getElementById('btn-publish');
   btn.disabled = true;
 
   try {
-    const total = 1 + pendingImages.length;
-    let done = 0;
+    // ── Step 1: Commit to GitHub (if token provided) ───────────────────────────
+    if (ghToken) {
+      const total = 1 + pendingImages.length;
+      let done = 0;
 
-    // ── Push comparisons.json ──────────────────────────────────────────────────
-    setPublishStatus(`Pushing file ${done + 1}/${total}: comparisons.json…`);
-    const jsonStr     = JSON.stringify(adminData, null, 2);
-    const jsonBytes   = new TextEncoder().encode(jsonStr);
-    const jsonBase64  = arrayBufferToBase64(jsonBytes);
-    const jsonPath    = 'public/data/comparisons.json';
-    const jsonSHA     = await githubGetSHA(token, jsonPath);
-    await githubPutFile(token, jsonPath, jsonBase64, 'Update comparisons via admin panel', jsonSHA);
-    done++;
-
-    // ── Push any newly uploaded images ─────────────────────────────────────────
-    for (const img of pendingImages) {
-      setPublishStatus(`Pushing file ${done + 1}/${total}: ${img.path}…`);
-      const imgBase64 = arrayBufferToBase64(img.data);
-      const imgPath   = 'public/' + img.path;
-      const imgSHA    = await githubGetSHA(token, imgPath);
-      await githubPutFile(token, imgPath, imgBase64, `Upload ${img.path} via admin panel`, imgSHA);
+      setPublishStatus(`GitHub: committing comparisons.json (${done + 1}/${total})…`);
+      const jsonBytes  = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
+      const jsonBase64 = arrayBufferToBase64(jsonBytes);
+      const jsonSHA    = await githubGetSHA(ghToken, 'public/data/comparisons.json');
+      await githubPutFile(ghToken, 'public/data/comparisons.json', jsonBase64,
+                          'Update comparisons via admin panel', jsonSHA);
       done++;
+
+      for (const img of pendingImages) {
+        setPublishStatus(`GitHub: committing ${img.path} (${done + 1}/${total})…`);
+        const imgBase64 = arrayBufferToBase64(img.data);
+        const imgSHA    = await githubGetSHA(ghToken, 'public/' + img.path);
+        await githubPutFile(ghToken, 'public/' + img.path, imgBase64,
+                            `Upload ${img.path} via admin panel`, imgSHA);
+        done++;
+      }
     }
 
+    // ── Step 2: Deploy to Netlify Files API (live update) ─────────────────────
+    await netlifyFilesDeploy(nlToken);
+
     pendingImages = [];
-    setPublishStatus('✓ Pushed to GitHub — Netlify will update in ~30 seconds.', 'success');
+    setPublishStatus('✓ Published! Site is live.', 'success');
   } catch (err) {
     setPublishStatus('✗ ' + err.message, 'error');
   } finally {
     btn.disabled = false;
   }
+}
+
+async function netlifyFilesDeploy(token) {
+  const jsonBytes = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
+
+  // Collect all image paths referenced in the data
+  const imagePaths = new Set();
+  for (const c of adminData) {
+    for (const side of ['left', 'right']) {
+      if (c[side]?.image) imagePaths.add('/' + c[side].image);
+      for (const ex of (c[side]?.extraImages || [])) { if (ex) imagePaths.add('/' + ex); }
+    }
+  }
+  for (const img of pendingImages) imagePaths.add('/' + img.path);
+
+  const allPaths = [...new Set([...STATIC_PATHS, ...imagePaths])];
+
+  // ── Fetch every static file from the current origin ─────────────────────────
+  setPublishStatus('Fetching site files…');
+  const fileBytes  = {}; // path → Uint8Array
+  const pendingSet = new Set(pendingImages.map(i => '/' + i.path));
+
+  fileBytes['/data/comparisons.json'] = jsonBytes;
+  for (const img of pendingImages) fileBytes['/' + img.path] = new Uint8Array(img.data);
+
+  await Promise.all(allPaths.map(async path => {
+    if (fileBytes[path]) return;                    // already loaded
+    try {
+      const res = await fetch(path);
+      if (res.ok) fileBytes[path] = new Uint8Array(await res.arrayBuffer());
+    } catch (_) { /* not on live site yet — skip */ }
+  }));
+
+  // ── Hash everything + build sha1→path reverse map ───────────────────────────
+  setPublishStatus('Hashing files…');
+  const fileHashes = {}; // path  → sha1 hex
+  const hashToPath = {}; // sha1 hex → path  (to resolve Netlify's required list)
+
+  for (const [path, data] of Object.entries(fileBytes)) {
+    const h = await sha1Hex(data);
+    fileHashes[path] = h;
+    hashToPath[h]    = path;
+  }
+
+  // ── Create the deploy (send path→hash manifest) ──────────────────────────────
+  setPublishStatus('Creating Netlify deploy…');
+  const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${NETLIFY_SITE}/deploys`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ files: fileHashes }),
+  });
+  if (!deployRes.ok) {
+    const e = await deployRes.json().catch(() => ({}));
+    throw new Error(e.message || `Netlify deploy creation failed (HTTP ${deployRes.status})`);
+  }
+  const deploy = await deployRes.json();
+
+  // Netlify returns required as a list of SHA1 hashes (not paths!) — look up each
+  const required = deploy.required || [];
+  setPublishStatus(`Uploading ${required.length} changed file(s) to Netlify…`);
+
+  for (let i = 0; i < required.length; i++) {
+    const hash = required[i];
+    const path = hashToPath[hash];
+    if (!path || !fileBytes[path]) { console.warn('No data for required hash:', hash); continue; }
+
+    setPublishStatus(`Uploading file ${i + 1}/${required.length}: ${path}`);
+    const up = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}/files${path}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+      body: fileBytes[path],
+    });
+    if (!up.ok) throw new Error(`Upload failed for ${path} (HTTP ${up.status})`);
+  }
+
+  // ── Poll until live ───────────────────────────────────────────────────────────
+  setPublishStatus('Waiting for Netlify to go live…');
+  for (let i = 0; i < 40; i++) {
+    await new Promise(r => setTimeout(r, 3000));
+    const res = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}`,
+                            { headers: { 'Authorization': `Bearer ${token}` } });
+    const d = await res.json();
+    if (d.state === 'ready' || d.state === 'processing' || d.state === 'uploaded') return;
+    if (d.state === 'error') throw new Error('Netlify reported a deploy error');
+  }
+  throw new Error('Netlify deploy timed out — check the Netlify dashboard');
 }
 
 function setPublishStatus(msg, type) {
