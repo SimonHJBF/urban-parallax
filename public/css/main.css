@@ -265,7 +265,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-width: 1400px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 0 32px 120px;
 }
@@ -689,13 +689,13 @@ body {
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
+/* Pairs are ALWAYS side by side — never collapse to single column.           */
 
-/* 800px tablet — slightly reduce outer padding */
-@media (max-width: 800px) {
-  .feed { padding: 0 20px 80px; }
-  .up-row-grid { gap: 2px; }
-  .up-image-wrap { aspect-ratio: 16 / 8; }
+/* 700px — reduce padding, adjust expand panel */
+@media (max-width: 700px) {
+  .feed { padding: 0 12px 80px; }
 
+  /* Expand panel: single column */
   .up-expand-grid { grid-template-columns: 1fr; }
   .up-expand-grid .up-divider-v { display: none; }
   .up-expand-body { padding: 0 0 36px; }
@@ -708,24 +708,19 @@ body {
   .about-contributors { grid-template-columns: 1fr; gap: 24px; }
 }
 
-/* 580px mobile — stack pair cards vertically + mobile header */
+/* 500px — compact card text, shorter images */
+@media (max-width: 500px) {
+  .up-image-wrap { aspect-ratio: 16 / 9; }
+  .up-cell-text { padding: 8px 8px 10px; }
+  .up-city-label { display: none; }
+  .up-cell-title { font-size: 13px; }
+  .up-cell-desc { display: none; }
+}
+
+/* 580px — mobile header: stacked 2-row layout */
 @media (max-width: 580px) {
   :root { --pad-h: 12px; --header-h: 80px; }
 
-  /* Feed */
-  .feed { padding: 0 12px 80px; gap: 12px; }
-
-  /* Pairs stack vertically */
-  .up-row-grid { grid-template-columns: 1fr; gap: 8px; }
-  .up-cell { border-radius: 4px; }
-  .up-image-wrap { aspect-ratio: 16 / 9; }
-  .up-cell-title { font-size: 14px; }
-  .up-cell-desc { font-size: 11px; }
-
-  /* Date header */
-  .up-date-header { margin: 16px 0 4px; }
-
-  /* Header: 2-row stacked layout */
   .site-header { height: auto; }
   .site-header.scrolled { height: auto; }
   .site-header.scrolled .site-title { font-size: clamp(20px, 5vw, 28px); }
