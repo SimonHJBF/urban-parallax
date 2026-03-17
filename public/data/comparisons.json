@@ -267,17 +267,9 @@
     "title": "Elevated Highways — II",
     "slug": "elevated-highways-2",
     "date": "2026-02-17",
+    "status": "published",
     "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": {
-      "topic": "Infrastructure",
-      "scale": "XL (District)",
-      "system": "The Hard City (Concrete / Built)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      }
-    },
     "tags": [
       "infrastructure",
       "adaptive-reuse",
@@ -300,8 +292,8 @@
       "subtitle": "Infrastructure as Amenity",
       "description": "A 1908 railway viaduct converted into market halls and studios",
       "contributor": "Miriam",
-      "image": "images/placeholder/2A.jpg",
-      "extraImages": [],
+      "image": "images/comparisons/elevated-highways-2/left.jpg",
+      "extraMedia": [],
       "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
     },
     "right": {
@@ -311,9 +303,18 @@
       "subtitle": "Infrastructure as Battleground",
       "description": "A 3.5 km elevated expressway turned weekend park",
       "contributor": "Simon",
-      "image": "images/placeholder/2B.jpg",
-      "extraImages": [],
+      "image": "images/comparisons/elevated-highways-2/right.gif",
+      "extraMedia": [],
       "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
+    },
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
     }
   },
   {
