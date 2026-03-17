@@ -3,18 +3,20 @@
  *
  * One comparison is always centred and fully expanded.
  * Every other entry compresses exponentially by distance, down to a 1px line.
- * Click any entry to jump to it. Click the active entry to open the full detail.
+ * Click an inactive entry to jump to it.
+ * Click the active entry to expand the full detail inline, below the images.
  */
 
 // ── State ──────────────────────────────────────────────────────────────────────
-let comparisons  = [];
-let currentIndex = 0;
+let comparisons    = [];
+let currentIndex   = 0;
+let isDetailOpen   = false;
 
 // ── Wheel constants ────────────────────────────────────────────────────────────
-const FULL_H     = 200;  // height of the active (centred) entry in px
-const MIN_H      = 1;    // floor — every entry is at least 1px (the border line)
-const DECAY      = 0.38; // exponential decay per distance step
-const TRANSITION = 400;  // animation duration in ms
+const FULL_H     = 200;  // active entry height
+const MIN_H      = 1;    // floor — always visible as a hairline + border
+const DECAY      = 0.38;
+const TRANSITION = 320;  // ms — slightly faster for crisper feel
 
 // ── Boot ───────────────────────────────────────────────────────────────────────
 async function init() {
@@ -25,8 +27,7 @@ async function init() {
   } catch (err) {
     document.getElementById('wheelStack').innerHTML =
       `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:var(--color-muted);">
-        Could not load comparisons.json<br>
-        <code style="font-size:11px">node scripts/build-data.js</code>
+        Could not load comparisons.json
       </p>`;
     console.error('Urban Parallax: failed to load data', err);
     return;
@@ -34,7 +35,6 @@ async function init() {
 
   renderWheel();
   initWheel();
-  bindDetailClose();
 }
 
 // ── Render ─────────────────────────────────────────────────────────────────────
@@ -43,10 +43,10 @@ function renderWheel() {
   stack.innerHTML = '';
 
   comparisons.forEach((c, idx) => {
-    const entry        = document.createElement('div');
-    entry.className    = 'wheel-entry';
-    entry.dataset.idx  = idx;
-    entry.innerHTML    = buildEntryHTML(c);
+    const entry       = document.createElement('div');
+    entry.className   = 'wheel-entry';
+    entry.dataset.idx = idx;
+    entry.innerHTML   = buildEntryHTML(c);
     stack.appendChild(entry);
   });
 }
@@ -101,10 +101,9 @@ function entryOpacity(distance) {
 }
 
 function getStackTop(activeIndex) {
-  // Sum heights of all entries above the active one (including their 1px borders)
   let sumAbove = 0;
   for (let i = 0; i < activeIndex; i++) {
-    sumAbove += entryHeight(Math.abs(i - activeIndex)) + 1; // +1 for border-bottom
+    sumAbove += entryHeight(Math.abs(i - activeIndex)) + 1;
   }
   const viewportH = document.getElementById('wheelViewport').offsetHeight;
   const activeMid = sumAbove + entryHeight(0) / 2;
@@ -135,13 +134,16 @@ function applyWheel(activeIndex, animate) {
   currentIndex = activeIndex;
 }
 
-function goTo(index) {
-  const entries = document.querySelectorAll('.wheel-entry');
-  const clamped = Math.max(0, Math.min(entries.length - 1, index));
+// fromClick = true means the call came from a user click, not navigation.
+// Only a click on the already-active entry opens the detail.
+function goTo(index, fromClick) {
+  if (isDetailOpen) return;
+
+  const total   = document.querySelectorAll('.wheel-entry').length;
+  const clamped = Math.max(0, Math.min(total - 1, index));
 
   if (clamped === currentIndex) {
-    // Clicking the already-active entry opens the full detail
-    openDetail(clamped);
+    if (fromClick) openDetail(clamped);
     return;
   }
 
@@ -149,18 +151,23 @@ function goTo(index) {
 }
 
 // ── Input bindings ─────────────────────────────────────────────────────────────
-let wheelAcc = 0;
+let wheelAcc      = 0;
+let wheelCooldown = false;
 
 function initWheelInput() {
   const vp = document.getElementById('wheelViewport');
 
-  // Mouse wheel
+  // Mouse wheel — skip when detail is open so native scroll works
   vp.addEventListener('wheel', e => {
+    if (isDetailOpen) return;
     e.preventDefault();
+    if (wheelCooldown) return;
     wheelAcc += e.deltaY;
     if (Math.abs(wheelAcc) > 40) {
       goTo(currentIndex + (wheelAcc > 0 ? 1 : -1));
       wheelAcc = 0;
+      wheelCooldown = true;
+      setTimeout(() => { wheelCooldown = false; }, TRANSITION + 60);
     }
   }, { passive: false });
 
@@ -169,22 +176,24 @@ function initWheelInput() {
   vp.addEventListener('touchstart', e => {
     touchStartY = e.touches[0].clientY;
   }, { passive: true });
+
   vp.addEventListener('touchend', e => {
+    if (isDetailOpen) return;
     const dy = touchStartY - e.changedTouches[0].clientY;
     if (Math.abs(dy) > 30) goTo(currentIndex + (dy > 0 ? 1 : -1));
   }, { passive: true });
 
   // Keyboard
   document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); goTo(currentIndex + 1); }
-    if (e.key === 'ArrowUp')   { e.preventDefault(); goTo(currentIndex - 1); }
-    if (e.key === 'Escape')    { closeDetail(); }
+    if (e.key === 'ArrowDown' && !isDetailOpen) { e.preventDefault(); goTo(currentIndex + 1); }
+    if (e.key === 'ArrowUp'   && !isDetailOpen) { e.preventDefault(); goTo(currentIndex - 1); }
+    if (e.key === 'Escape') closeDetail();
   });
 }
 
 function attachEntryClicks() {
   document.querySelectorAll('.wheel-entry').forEach((el, i) => {
-    el.addEventListener('click', () => goTo(i));
+    el.addEventListener('click', () => goTo(i, true));
   });
 }
 
@@ -194,35 +203,66 @@ function initWheel() {
   applyWheel(0, false);
 }
 
-// ── Detail overlay ─────────────────────────────────────────────────────────────
+// ── Detail — opens inline below the pair images ────────────────────────────────
 function openDetail(idx) {
-  const c = comparisons[idx];
-  if (!c) return;
+  if (isDetailOpen) return;
+  const c     = comparisons[idx];
+  const entry = document.querySelector(`.wheel-entry[data-idx="${idx}"]`);
+  if (!c || !entry) return;
 
-  const overlay = document.getElementById('wheelDetail');
-  const inner   = document.getElementById('wheelDetailInner');
+  // Inject expand HTML inside the entry, below pair-row
+  const inner    = entry.querySelector('.wheel-entry-inner');
+  const detailEl = document.createElement('div');
+  detailEl.className = 'wheel-entry-detail';
+  detailEl.innerHTML = buildExpandHTML(c);
+  inner.appendChild(detailEl);
 
-  inner.innerHTML = buildExpandHTML(c);
-  overlay.hidden  = false;
+  // Let the entry grow to its natural content height
+  entry.style.transition = `height ${TRANSITION}ms cubic-bezier(0.4,0,0.2,1)`;
+  entry.style.overflow   = 'visible';
+  entry.style.height     = 'auto';
+  entry.classList.add('is-expanded');
 
-  // Two rAF frames to ensure hidden→display transition fires
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    overlay.classList.add('open');
-  }));
+  // Make the viewport scrollable so the user can read the full detail
+  const vp      = document.getElementById('wheelViewport');
+  const stackEl = document.getElementById('wheelStack');
+  vp.classList.add('is-expanded');
 
-  // Bind the close button rendered inside the expand HTML
-  const closeBtn = inner.querySelector('.up-close-btn');
-  if (closeBtn) closeBtn.addEventListener('click', closeDetail);
+  // Scroll the viewport so the top of the active entry aligns with the viewport top
+  const stackTop  = parseFloat(stackEl.style.top) || 0;
+  let   sumAbove  = 0;
+  for (let i = 0; i < idx; i++) sumAbove += entryHeight(Math.abs(i - idx)) + 1;
+  const entryTopInViewport = stackTop + sumAbove;
+  requestAnimationFrame(() => {
+    vp.scrollTop = Math.max(0, entryTopInViewport);
+  });
+
+  isDetailOpen = true;
+
+  // Bind close button inside the injected HTML
+  detailEl.querySelector('.up-close-btn')?.addEventListener('click', e => {
+    e.stopPropagation();
+    closeDetail();
+  });
 }
 
 function closeDetail() {
-  const overlay = document.getElementById('wheelDetail');
-  overlay.classList.remove('open');
-  setTimeout(() => { overlay.hidden = true; }, 380);
-}
+  if (!isDetailOpen) return;
 
-function bindDetailClose() {
-  document.getElementById('wheelDetailClose').addEventListener('click', closeDetail);
+  const entry = document.querySelector('.wheel-entry.is-expanded');
+  if (entry) {
+    entry.querySelector('.wheel-entry-detail')?.remove();
+    entry.style.transition = 'none';
+    entry.style.overflow   = 'hidden';
+    entry.style.height     = FULL_H + 'px';
+    entry.classList.remove('is-expanded');
+  }
+
+  const vp = document.getElementById('wheelViewport');
+  vp.classList.remove('is-expanded');
+  vp.scrollTop = 0;
+
+  isDetailOpen = false;
 }
 
 // ── Expand HTML ────────────────────────────────────────────────────────────────
@@ -230,7 +270,6 @@ function buildExpandHTML(c) {
   const leftBodyHTML  = c.left?.body  ? marked.parse(c.left.body)  : '';
   const rightBodyHTML = c.right?.body ? marked.parse(c.right.body) : '';
 
-  // Metadata pills
   const meta = c.metadata || {};
   const pillFields = ['topic', 'scale', 'system', 'season', 'population_density', 'year_built', 'architect'];
   let pills = pillFields
@@ -241,7 +280,6 @@ function buildExpandHTML(c) {
     pills += `<span class="up-pill"><span class="up-pill-key">coords</span>${esc(meta.coordinates.left)} / ${esc(meta.coordinates.right)}</span>`;
   }
 
-  // Quick facts
   let qfHTML = '';
   if (c.quickFacts && c.quickFacts.length) {
     const rows = c.quickFacts.map(r =>
@@ -254,19 +292,17 @@ function buildExpandHTML(c) {
     qfHTML = `
       <div class="up-quickfacts">
         <div class="up-qf-header">
-          <span>${esc(c.left.city)}</span>
+          <span>${esc(c.left?.city || '')}</span>
           <span></span>
-          <span>${esc(c.right.city)}</span>
+          <span>${esc(c.right?.city || '')}</span>
         </div>
         ${rows}
       </div>`;
   }
 
-  // Extra images
   const leftExtras  = (c.left?.extraImages  || []).map(src => `<img src="${esc(src)}" alt="" loading="lazy" class="up-extra-img">`).join('');
   const rightExtras = (c.right?.extraImages || []).map(src => `<img src="${esc(src)}" alt="" loading="lazy" class="up-extra-img">`).join('');
 
-  // Tags
   const tagsHTML = c.tags && c.tags.length
     ? `<div class="up-tags">${c.tags.map(t => `<span class="up-tag">#${esc(t)}</span>`).join('')}</div>`
     : '';

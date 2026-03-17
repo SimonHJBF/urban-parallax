@@ -847,6 +847,15 @@ body {
   cursor: default;
 }
 
+.wheel-entry.is-expanded {
+  overflow: visible;
+}
+
+.wheel-viewport.is-expanded {
+  overflow-y: auto;
+  cursor: auto;
+}
+
 .wheel-entry-inner {
   padding: 12px 0 14px;
   width: 100%;
