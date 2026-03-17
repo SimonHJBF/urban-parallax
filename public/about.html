@@ -23,56 +23,39 @@
         <button class="colour-pill" data-family="dark" onclick="handlePillClick(this)">
           <span class="pill-dot" style="background:#888880"></span>
           <span class="pill-label">Dark</span>
-          <span class="pill-ve hidden">
-            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
-            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
-          </span>
         </button>
 
         <button class="colour-pill" data-family="light" onclick="handlePillClick(this)">
           <span class="pill-dot" style="background:#C8C5BE;border:1px solid #aaa"></span>
           <span class="pill-label">Light</span>
-          <span class="pill-ve hidden">
-            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
-            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
-          </span>
         </button>
 
         <button class="colour-pill" data-family="red" onclick="handlePillClick(this)">
-          <span class="pill-dot" style="background:#E06040"></span>
+          <span class="pill-dot" style="background:#FF2222"></span>
           <span class="pill-label">Red</span>
-          <span class="pill-ve hidden">
-            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
-            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
-          </span>
         </button>
 
         <button class="colour-pill" data-family="orange" onclick="handlePillClick(this)">
-          <span class="pill-dot" style="background:#D4821A"></span>
+          <span class="pill-dot" style="background:#FF8C00"></span>
           <span class="pill-label">Orange</span>
-          <span class="pill-ve hidden">
-            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
-            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
-          </span>
         </button>
 
         <button class="colour-pill" data-family="green" onclick="handlePillClick(this)">
-          <span class="pill-dot" style="background:#4DAA70"></span>
+          <span class="pill-dot" style="background:#00DD55"></span>
           <span class="pill-label">Green</span>
-          <span class="pill-ve hidden">
-            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
-            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
-          </span>
         </button>
 
         <button class="colour-pill" data-family="blue" onclick="handlePillClick(this)">
-          <span class="pill-dot" style="background:#5A90C8"></span>
+          <span class="pill-dot" style="background:#2255FF"></span>
           <span class="pill-label">Blue</span>
-          <span class="pill-ve hidden">
-            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
-            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
-          </span>
         </button>
+
+        <div class="ve-sep"></div>
+
+        <div class="ve-toggle-standalone">
+          <button class="ve-btn-standalone" data-v="earth" onclick="handleStandaloneVE('earth')">Earth</button>
+          <button class="ve-btn-standalone" data-v="vivid" onclick="handleStandaloneVE('vivid')">Vivid</button>
+        </div>
 
       </div>
 
