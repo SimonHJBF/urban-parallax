@@ -8,8 +8,30 @@
   <link rel="icon" href="images/site/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/main.css">
+  <!-- Theme applied before paint to avoid flash -->
+  <script src="js/theme.js"></script>
 </head>
 <body>
+
+  <!-- Theme Strip -->
+  <div class="theme-strip" aria-label="Theme selector">
+    <div class="theme-swatches">
+      <button class="theme-swatch" data-theme="light"  title="Light"  style="background:#F4F4F2" onclick="applyTheme('light',  currentMood)"></button>
+      <button class="theme-swatch" data-theme="dark"   title="Dark"   style="background:#1A1A18" onclick="applyTheme('dark',   currentMood)"></button>
+    </div>
+    <div class="theme-sep"></div>
+    <div class="theme-swatches">
+      <button class="theme-swatch" data-theme="red"    title="Red"    style="background:#C4553A" onclick="applyTheme('red',    currentMood)"></button>
+      <button class="theme-swatch" data-theme="orange" title="Orange" style="background:#C88A30" onclick="applyTheme('orange', currentMood)"></button>
+      <button class="theme-swatch" data-theme="green"  title="Green"  style="background:#5A8A4A" onclick="applyTheme('green',  currentMood)"></button>
+      <button class="theme-swatch" data-theme="blue"   title="Blue"   style="background:#4A7AA0" onclick="applyTheme('blue',   currentMood)"></button>
+    </div>
+    <div class="theme-sep"></div>
+    <button id="mood-toggle" onclick="toggleMood()" title="Toggle earthy / vivid">earthy</button>
+  </div>
+
+  <!-- Lens overlay -->
+  <div class="up-lens-overlay" id="lensOverlay"></div>
 
   <header class="site-header">
     <div class="header-inner">

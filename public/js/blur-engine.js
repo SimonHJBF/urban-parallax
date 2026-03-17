@@ -31,6 +31,18 @@ const BlurEngine = (() => {
   let rafPending  = false;
   let enabled     = true;   // false on mobile we could still keep on, lens just stays centred
 
+  // ── Overlay ────────────────────────────────────────────────────────────────
+  function updateOverlay(centreY) {
+    const overlay = document.getElementById('lensOverlay');
+    if (!overlay) return;
+    if (expandedRow !== null) {
+      overlay.classList.add('hidden');
+    } else {
+      overlay.classList.remove('hidden');
+      overlay.style.top = centreY + 'px';
+    }
+  }
+
   // ── Core ───────────────────────────────────────────────────────────────────
   function applyLens() {
     rafPending = false;
@@ -39,6 +51,8 @@ const BlurEngine = (() => {
     const centreY = (lensY !== null) ? lensY : vpH / 2;
     const lensTop = centreY - LENS_HEIGHT / 2;
     const lensBot = centreY + LENS_HEIGHT / 2;
+
+    updateOverlay(centreY);
 
     elements.forEach(el => {
       // ── Expand mode ──
