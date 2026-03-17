@@ -1,242 +1,1336 @@
 [
   {
-    "id": "001", "title": "The Morning Commute", "slug": "morning-commute",
-    "date": "2026-03-17", "order": null,
+    "id": "001",
+    "title": "The Morning Commute",
+    "slug": "morning-commute",
+    "date": "2026-03-17",
+    "status": "published",
+    "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway. How we move through a city defines who we are within it.",
-    "metadata": { "topic": "Transport", "scale": "XXL (City-wide)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" }, "season": "Winter / Summer" },
-    "tags": ["transport", "infrastructure", "daily-life"],
-    "quickFacts": [ { "left": "The Bicycle", "right": "The Car & Moto" }, { "left": "20 Minutes", "right": "90 Minutes" }, { "left": "Silence", "right": "Noise Symphony" }, { "left": "Rain Gear", "right": "Air Conditioning" }, { "left": "Flat", "right": "Hilly" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Centrum", "title": "The Dutch Flow", "subtitle": "Controlled Friction", "description": "20-minute silent bike rides through engineered calm", "contributor": "Miriam", "image": "images/placeholder/1A.jpg", "extraImages": [], "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism. You clip your panniers onto the rear rack, step out into grey-white winter light, and join the invisible infrastructure that holds this city together: the fietspaden.\n\nThe bike lanes are not a courtesy here. They are the primary circulatory system. They are separated from car traffic by curb height, by bollards, by decades of political will.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Paulista", "title": "The Paulista Chaos", "subtitle": "Social Friction", "description": "90-minute sensory overload through the marginal", "contributor": "Simon", "image": "images/placeholder/1B.jpg", "extraImages": [], "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy. You leave your apartment at 6:45 knowing that if you leave at 7:15, the journey will take twice as long.\n" }
+    "tags": [
+      "transport",
+      "infrastructure",
+      "daily-life"
+    ],
+    "quickFacts": [
+      {
+        "left": "The Bicycle",
+        "right": "The Car & Moto"
+      },
+      {
+        "left": "20 Minutes",
+        "right": "90 Minutes"
+      },
+      {
+        "left": "Silence",
+        "right": "Noise Symphony"
+      },
+      {
+        "left": "Rain Gear",
+        "right": "Air Conditioning"
+      },
+      {
+        "left": "Flat",
+        "right": "Hilly"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Centrum",
+      "title": "The Dutch Flow",
+      "subtitle": "Controlled Friction",
+      "description": "20-minute silent bike rides through engineered calm",
+      "contributor": "Miriam",
+      "image": "images/comparisons/morning-commute/left.jpg",
+      "extraImages": [],
+      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism. You clip your panniers onto the rear rack, step out into grey-white winter light, and join the invisible infrastructure that holds this city together: the fietspaden.\n\nThe bike lanes are not a courtesy here. They are the primary circulatory system. They are separated from car traffic by curb height, by bollards, by decades of political will.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Paulista",
+      "title": "The Paulista Chaos",
+      "subtitle": "Social Friction",
+      "description": "90-minute sensory overload through the marginal",
+      "contributor": "Simon",
+      "image": "images/comparisons/morning-commute/right.jpg",
+      "extraImages": [],
+      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy. You leave your apartment at 6:45 knowing that if you leave at 7:15, the journey will take twice as long.\n"
+    },
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "season": "Winter / Summer",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    }
   },
   {
-    "id": "002", "title": "Elevated Highways", "slug": "elevated-highways",
-    "date": "2026-03-10", "order": null,
+    "id": "002",
+    "title": "Elevated Highways",
+    "slug": "elevated-highways",
+    "date": "2026-03-10",
+    "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down? Two cities found different answers — one still arguing, one already eating brunch on the roof.",
-    "metadata": { "topic": "Infrastructure", "scale": "XL (District)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" }, "year_built": "1908 / 1971" },
-    "tags": ["infrastructure", "adaptive-reuse", "public-space"],
-    "quickFacts": [ { "left": "1.9 km viaduct", "right": "3.5 km elevated" }, { "left": "Built 1908", "right": "Built 1971" }, { "left": "Permanent conversion", "right": "Weekend park (temporary)" }, { "left": "Restaurants & studios", "right": "Demolition debate" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Hofbogen / Noord", "title": "The Viaduct Reborn", "subtitle": "Infrastructure as Amenity", "description": "A 1908 railway viaduct permanently converted into market halls, studios, and a rooftop farm", "contributor": "Miriam", "image": "images/placeholder/2A.jpg", "extraImages": [], "body": "# The Viaduct Reborn\n\nThe Hofbogen is easy to miss if you're not looking for it. It doesn't announce itself. It runs for 1.9 kilometres through the Agniesebuurt and Bergpolder neighbourhoods of northern Rotterdam.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Santa Cecília / Barra Funda", "title": "The Minhocão", "subtitle": "Infrastructure as Battleground", "description": "A 3.5 km elevated expressway turned weekend park, permanent closure still under debate", "contributor": "Simon", "image": "images/placeholder/2B.jpg", "extraImages": [], "body": "# The Minhocão\n\nThe Elevado Presidente João Goulart — universally known as the Minhocão, the Big Worm — was built in 1971 as a solution to São Paulo's traffic problem. It is still a highway on weekdays. It is still a park on weekends.\n" }
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      },
+      "year_built": "1908 / 1971"
+    },
+    "tags": [
+      "infrastructure",
+      "adaptive-reuse",
+      "public-space"
+    ],
+    "quickFacts": [
+      {
+        "left": "1.9 km viaduct",
+        "right": "3.5 km elevated"
+      },
+      {
+        "left": "Built 1908",
+        "right": "Built 1971"
+      },
+      {
+        "left": "Permanent conversion",
+        "right": "Weekend park (temporary)"
+      },
+      {
+        "left": "Restaurants & studios",
+        "right": "Demolition debate"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Hofbogen / Noord",
+      "title": "The Viaduct Reborn",
+      "subtitle": "Infrastructure as Amenity",
+      "description": "A 1908 railway viaduct permanently converted into market halls, studios, and a rooftop farm",
+      "contributor": "Miriam",
+      "image": "images/placeholder/2A.jpg",
+      "extraImages": [],
+      "body": "# The Viaduct Reborn\n\nThe Hofbogen is easy to miss if you're not looking for it. It doesn't announce itself. It runs for 1.9 kilometres through the Agniesebuurt and Bergpolder neighbourhoods of northern Rotterdam.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Santa Cecília / Barra Funda",
+      "title": "The Minhocão",
+      "subtitle": "Infrastructure as Battleground",
+      "description": "A 3.5 km elevated expressway turned weekend park, permanent closure still under debate",
+      "contributor": "Simon",
+      "image": "images/placeholder/2B.jpg",
+      "extraImages": [],
+      "body": "# The Minhocão\n\nThe Elevado Presidente João Goulart — universally known as the Minhocão, the Big Worm — was built in 1971 as a solution to São Paulo's traffic problem. It is still a highway on weekdays. It is still a park on weekends.\n"
+    }
   },
   {
-    "id": "003", "title": "Public Markets", "slug": "public-markets",
-    "date": "2026-03-03", "order": null,
+    "id": "003",
+    "title": "Public Markets",
+    "slug": "public-markets",
+    "date": "2026-03-03",
+    "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display. The question is whether that room is built for the vendors or for the spectators.",
-    "metadata": { "topic": "Food", "scale": "M (Street/Block)", "system": "The Soft City (Social / Cultural)", "coordinates": { "left": "51.92° N", "right": "23.55° S" }, "year_built": "2014 / 1933", "architect": "MVRDV / Felisberto Ranzini" },
-    "tags": ["food", "public-space", "architecture"],
-    "quickFacts": [ { "left": "Since 2014", "right": "Since 1933" }, { "left": "Designed spectacle", "right": "Organic growth" }, { "left": "Kibbeling", "right": "Mortadella sandwich" }, { "left": "11,000 m² painted arch", "right": "Stained glass ceiling" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Blaak", "title": "The Markthal", "subtitle": "Architecture as Market", "description": "A MVRDV-designed horseshoe arch of apartments enclosing Europe's largest indoor market", "contributor": "Miriam", "image": "images/placeholder/3A.jpg", "extraImages": [], "body": "# The Markthal\n\nThe Markthal is Rotterdam's most photographed building. Completed by MVRDV in 2014, it is shaped like a horseshoe with 228 residential apartments stacked along the rising flanks and an 11,000 m² mural overhead.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Santa Ifigênia", "title": "The Mercadão", "subtitle": "Market as Architecture", "description": "A 1933 neoclassical municipal market where the mortadella sandwich is a civic institution", "contributor": "Simon", "image": "images/placeholder/3B.jpg", "extraImages": [], "body": "# The Mercadão\n\nThe Mercado Municipal de São Paulo has been in operation since 1933. It occupies a neoclassical building on the edge of the Centro Histórico, and it smells of dried cod and ripe mango and years.\n" }
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      },
+      "year_built": "2014 / 1933",
+      "architect": "MVRDV / Felisberto Ranzini"
+    },
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      },
+      {
+        "left": "Kibbeling",
+        "right": "Mortadella sandwich"
+      },
+      {
+        "left": "11,000 m² painted arch",
+        "right": "Stained glass ceiling"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "A MVRDV-designed horseshoe arch of apartments enclosing Europe's largest indoor market",
+      "contributor": "Miriam",
+      "image": "images/placeholder/3A.jpg",
+      "extraImages": [],
+      "body": "# The Markthal\n\nThe Markthal is Rotterdam's most photographed building. Completed by MVRDV in 2014, it is shaped like a horseshoe with 228 residential apartments stacked along the rising flanks and an 11,000 m² mural overhead.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Santa Ifigênia",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market where the mortadella sandwich is a civic institution",
+      "contributor": "Simon",
+      "image": "images/placeholder/3B.jpg",
+      "extraImages": [],
+      "body": "# The Mercadão\n\nThe Mercado Municipal de São Paulo has been in operation since 1933. It occupies a neoclassical building on the edge of the Centro Histórico, and it smells of dried cod and ripe mango and years.\n"
+    }
   },
   {
-    "id": "004", "title": "The Morning Commute — II", "slug": "morning-commute-2",
-    "date": "2026-02-24", "order": null,
+    "id": "004",
+    "title": "The Morning Commute — II",
+    "slug": "morning-commute-2",
+    "date": "2026-02-24",
+    "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway. How we move through a city defines who we are within it.",
-    "metadata": { "topic": "Transport", "scale": "XXL (City-wide)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" }, "season": "Winter / Summer" },
-    "tags": ["transport", "infrastructure", "daily-life"],
-    "quickFacts": [ { "left": "The Bicycle", "right": "The Car & Moto" }, { "left": "20 Minutes", "right": "90 Minutes" }, { "left": "Silence", "right": "Noise Symphony" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Kralingen", "title": "The Dutch Flow", "subtitle": "Controlled Friction", "description": "20-minute silent bike rides through engineered calm", "contributor": "Miriam", "image": "images/placeholder/1A.jpg", "extraImages": [], "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Vila Madalena", "title": "The Paulista Chaos", "subtitle": "Social Friction", "description": "90-minute sensory overload through the marginal", "contributor": "Simon", "image": "images/placeholder/1B.jpg", "extraImages": [], "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n" }
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      },
+      "season": "Winter / Summer"
+    },
+    "tags": [
+      "transport",
+      "infrastructure",
+      "daily-life"
+    ],
+    "quickFacts": [
+      {
+        "left": "The Bicycle",
+        "right": "The Car & Moto"
+      },
+      {
+        "left": "20 Minutes",
+        "right": "90 Minutes"
+      },
+      {
+        "left": "Silence",
+        "right": "Noise Symphony"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Kralingen",
+      "title": "The Dutch Flow",
+      "subtitle": "Controlled Friction",
+      "description": "20-minute silent bike rides through engineered calm",
+      "contributor": "Miriam",
+      "image": "images/placeholder/1A.jpg",
+      "extraImages": [],
+      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Vila Madalena",
+      "title": "The Paulista Chaos",
+      "subtitle": "Social Friction",
+      "description": "90-minute sensory overload through the marginal",
+      "contributor": "Simon",
+      "image": "images/placeholder/1B.jpg",
+      "extraImages": [],
+      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
+    }
   },
   {
-    "id": "005", "title": "Elevated Highways — II", "slug": "elevated-highways-2",
-    "date": "2026-02-17", "order": null,
+    "id": "005",
+    "title": "Elevated Highways — II",
+    "slug": "elevated-highways-2",
+    "date": "2026-02-17",
+    "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": { "topic": "Infrastructure", "scale": "XL (District)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["infrastructure", "adaptive-reuse", "public-space"],
-    "quickFacts": [ { "left": "1.9 km viaduct", "right": "3.5 km elevated" }, { "left": "Built 1908", "right": "Built 1971" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Agniesebuurt", "title": "The Viaduct Reborn", "subtitle": "Infrastructure as Amenity", "description": "A 1908 railway viaduct converted into market halls and studios", "contributor": "Miriam", "image": "images/placeholder/2A.jpg", "extraImages": [], "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Barra Funda", "title": "The Minhocão", "subtitle": "Infrastructure as Battleground", "description": "A 3.5 km elevated expressway turned weekend park", "contributor": "Simon", "image": "images/placeholder/2B.jpg", "extraImages": [], "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n" }
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "infrastructure",
+      "adaptive-reuse",
+      "public-space"
+    ],
+    "quickFacts": [
+      {
+        "left": "1.9 km viaduct",
+        "right": "3.5 km elevated"
+      },
+      {
+        "left": "Built 1908",
+        "right": "Built 1971"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Agniesebuurt",
+      "title": "The Viaduct Reborn",
+      "subtitle": "Infrastructure as Amenity",
+      "description": "A 1908 railway viaduct converted into market halls and studios",
+      "contributor": "Miriam",
+      "image": "images/placeholder/2A.jpg",
+      "extraImages": [],
+      "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Barra Funda",
+      "title": "The Minhocão",
+      "subtitle": "Infrastructure as Battleground",
+      "description": "A 3.5 km elevated expressway turned weekend park",
+      "contributor": "Simon",
+      "image": "images/placeholder/2B.jpg",
+      "extraImages": [],
+      "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
+    }
   },
   {
-    "id": "006", "title": "Public Markets — II", "slug": "public-markets-2",
-    "date": "2026-02-10", "order": null,
+    "id": "006",
+    "title": "Public Markets — II",
+    "slug": "public-markets-2",
+    "date": "2026-02-10",
+    "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": { "topic": "Food", "scale": "M (Street/Block)", "system": "The Soft City (Social / Cultural)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["food", "public-space", "architecture"],
-    "quickFacts": [ { "left": "Since 2014", "right": "Since 1933" }, { "left": "Designed spectacle", "right": "Organic growth" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Blaak", "title": "The Markthal", "subtitle": "Architecture as Market", "description": "Europe's largest indoor market under a painted horseshoe arch", "contributor": "Miriam", "image": "images/placeholder/3A.jpg", "extraImages": [], "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Centro Histórico", "title": "The Mercadão", "subtitle": "Market as Architecture", "description": "A 1933 neoclassical municipal market", "contributor": "Simon", "image": "images/placeholder/3B.jpg", "extraImages": [], "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n" }
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "Europe's largest indoor market under a painted horseshoe arch",
+      "contributor": "Miriam",
+      "image": "images/placeholder/3A.jpg",
+      "extraImages": [],
+      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Centro Histórico",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market",
+      "contributor": "Simon",
+      "image": "images/placeholder/3B.jpg",
+      "extraImages": [],
+      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
+    }
   },
   {
-    "id": "007", "title": "The Morning Commute — III", "slug": "morning-commute-3",
-    "date": "2026-02-03", "order": null,
+    "id": "007",
+    "title": "The Morning Commute — III",
+    "slug": "morning-commute-3",
+    "date": "2026-02-03",
+    "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway.",
-    "metadata": { "topic": "Transport", "scale": "XXL (City-wide)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["transport", "infrastructure", "daily-life"],
-    "quickFacts": [ { "left": "The Bicycle", "right": "The Car & Moto" }, { "left": "20 Minutes", "right": "90 Minutes" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Feijenoord", "title": "The Dutch Flow", "subtitle": "Controlled Friction", "description": "20-minute silent bike rides through engineered calm", "contributor": "Miriam", "image": "images/placeholder/1A.jpg", "extraImages": [], "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Consolação", "title": "The Paulista Chaos", "subtitle": "Social Friction", "description": "90-minute sensory overload through the marginal", "contributor": "Simon", "image": "images/placeholder/1B.jpg", "extraImages": [], "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n" }
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "transport",
+      "infrastructure",
+      "daily-life"
+    ],
+    "quickFacts": [
+      {
+        "left": "The Bicycle",
+        "right": "The Car & Moto"
+      },
+      {
+        "left": "20 Minutes",
+        "right": "90 Minutes"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Feijenoord",
+      "title": "The Dutch Flow",
+      "subtitle": "Controlled Friction",
+      "description": "20-minute silent bike rides through engineered calm",
+      "contributor": "Miriam",
+      "image": "images/placeholder/1A.jpg",
+      "extraImages": [],
+      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Consolação",
+      "title": "The Paulista Chaos",
+      "subtitle": "Social Friction",
+      "description": "90-minute sensory overload through the marginal",
+      "contributor": "Simon",
+      "image": "images/placeholder/1B.jpg",
+      "extraImages": [],
+      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
+    }
   },
   {
-    "id": "008", "title": "Elevated Highways — III", "slug": "elevated-highways-3",
-    "date": "2026-01-27", "order": null,
+    "id": "008",
+    "title": "Elevated Highways — III",
+    "slug": "elevated-highways-3",
+    "date": "2026-01-27",
+    "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": { "topic": "Infrastructure", "scale": "XL (District)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["infrastructure", "adaptive-reuse", "public-space"],
-    "quickFacts": [ { "left": "1.9 km viaduct", "right": "3.5 km elevated" }, { "left": "Built 1908", "right": "Built 1971" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Bergpolder", "title": "The Viaduct Reborn", "subtitle": "Infrastructure as Amenity", "description": "A 1908 railway viaduct converted into market halls and studios", "contributor": "Miriam", "image": "images/placeholder/2A.jpg", "extraImages": [], "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Santa Cecília", "title": "The Minhocão", "subtitle": "Infrastructure as Battleground", "description": "A 3.5 km elevated expressway turned weekend park", "contributor": "Simon", "image": "images/placeholder/2B.jpg", "extraImages": [], "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n" }
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "infrastructure",
+      "adaptive-reuse",
+      "public-space"
+    ],
+    "quickFacts": [
+      {
+        "left": "1.9 km viaduct",
+        "right": "3.5 km elevated"
+      },
+      {
+        "left": "Built 1908",
+        "right": "Built 1971"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Bergpolder",
+      "title": "The Viaduct Reborn",
+      "subtitle": "Infrastructure as Amenity",
+      "description": "A 1908 railway viaduct converted into market halls and studios",
+      "contributor": "Miriam",
+      "image": "images/placeholder/2A.jpg",
+      "extraImages": [],
+      "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Santa Cecília",
+      "title": "The Minhocão",
+      "subtitle": "Infrastructure as Battleground",
+      "description": "A 3.5 km elevated expressway turned weekend park",
+      "contributor": "Simon",
+      "image": "images/placeholder/2B.jpg",
+      "extraImages": [],
+      "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
+    }
   },
   {
-    "id": "009", "title": "Public Markets — III", "slug": "public-markets-3",
-    "date": "2026-01-20", "order": null,
+    "id": "009",
+    "title": "Public Markets — III",
+    "slug": "public-markets-3",
+    "date": "2026-01-20",
+    "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": { "topic": "Food", "scale": "M (Street/Block)", "system": "The Soft City (Social / Cultural)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["food", "public-space", "architecture"],
-    "quickFacts": [ { "left": "Since 2014", "right": "Since 1933" }, { "left": "Designed spectacle", "right": "Organic growth" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Blaak", "title": "The Markthal", "subtitle": "Architecture as Market", "description": "Europe's largest indoor market under a painted horseshoe arch", "contributor": "Miriam", "image": "images/placeholder/3A.jpg", "extraImages": [], "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Brás", "title": "The Mercadão", "subtitle": "Market as Architecture", "description": "A 1933 neoclassical municipal market", "contributor": "Simon", "image": "images/placeholder/3B.jpg", "extraImages": [], "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n" }
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "Europe's largest indoor market under a painted horseshoe arch",
+      "contributor": "Miriam",
+      "image": "images/placeholder/3A.jpg",
+      "extraImages": [],
+      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Brás",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market",
+      "contributor": "Simon",
+      "image": "images/placeholder/3B.jpg",
+      "extraImages": [],
+      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
+    }
   },
   {
-    "id": "010", "title": "The Morning Commute — IV", "slug": "morning-commute-4",
-    "date": "2026-01-13", "order": null,
+    "id": "010",
+    "title": "The Morning Commute — IV",
+    "slug": "morning-commute-4",
+    "date": "2026-01-13",
+    "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway.",
-    "metadata": { "topic": "Transport", "scale": "XXL (City-wide)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["transport", "infrastructure", "daily-life"],
-    "quickFacts": [ { "left": "The Bicycle", "right": "The Car & Moto" }, { "left": "20 Minutes", "right": "90 Minutes" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Delfshaven", "title": "The Dutch Flow", "subtitle": "Controlled Friction", "description": "20-minute silent bike rides through engineered calm", "contributor": "Miriam", "image": "images/placeholder/1A.jpg", "extraImages": [], "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Moema", "title": "The Paulista Chaos", "subtitle": "Social Friction", "description": "90-minute sensory overload through the marginal", "contributor": "Simon", "image": "images/placeholder/1B.jpg", "extraImages": [], "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n" }
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "transport",
+      "infrastructure",
+      "daily-life"
+    ],
+    "quickFacts": [
+      {
+        "left": "The Bicycle",
+        "right": "The Car & Moto"
+      },
+      {
+        "left": "20 Minutes",
+        "right": "90 Minutes"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Delfshaven",
+      "title": "The Dutch Flow",
+      "subtitle": "Controlled Friction",
+      "description": "20-minute silent bike rides through engineered calm",
+      "contributor": "Miriam",
+      "image": "images/placeholder/1A.jpg",
+      "extraImages": [],
+      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Moema",
+      "title": "The Paulista Chaos",
+      "subtitle": "Social Friction",
+      "description": "90-minute sensory overload through the marginal",
+      "contributor": "Simon",
+      "image": "images/placeholder/1B.jpg",
+      "extraImages": [],
+      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
+    }
   },
   {
-    "id": "011", "title": "Elevated Highways — IV", "slug": "elevated-highways-4",
-    "date": "2026-01-06", "order": null,
+    "id": "011",
+    "title": "Elevated Highways — IV",
+    "slug": "elevated-highways-4",
+    "date": "2026-01-06",
+    "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": { "topic": "Infrastructure", "scale": "XL (District)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["infrastructure", "adaptive-reuse", "public-space"],
-    "quickFacts": [ { "left": "1.9 km viaduct", "right": "3.5 km elevated" }, { "left": "Built 1908", "right": "Built 1971" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Noord", "title": "The Viaduct Reborn", "subtitle": "Infrastructure as Amenity", "description": "A 1908 railway viaduct converted into market halls and studios", "contributor": "Miriam", "image": "images/placeholder/2A.jpg", "extraImages": [], "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Lapa", "title": "The Minhocão", "subtitle": "Infrastructure as Battleground", "description": "A 3.5 km elevated expressway turned weekend park", "contributor": "Simon", "image": "images/placeholder/2B.jpg", "extraImages": [], "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n" }
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "infrastructure",
+      "adaptive-reuse",
+      "public-space"
+    ],
+    "quickFacts": [
+      {
+        "left": "1.9 km viaduct",
+        "right": "3.5 km elevated"
+      },
+      {
+        "left": "Built 1908",
+        "right": "Built 1971"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Noord",
+      "title": "The Viaduct Reborn",
+      "subtitle": "Infrastructure as Amenity",
+      "description": "A 1908 railway viaduct converted into market halls and studios",
+      "contributor": "Miriam",
+      "image": "images/placeholder/2A.jpg",
+      "extraImages": [],
+      "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Lapa",
+      "title": "The Minhocão",
+      "subtitle": "Infrastructure as Battleground",
+      "description": "A 3.5 km elevated expressway turned weekend park",
+      "contributor": "Simon",
+      "image": "images/placeholder/2B.jpg",
+      "extraImages": [],
+      "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
+    }
   },
   {
-    "id": "012", "title": "Public Markets — IV", "slug": "public-markets-4",
-    "date": "2025-12-30", "order": null,
+    "id": "012",
+    "title": "Public Markets — IV",
+    "slug": "public-markets-4",
+    "date": "2025-12-30",
+    "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": { "topic": "Food", "scale": "M (Street/Block)", "system": "The Soft City (Social / Cultural)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["food", "public-space", "architecture"],
-    "quickFacts": [ { "left": "Since 2014", "right": "Since 1933" }, { "left": "Designed spectacle", "right": "Organic growth" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Blaak", "title": "The Markthal", "subtitle": "Architecture as Market", "description": "Europe's largest indoor market under a painted horseshoe arch", "contributor": "Miriam", "image": "images/placeholder/3A.jpg", "extraImages": [], "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Liberdade", "title": "The Mercadão", "subtitle": "Market as Architecture", "description": "A 1933 neoclassical municipal market", "contributor": "Simon", "image": "images/placeholder/3B.jpg", "extraImages": [], "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n" }
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "Europe's largest indoor market under a painted horseshoe arch",
+      "contributor": "Miriam",
+      "image": "images/placeholder/3A.jpg",
+      "extraImages": [],
+      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Liberdade",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market",
+      "contributor": "Simon",
+      "image": "images/placeholder/3B.jpg",
+      "extraImages": [],
+      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
+    }
   },
   {
-    "id": "013", "title": "The Morning Commute — V", "slug": "morning-commute-5",
-    "date": "2025-12-23", "order": null,
+    "id": "013",
+    "title": "The Morning Commute — V",
+    "slug": "morning-commute-5",
+    "date": "2025-12-23",
+    "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway.",
-    "metadata": { "topic": "Transport", "scale": "XXL (City-wide)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["transport", "infrastructure", "daily-life"],
-    "quickFacts": [ { "left": "The Bicycle", "right": "The Car & Moto" }, { "left": "20 Minutes", "right": "90 Minutes" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Hillegersberg", "title": "The Dutch Flow", "subtitle": "Controlled Friction", "description": "20-minute silent bike rides through engineered calm", "contributor": "Miriam", "image": "images/placeholder/1A.jpg", "extraImages": [], "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Pinheiros", "title": "The Paulista Chaos", "subtitle": "Social Friction", "description": "90-minute sensory overload through the marginal", "contributor": "Simon", "image": "images/placeholder/1B.jpg", "extraImages": [], "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n" }
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "transport",
+      "infrastructure",
+      "daily-life"
+    ],
+    "quickFacts": [
+      {
+        "left": "The Bicycle",
+        "right": "The Car & Moto"
+      },
+      {
+        "left": "20 Minutes",
+        "right": "90 Minutes"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Hillegersberg",
+      "title": "The Dutch Flow",
+      "subtitle": "Controlled Friction",
+      "description": "20-minute silent bike rides through engineered calm",
+      "contributor": "Miriam",
+      "image": "images/placeholder/1A.jpg",
+      "extraImages": [],
+      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Pinheiros",
+      "title": "The Paulista Chaos",
+      "subtitle": "Social Friction",
+      "description": "90-minute sensory overload through the marginal",
+      "contributor": "Simon",
+      "image": "images/placeholder/1B.jpg",
+      "extraImages": [],
+      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
+    }
   },
   {
-    "id": "014", "title": "Elevated Highways — V", "slug": "elevated-highways-5",
-    "date": "2025-12-16", "order": null,
+    "id": "014",
+    "title": "Elevated Highways — V",
+    "slug": "elevated-highways-5",
+    "date": "2025-12-16",
+    "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": { "topic": "Infrastructure", "scale": "XL (District)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["infrastructure", "adaptive-reuse", "public-space"],
-    "quickFacts": [ { "left": "1.9 km viaduct", "right": "3.5 km elevated" }, { "left": "Built 1908", "right": "Built 1971" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Schiebroek", "title": "The Viaduct Reborn", "subtitle": "Infrastructure as Amenity", "description": "A 1908 railway viaduct converted into market halls and studios", "contributor": "Miriam", "image": "images/placeholder/2A.jpg", "extraImages": [], "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Perdizes", "title": "The Minhocão", "subtitle": "Infrastructure as Battleground", "description": "A 3.5 km elevated expressway turned weekend park", "contributor": "Simon", "image": "images/placeholder/2B.jpg", "extraImages": [], "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n" }
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "infrastructure",
+      "adaptive-reuse",
+      "public-space"
+    ],
+    "quickFacts": [
+      {
+        "left": "1.9 km viaduct",
+        "right": "3.5 km elevated"
+      },
+      {
+        "left": "Built 1908",
+        "right": "Built 1971"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Schiebroek",
+      "title": "The Viaduct Reborn",
+      "subtitle": "Infrastructure as Amenity",
+      "description": "A 1908 railway viaduct converted into market halls and studios",
+      "contributor": "Miriam",
+      "image": "images/placeholder/2A.jpg",
+      "extraImages": [],
+      "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Perdizes",
+      "title": "The Minhocão",
+      "subtitle": "Infrastructure as Battleground",
+      "description": "A 3.5 km elevated expressway turned weekend park",
+      "contributor": "Simon",
+      "image": "images/placeholder/2B.jpg",
+      "extraImages": [],
+      "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
+    }
   },
   {
-    "id": "015", "title": "Public Markets — V", "slug": "public-markets-5",
-    "date": "2025-12-09", "order": null,
+    "id": "015",
+    "title": "Public Markets — V",
+    "slug": "public-markets-5",
+    "date": "2025-12-09",
+    "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": { "topic": "Food", "scale": "M (Street/Block)", "system": "The Soft City (Social / Cultural)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["food", "public-space", "architecture"],
-    "quickFacts": [ { "left": "Since 2014", "right": "Since 1933" }, { "left": "Designed spectacle", "right": "Organic growth" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Blaak", "title": "The Markthal", "subtitle": "Architecture as Market", "description": "Europe's largest indoor market under a painted horseshoe arch", "contributor": "Miriam", "image": "images/placeholder/3A.jpg", "extraImages": [], "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Bela Vista", "title": "The Mercadão", "subtitle": "Market as Architecture", "description": "A 1933 neoclassical municipal market", "contributor": "Simon", "image": "images/placeholder/3B.jpg", "extraImages": [], "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n" }
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "Europe's largest indoor market under a painted horseshoe arch",
+      "contributor": "Miriam",
+      "image": "images/placeholder/3A.jpg",
+      "extraImages": [],
+      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Bela Vista",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market",
+      "contributor": "Simon",
+      "image": "images/placeholder/3B.jpg",
+      "extraImages": [],
+      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
+    }
   },
   {
-    "id": "016", "title": "The Morning Commute — VI", "slug": "morning-commute-6",
-    "date": "2025-12-02", "order": null,
+    "id": "016",
+    "title": "The Morning Commute — VI",
+    "slug": "morning-commute-6",
+    "date": "2025-12-02",
+    "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway.",
-    "metadata": { "topic": "Transport", "scale": "XXL (City-wide)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["transport", "infrastructure", "daily-life"],
-    "quickFacts": [ { "left": "The Bicycle", "right": "The Car & Moto" }, { "left": "20 Minutes", "right": "90 Minutes" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Ommoord", "title": "The Dutch Flow", "subtitle": "Controlled Friction", "description": "20-minute silent bike rides through engineered calm", "contributor": "Miriam", "image": "images/placeholder/1A.jpg", "extraImages": [], "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Tatuapé", "title": "The Paulista Chaos", "subtitle": "Social Friction", "description": "90-minute sensory overload through the marginal", "contributor": "Simon", "image": "images/placeholder/1B.jpg", "extraImages": [], "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n" }
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "transport",
+      "infrastructure",
+      "daily-life"
+    ],
+    "quickFacts": [
+      {
+        "left": "The Bicycle",
+        "right": "The Car & Moto"
+      },
+      {
+        "left": "20 Minutes",
+        "right": "90 Minutes"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Ommoord",
+      "title": "The Dutch Flow",
+      "subtitle": "Controlled Friction",
+      "description": "20-minute silent bike rides through engineered calm",
+      "contributor": "Miriam",
+      "image": "images/placeholder/1A.jpg",
+      "extraImages": [],
+      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Tatuapé",
+      "title": "The Paulista Chaos",
+      "subtitle": "Social Friction",
+      "description": "90-minute sensory overload through the marginal",
+      "contributor": "Simon",
+      "image": "images/placeholder/1B.jpg",
+      "extraImages": [],
+      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
+    }
   },
   {
-    "id": "017", "title": "Elevated Highways — VI", "slug": "elevated-highways-6",
-    "date": "2025-11-25", "order": null,
+    "id": "017",
+    "title": "Elevated Highways — VI",
+    "slug": "elevated-highways-6",
+    "date": "2025-11-25",
+    "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": { "topic": "Infrastructure", "scale": "XL (District)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["infrastructure", "adaptive-reuse", "public-space"],
-    "quickFacts": [ { "left": "1.9 km viaduct", "right": "3.5 km elevated" }, { "left": "Built 1908", "right": "Built 1971" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Hillesluis", "title": "The Viaduct Reborn", "subtitle": "Infrastructure as Amenity", "description": "A 1908 railway viaduct converted into market halls and studios", "contributor": "Miriam", "image": "images/placeholder/2A.jpg", "extraImages": [], "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Santana", "title": "The Minhocão", "subtitle": "Infrastructure as Battleground", "description": "A 3.5 km elevated expressway turned weekend park", "contributor": "Simon", "image": "images/placeholder/2B.jpg", "extraImages": [], "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n" }
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "infrastructure",
+      "adaptive-reuse",
+      "public-space"
+    ],
+    "quickFacts": [
+      {
+        "left": "1.9 km viaduct",
+        "right": "3.5 km elevated"
+      },
+      {
+        "left": "Built 1908",
+        "right": "Built 1971"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Hillesluis",
+      "title": "The Viaduct Reborn",
+      "subtitle": "Infrastructure as Amenity",
+      "description": "A 1908 railway viaduct converted into market halls and studios",
+      "contributor": "Miriam",
+      "image": "images/placeholder/2A.jpg",
+      "extraImages": [],
+      "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Santana",
+      "title": "The Minhocão",
+      "subtitle": "Infrastructure as Battleground",
+      "description": "A 3.5 km elevated expressway turned weekend park",
+      "contributor": "Simon",
+      "image": "images/placeholder/2B.jpg",
+      "extraImages": [],
+      "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
+    }
   },
   {
-    "id": "018", "title": "Public Markets — VI", "slug": "public-markets-6",
-    "date": "2025-11-18", "order": null,
+    "id": "018",
+    "title": "Public Markets — VI",
+    "slug": "public-markets-6",
+    "date": "2025-11-18",
+    "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": { "topic": "Food", "scale": "M (Street/Block)", "system": "The Soft City (Social / Cultural)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["food", "public-space", "architecture"],
-    "quickFacts": [ { "left": "Since 2014", "right": "Since 1933" }, { "left": "Designed spectacle", "right": "Organic growth" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Blaak", "title": "The Markthal", "subtitle": "Architecture as Market", "description": "Europe's largest indoor market under a painted horseshoe arch", "contributor": "Miriam", "image": "images/placeholder/3A.jpg", "extraImages": [], "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Higienópolis", "title": "The Mercadão", "subtitle": "Market as Architecture", "description": "A 1933 neoclassical municipal market", "contributor": "Simon", "image": "images/placeholder/3B.jpg", "extraImages": [], "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n" }
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "Europe's largest indoor market under a painted horseshoe arch",
+      "contributor": "Miriam",
+      "image": "images/placeholder/3A.jpg",
+      "extraImages": [],
+      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Higienópolis",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market",
+      "contributor": "Simon",
+      "image": "images/placeholder/3B.jpg",
+      "extraImages": [],
+      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
+    }
   },
   {
-    "id": "019", "title": "The Morning Commute — VII", "slug": "morning-commute-7",
-    "date": "2025-11-11", "order": null,
+    "id": "019",
+    "title": "The Morning Commute — VII",
+    "slug": "morning-commute-7",
+    "date": "2025-11-11",
+    "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway.",
-    "metadata": { "topic": "Transport", "scale": "XXL (City-wide)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["transport", "infrastructure", "daily-life"],
-    "quickFacts": [ { "left": "The Bicycle", "right": "The Car & Moto" }, { "left": "20 Minutes", "right": "90 Minutes" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Prins Alexander", "title": "The Dutch Flow", "subtitle": "Controlled Friction", "description": "20-minute silent bike rides through engineered calm", "contributor": "Miriam", "image": "images/placeholder/1A.jpg", "extraImages": [], "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Itaim Bibi", "title": "The Paulista Chaos", "subtitle": "Social Friction", "description": "90-minute sensory overload through the marginal", "contributor": "Simon", "image": "images/placeholder/1B.jpg", "extraImages": [], "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n" }
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "transport",
+      "infrastructure",
+      "daily-life"
+    ],
+    "quickFacts": [
+      {
+        "left": "The Bicycle",
+        "right": "The Car & Moto"
+      },
+      {
+        "left": "20 Minutes",
+        "right": "90 Minutes"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Prins Alexander",
+      "title": "The Dutch Flow",
+      "subtitle": "Controlled Friction",
+      "description": "20-minute silent bike rides through engineered calm",
+      "contributor": "Miriam",
+      "image": "images/placeholder/1A.jpg",
+      "extraImages": [],
+      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Itaim Bibi",
+      "title": "The Paulista Chaos",
+      "subtitle": "Social Friction",
+      "description": "90-minute sensory overload through the marginal",
+      "contributor": "Simon",
+      "image": "images/placeholder/1B.jpg",
+      "extraImages": [],
+      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
+    }
   },
   {
-    "id": "020", "title": "Elevated Highways — VII", "slug": "elevated-highways-7",
-    "date": "2025-11-04", "order": null,
+    "id": "020",
+    "title": "Elevated Highways — VII",
+    "slug": "elevated-highways-7",
+    "date": "2025-11-04",
+    "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": { "topic": "Infrastructure", "scale": "XL (District)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["infrastructure", "adaptive-reuse", "public-space"],
-    "quickFacts": [ { "left": "1.9 km viaduct", "right": "3.5 km elevated" }, { "left": "Built 1908", "right": "Built 1971" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Katendrecht", "title": "The Viaduct Reborn", "subtitle": "Infrastructure as Amenity", "description": "A 1908 railway viaduct converted into market halls and studios", "contributor": "Miriam", "image": "images/placeholder/2A.jpg", "extraImages": [], "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Tucuruvi", "title": "The Minhocão", "subtitle": "Infrastructure as Battleground", "description": "A 3.5 km elevated expressway turned weekend park", "contributor": "Simon", "image": "images/placeholder/2B.jpg", "extraImages": [], "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n" }
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "infrastructure",
+      "adaptive-reuse",
+      "public-space"
+    ],
+    "quickFacts": [
+      {
+        "left": "1.9 km viaduct",
+        "right": "3.5 km elevated"
+      },
+      {
+        "left": "Built 1908",
+        "right": "Built 1971"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Katendrecht",
+      "title": "The Viaduct Reborn",
+      "subtitle": "Infrastructure as Amenity",
+      "description": "A 1908 railway viaduct converted into market halls and studios",
+      "contributor": "Miriam",
+      "image": "images/placeholder/2A.jpg",
+      "extraImages": [],
+      "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Tucuruvi",
+      "title": "The Minhocão",
+      "subtitle": "Infrastructure as Battleground",
+      "description": "A 3.5 km elevated expressway turned weekend park",
+      "contributor": "Simon",
+      "image": "images/placeholder/2B.jpg",
+      "extraImages": [],
+      "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
+    }
   },
   {
-    "id": "021", "title": "Public Markets — VII", "slug": "public-markets-7",
-    "date": "2025-10-28", "order": null,
+    "id": "021",
+    "title": "Public Markets — VII",
+    "slug": "public-markets-7",
+    "date": "2025-10-28",
+    "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": { "topic": "Food", "scale": "M (Street/Block)", "system": "The Soft City (Social / Cultural)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["food", "public-space", "architecture"],
-    "quickFacts": [ { "left": "Since 2014", "right": "Since 1933" }, { "left": "Designed spectacle", "right": "Organic growth" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Blaak", "title": "The Markthal", "subtitle": "Architecture as Market", "description": "Europe's largest indoor market under a painted horseshoe arch", "contributor": "Miriam", "image": "images/placeholder/3A.jpg", "extraImages": [], "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Ipiranga", "title": "The Mercadão", "subtitle": "Market as Architecture", "description": "A 1933 neoclassical municipal market", "contributor": "Simon", "image": "images/placeholder/3B.jpg", "extraImages": [], "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n" }
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "Europe's largest indoor market under a painted horseshoe arch",
+      "contributor": "Miriam",
+      "image": "images/placeholder/3A.jpg",
+      "extraImages": [],
+      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Ipiranga",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market",
+      "contributor": "Simon",
+      "image": "images/placeholder/3B.jpg",
+      "extraImages": [],
+      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
+    }
   },
   {
-    "id": "022", "title": "The Morning Commute — VIII", "slug": "morning-commute-8",
-    "date": "2025-10-21", "order": null,
+    "id": "022",
+    "title": "The Morning Commute — VIII",
+    "slug": "morning-commute-8",
+    "date": "2025-10-21",
+    "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway.",
-    "metadata": { "topic": "Transport", "scale": "XXL (City-wide)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["transport", "infrastructure", "daily-life"],
-    "quickFacts": [ { "left": "The Bicycle", "right": "The Car & Moto" }, { "left": "20 Minutes", "right": "90 Minutes" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Spangen", "title": "The Dutch Flow", "subtitle": "Controlled Friction", "description": "20-minute silent bike rides through engineered calm", "contributor": "Miriam", "image": "images/placeholder/1A.jpg", "extraImages": [], "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Campo Belo", "title": "The Paulista Chaos", "subtitle": "Social Friction", "description": "90-minute sensory overload through the marginal", "contributor": "Simon", "image": "images/placeholder/1B.jpg", "extraImages": [], "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n" }
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "transport",
+      "infrastructure",
+      "daily-life"
+    ],
+    "quickFacts": [
+      {
+        "left": "The Bicycle",
+        "right": "The Car & Moto"
+      },
+      {
+        "left": "20 Minutes",
+        "right": "90 Minutes"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Spangen",
+      "title": "The Dutch Flow",
+      "subtitle": "Controlled Friction",
+      "description": "20-minute silent bike rides through engineered calm",
+      "contributor": "Miriam",
+      "image": "images/placeholder/1A.jpg",
+      "extraImages": [],
+      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Campo Belo",
+      "title": "The Paulista Chaos",
+      "subtitle": "Social Friction",
+      "description": "90-minute sensory overload through the marginal",
+      "contributor": "Simon",
+      "image": "images/placeholder/1B.jpg",
+      "extraImages": [],
+      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
+    }
   },
   {
-    "id": "023", "title": "Elevated Highways — VIII", "slug": "elevated-highways-8",
-    "date": "2025-10-14", "order": null,
+    "id": "023",
+    "title": "Elevated Highways — VIII",
+    "slug": "elevated-highways-8",
+    "date": "2025-10-14",
+    "order": null,
     "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": { "topic": "Infrastructure", "scale": "XL (District)", "system": "The Hard City (Concrete / Built)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["infrastructure", "adaptive-reuse", "public-space"],
-    "quickFacts": [ { "left": "1.9 km viaduct", "right": "3.5 km elevated" }, { "left": "Built 1908", "right": "Built 1971" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Charlois", "title": "The Viaduct Reborn", "subtitle": "Infrastructure as Amenity", "description": "A 1908 railway viaduct converted into market halls and studios", "contributor": "Miriam", "image": "images/placeholder/2A.jpg", "extraImages": [], "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Penha", "title": "The Minhocão", "subtitle": "Infrastructure as Battleground", "description": "A 3.5 km elevated expressway turned weekend park", "contributor": "Simon", "image": "images/placeholder/2B.jpg", "extraImages": [], "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n" }
+    "metadata": {
+      "topic": "Infrastructure",
+      "scale": "XL (District)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "infrastructure",
+      "adaptive-reuse",
+      "public-space"
+    ],
+    "quickFacts": [
+      {
+        "left": "1.9 km viaduct",
+        "right": "3.5 km elevated"
+      },
+      {
+        "left": "Built 1908",
+        "right": "Built 1971"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Charlois",
+      "title": "The Viaduct Reborn",
+      "subtitle": "Infrastructure as Amenity",
+      "description": "A 1908 railway viaduct converted into market halls and studios",
+      "contributor": "Miriam",
+      "image": "images/placeholder/2A.jpg",
+      "extraImages": [],
+      "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Penha",
+      "title": "The Minhocão",
+      "subtitle": "Infrastructure as Battleground",
+      "description": "A 3.5 km elevated expressway turned weekend park",
+      "contributor": "Simon",
+      "image": "images/placeholder/2B.jpg",
+      "extraImages": [],
+      "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
+    }
   },
   {
-    "id": "024", "title": "Public Markets — VIII", "slug": "public-markets-8",
-    "date": "2025-10-07", "order": null,
+    "id": "024",
+    "title": "Public Markets — VIII",
+    "slug": "public-markets-8",
+    "date": "2025-10-07",
+    "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": { "topic": "Food", "scale": "M (Street/Block)", "system": "The Soft City (Social / Cultural)", "coordinates": { "left": "51.92° N", "right": "23.55° S" } },
-    "tags": ["food", "public-space", "architecture"],
-    "quickFacts": [ { "left": "Since 2014", "right": "Since 1933" }, { "left": "Designed spectacle", "right": "Organic growth" } ],
-    "left": { "city": "Rotterdam", "neighbourhood": "Blaak", "title": "The Markthal", "subtitle": "Architecture as Market", "description": "Europe's largest indoor market under a painted horseshoe arch", "contributor": "Miriam", "image": "images/placeholder/3A.jpg", "extraImages": [], "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n" },
-    "right": { "city": "São Paulo", "neighbourhood": "Vila Prudente", "title": "The Mercadão", "subtitle": "Market as Architecture", "description": "A 1933 neoclassical municipal market", "contributor": "Simon", "image": "images/placeholder/3B.jpg", "extraImages": [], "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n" }
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    },
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "Europe's largest indoor market under a painted horseshoe arch",
+      "contributor": "Miriam",
+      "image": "images/placeholder/3A.jpg",
+      "extraImages": [],
+      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Vila Prudente",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market",
+      "contributor": "Simon",
+      "image": "images/placeholder/3B.jpg",
+      "extraImages": [],
+      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
+    }
   }
 ]
