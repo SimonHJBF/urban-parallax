@@ -15,6 +15,9 @@ let editingIdx  = null; // null = new, number = index being edited
 let currentUser = '';
 let pendingImages = []; // { path, data: ArrayBuffer, type, objectUrl }
 
+// Extra media per side: array of { type, path, data, objectUrl, name, saved }
+const extraMediaSlots = { left: [], right: [] };
+
 // ── Auth ──────────────────────────────────────────────────────────────────────
 async function hashPassword(pw) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
@@ -215,8 +218,8 @@ function startEdit(idx) {
 function clearForm() {
   [
     'title','date','status','slug','intro',
-    'left-city','left-nbhd','left-contrib','left-title','left-subtitle','left-desc','left-img','left-body','left-extras',
-    'right-city','right-nbhd','right-contrib','right-title','right-subtitle','right-desc','right-img','right-body','right-extras',
+    'left-city','left-nbhd','left-contrib','left-title','left-subtitle','left-desc','left-img','left-body',
+    'right-city','right-nbhd','right-contrib','right-title','right-subtitle','right-desc','right-img','right-body',
     'topic','scale','system','season','coord-left','coord-right','tags',
   ].forEach(id => {
     const el = document.getElementById('f-' + id);
@@ -227,6 +230,8 @@ function clearForm() {
   updateImagePreview('right', '');
   updateBodyPreview('left',   '');
   updateBodyPreview('right',  '');
+  initExtraMedia('left',  []);
+  initExtraMedia('right', []);
 }
 
 function populateForm(c) {
@@ -258,7 +263,6 @@ function populateForm(c) {
   set('left-contrib',  c.left?.contributor);
   set('left-img',      c.left?.image);
   set('left-body',     c.left?.body);
-  set('left-extras',   (c.left?.extraImages || []).join(', '));
 
   set('right-city',     c.right?.city);
   set('right-nbhd',     c.right?.neighbourhood);
@@ -268,7 +272,11 @@ function populateForm(c) {
   set('right-contrib',  c.right?.contributor);
   set('right-img',      c.right?.image);
   set('right-body',     c.right?.body);
-  set('right-extras',   (c.right?.extraImages || []).join(', '));
+
+  // Load extra media — support both new extraMedia and legacy extraImages
+  const toMedia = arr => (arr || []).map(p => typeof p === 'string' ? { type: 'image', path: p } : p);
+  initExtraMedia('left',  toMedia(c.left?.extraMedia  || c.left?.extraImages));
+  initExtraMedia('right', toMedia(c.right?.extraMedia || c.right?.extraImages));
 
   document.getElementById('qf-rows').innerHTML = '';
   (c.quickFacts || []).forEach(r => addQFRow(r.left, r.right));
@@ -300,6 +308,121 @@ function updateBodyPreview(side, md) {
   el.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : md.replace(/\n/g, '<br>');
 }
 
+// ── Extra media (images / GIFs / videos below body text) ──────────────────────
+
+function initExtraMedia(side, mediaArray) {
+  // Revoke any previous blob URLs to avoid memory leaks
+  for (const slot of extraMediaSlots[side]) {
+    if (slot.objectUrl && slot.objectUrl.startsWith('blob:')) URL.revokeObjectURL(slot.objectUrl);
+  }
+  extraMediaSlots[side] = mediaArray.map(item => ({
+    type:     item.type || 'image',
+    path:     item.path,
+    data:     null,        // already saved — no pending data needed
+    objectUrl: item.path,  // use live path for preview
+    name:     item.path.split('/').pop(),
+    saved:    true,
+  }));
+  renderExtraMediaSlots(side);
+}
+
+function renderExtraMediaSlots(side) {
+  const container = document.getElementById(`${side}-extra-media`);
+  if (!container) return;
+  container.innerHTML = '';
+
+  extraMediaSlots[side].forEach((slot, idx) => {
+    container.appendChild(buildFilledSlot(side, idx, slot));
+  });
+
+  // Always show one empty "+ Add media" button unless we've hit the limit
+  if (extraMediaSlots[side].length < 10) {
+    container.appendChild(buildEmptySlot(side));
+  }
+}
+
+function buildFilledSlot(side, idx, slot) {
+  const div = document.createElement('div');
+  div.className = 'em-slot em-slot--filled';
+
+  const thumb = slot.type === 'video'
+    ? `<div class="em-thumb em-thumb--video">▶</div>`
+    : `<img class="em-thumb" src="${esc(slot.objectUrl || slot.path)}" alt=""
+         onerror="this.style.background='#333'">`;
+
+  div.innerHTML = `
+    ${thumb}
+    <div class="em-info">
+      <span class="em-type-badge em-type--${slot.type}">${slot.type}</span>
+      <span class="em-name">${esc(slot.name)}</span>
+    </div>
+    <button class="em-remove" type="button" title="Remove">×</button>`;
+
+  div.querySelector('.em-remove').addEventListener('click', () => removeExtraMedia(side, idx));
+  return div;
+}
+
+function buildEmptySlot(side) {
+  const div = document.createElement('div');
+  div.className = 'em-slot em-slot--empty';
+
+  const label = document.createElement('label');
+  label.className = 'em-add-btn';
+  label.innerHTML = '<span>+ Add<br>media</span>';
+
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*,video/mp4,video/webm,video/quicktime,.gif';
+  input.className = 'em-file-input';
+  input.addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (file) await handleExtraMediaFile(side, file);
+    e.target.value = '';
+  });
+
+  label.appendChild(input);
+  div.appendChild(label);
+  return div;
+}
+
+async function handleExtraMediaFile(side, file) {
+  const slug = document.getElementById('f-slug').value.trim() || 'untitled';
+  const idx  = extraMediaSlots[side].length + 1; // 1-based for filename
+  const ext  = file.name.split('.').pop().toLowerCase();
+
+  // Determine type from MIME
+  let type;
+  if (file.type.startsWith('video/'))              type = 'video';
+  else if (file.type === 'image/gif' || ext === 'gif') type = 'gif';
+  else                                              type = 'image';
+
+  const path      = `images/comparisons/${slug}/${side}-extra-${idx}.${ext}`;
+  const data      = await file.arrayBuffer();
+  const objectUrl = URL.createObjectURL(file);
+
+  // Add to slot list
+  extraMediaSlots[side].push({ type, path, data, objectUrl, name: file.name, saved: false });
+
+  // Register as a pending upload so publish picks it up
+  pendingImages = pendingImages.filter(p => p.path !== path);
+  pendingImages.push({ path, data, type: file.type, objectUrl });
+
+  renderExtraMediaSlots(side);
+}
+
+function removeExtraMedia(side, idx) {
+  const slot = extraMediaSlots[side][idx];
+  // Remove from pending uploads if it hasn't been published yet
+  if (!slot.saved) pendingImages = pendingImages.filter(p => p.path !== slot.path);
+  if (slot.objectUrl && slot.objectUrl.startsWith('blob:')) URL.revokeObjectURL(slot.objectUrl);
+  extraMediaSlots[side].splice(idx, 1);
+  renderExtraMediaSlots(side);
+}
+
+function getExtraMedia(side) {
+  return extraMediaSlots[side].map(s => ({ type: s.type, path: s.path }));
+}
+
 function saveComparison() {
   const val = id => {
     const el = document.getElementById('f-' + id);
@@ -326,9 +449,9 @@ function saveComparison() {
       subtitle:      val('left-subtitle'),
       description:   val('left-desc'),
       contributor:   val('left-contrib'),
-      image:         val('left-img') || 'images/site/placeholder.svg',
-      extraImages:   val('left-extras').split(',').map(s => s.trim()).filter(Boolean),
-      body:          leftBody,
+      image:      val('left-img') || 'images/site/placeholder.svg',
+      extraMedia: getExtraMedia('left'),
+      body:       leftBody,
     },
     right: {
       city:          val('right-city'),
@@ -337,9 +460,9 @@ function saveComparison() {
       subtitle:      val('right-subtitle'),
       description:   val('right-desc'),
       contributor:   val('right-contrib'),
-      image:         val('right-img') || 'images/site/placeholder.svg',
-      extraImages:   val('right-extras').split(',').map(s => s.trim()).filter(Boolean),
-      body:          rightBody,
+      image:      val('right-img') || 'images/site/placeholder.svg',
+      extraMedia: getExtraMedia('right'),
+      body:       rightBody,
     },
   };
 

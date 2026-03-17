@@ -334,8 +334,16 @@ function buildExpandHTML(c) {
       </div>`;
   }
 
-  const leftExtras  = (c.left?.extraImages  || []).map(src => `<img src="${esc(src)}" alt="" loading="lazy" class="up-extra-img">`).join('');
-  const rightExtras = (c.right?.extraImages || []).map(src => `<img src="${esc(src)}" alt="" loading="lazy" class="up-extra-img">`).join('');
+  // Support both new extraMedia (typed) and legacy extraImages (string array)
+  const toMedia = arr => (arr || []).map(p => typeof p === 'string' ? { type: 'image', path: p } : p);
+  const renderMedia = items => toMedia(items).map(item =>
+    item.type === 'video'
+      ? `<video src="${esc(item.path)}" class="up-extra-item up-extra-video" controls preload="metadata" playsinline></video>`
+      : `<img  src="${esc(item.path)}" class="up-extra-item up-extra-img" alt="" loading="lazy">`
+  ).join('');
+
+  const leftExtras  = renderMedia(c.left?.extraMedia  || c.left?.extraImages);
+  const rightExtras = renderMedia(c.right?.extraMedia || c.right?.extraImages);
 
   const tagsHTML = c.tags && c.tags.length
     ? `<div class="up-tags">${c.tags.map(t => `<span class="up-tag">#${esc(t)}</span>`).join('')}</div>`
@@ -351,7 +359,7 @@ function buildExpandHTML(c) {
         <div class="up-expand-body">
           ${c.left?.subtitle  ? `<div class="up-expand-subtitle">${esc(c.left.subtitle)}</div>` : ''}
           <div class="up-body-text">${leftBodyHTML}</div>
-          ${leftExtras ? `<div class="up-extra-images">${leftExtras}</div>` : ''}
+          ${leftExtras ? `<div class="up-extra-media">${leftExtras}</div>` : ''}
           <p class="up-credit">${esc(c.left?.contributor || '')}${c.date ? ' · ' + c.date : ''}</p>
         </div>
 
@@ -360,7 +368,7 @@ function buildExpandHTML(c) {
         <div class="up-expand-body">
           ${c.right?.subtitle ? `<div class="up-expand-subtitle">${esc(c.right.subtitle)}</div>` : ''}
           <div class="up-body-text">${rightBodyHTML}</div>
-          ${rightExtras ? `<div class="up-extra-images">${rightExtras}</div>` : ''}
+          ${rightExtras ? `<div class="up-extra-media">${rightExtras}</div>` : ''}
           <p class="up-credit">${esc(c.right?.contributor || '')}${c.date ? ' · ' + c.date : ''}</p>
         </div>
       </div>
