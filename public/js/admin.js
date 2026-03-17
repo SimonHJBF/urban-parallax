@@ -1,16 +1,18 @@
 /**
  * Urban Parallax — Admin Panel
- * Client-side only. Generates downloadable folder (meta.json + left.md + right.md).
- * Password gate using SHA-256. No server needed.
- *
- * Accounts: Simon / Miriam (see ACCOUNTS below)
+ * Passwords: Simon = 12345 / Miriam = 12345
  */
 
 // ── Accounts ──────────────────────────────────────────────────────────────────
 const ACCOUNTS = [
-  { name: 'Simon',  hash: '396c4b08a294fcbd7a0d6c35f62db534b2bb1fd6c416297f63c272396c954ce0' },
-  { name: 'Miriam', hash: 'a6b187d8a7c631f81481b1ba9223843333a80eacf0a1929db7ab54ba1219c19c' },
+  { name: 'Simon',  hash: '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5' },
+  { name: 'Miriam', hash: '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5' },
 ];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let adminData   = [];   // full comparisons array
+let editingIdx  = null; // null = new, number = index being edited
+let currentUser = '';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 async function hashPassword(pw) {
@@ -38,13 +40,12 @@ async function checkAuth() {
 }
 
 function showAdmin(userName) {
-  const gate = document.getElementById('auth-gate');
+  currentUser = userName;
+  const gate  = document.getElementById('auth-gate');
   gate.classList.add('fade-out');
   setTimeout(() => { gate.hidden = true; }, 400);
-  document.getElementById('admin-ui').hidden  = false;
-  // Show logged-in user name in header
-  const titleEl = document.querySelector('.admin-title');
-  if (titleEl) titleEl.textContent = `Admin Panel — ${userName}`;
+  document.getElementById('admin-ui').hidden = false;
+  document.querySelector('.admin-title').textContent = `Admin — ${userName}`;
   initAdmin(userName);
 }
 
@@ -54,58 +55,291 @@ document.getElementById('admin-logout').addEventListener('click', () => {
 });
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+}
+
 document.querySelectorAll('.admin-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
-  });
+  tab.addEventListener('click', () => switchTab(tab.dataset.tab));
 });
 
-// ── Admin init ────────────────────────────────────────────────────────────────
-function initAdmin(userName) {
-  initQuickFacts();
-  initExport();
-  initReorder();
-  initLoadMeta();
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function initAdmin(userName) {
+  initEditor(userName);
+  initPublish();
 
+  // Auto-load the live comparisons.json
+  try {
+    const res = await fetch('data/comparisons.json?t=' + Date.now());
+    if (res.ok) adminData = await res.json();
+  } catch { /* file not found or offline — start with empty array */ }
+
+  renderBrowse();
+
+  document.getElementById('btn-new').addEventListener('click', () => {
+    startEdit(null);
+    switchTab('edit');
+  });
+}
+
+// ── Browse tab ────────────────────────────────────────────────────────────────
+function renderBrowse() {
+  const list = document.getElementById('browse-list');
+
+  if (!adminData.length) {
+    list.innerHTML = '<p class="admin-hint">No comparisons yet. Click "+ New Comparison" to add one.</p>';
+    return;
+  }
+
+  list.innerHTML = '';
+
+  adminData.forEach((c, idx) => {
+    const card      = document.createElement('div');
+    card.className  = 'browse-card';
+
+    const statusClass = `browse-status--${c.status || 'published'}`;
+    card.innerHTML = `
+      <div class="browse-card-img">
+        <img src="${esc(c.left?.image || 'images/site/placeholder.svg')}" alt="" loading="lazy">
+      </div>
+      <div class="browse-card-body">
+        <div class="browse-card-title">${esc(c.title || '(untitled)')}</div>
+        <div class="browse-card-meta">
+          <span>${esc(c.left?.city || '—')} ↔ ${esc(c.right?.city || '—')}</span>
+          <span>${c.date || ''}</span>
+          <span class="browse-status ${statusClass}">${c.status || 'published'}</span>
+        </div>
+      </div>
+      <div class="browse-card-actions">
+        <button class="admin-btn admin-btn--sm" data-action="edit" data-idx="${idx}">Edit</button>
+        <button class="admin-btn admin-btn--sm admin-btn--ghost" data-action="delete" data-idx="${idx}">Delete</button>
+      </div>`;
+
+    card.querySelector('[data-action="edit"]').addEventListener('click', () => {
+      startEdit(idx);
+      switchTab('edit');
+    });
+
+    card.querySelector('[data-action="delete"]').addEventListener('click', () => {
+      if (confirm(`Delete "${c.title || 'this comparison'}"? This cannot be undone.`)) {
+        adminData.splice(idx, 1);
+        renderBrowse();
+      }
+    });
+
+    list.appendChild(card);
+  });
+}
+
+// ── Editor tab ────────────────────────────────────────────────────────────────
+function initEditor(userName) {
   // Auto-generate slug from title
   document.getElementById('f-title').addEventListener('input', e => {
     const slugField = document.getElementById('f-slug');
-    if (!slugField.dataset.manual) {
-      slugField.value = slugify(e.target.value);
-    }
+    if (!slugField.dataset.manual) slugField.value = slugify(e.target.value);
   });
   document.getElementById('f-slug').addEventListener('input', function() {
     this.dataset.manual = '1';
   });
 
-  // Set today's date
-  document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
+  // Live image previews
+  document.getElementById('f-left-img').addEventListener('input', e => {
+    updateImagePreview('left', e.target.value.trim());
+  });
+  document.getElementById('f-right-img').addEventListener('input', e => {
+    updateImagePreview('right', e.target.value.trim());
+  });
 
-  // Pre-fill contributor fields based on logged-in user
-  if (userName === 'Simon') {
-    document.getElementById('f-right-contrib').value = 'Simon';
-  } else if (userName === 'Miriam') {
-    document.getElementById('f-left-contrib').value = 'Miriam';
+  // Live body previews
+  document.getElementById('f-left-body').addEventListener('input', e => {
+    updateBodyPreview('left', e.target.value);
+  });
+  document.getElementById('f-right-body').addEventListener('input', e => {
+    updateBodyPreview('right', e.target.value);
+  });
+
+  // Quick facts
+  document.getElementById('qf-add').addEventListener('click', () => addQFRow());
+
+  // Save / Cancel
+  document.getElementById('btn-save').addEventListener('click', saveComparison);
+  document.getElementById('btn-cancel').addEventListener('click', () => switchTab('browse'));
+}
+
+function startEdit(idx) {
+  editingIdx = idx;
+  document.getElementById('save-status').textContent = '';
+
+  if (idx === null) {
+    clearForm();
+    document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('f-status').value = 'published';
+    if (currentUser === 'Simon')  document.getElementById('f-right-contrib').value = 'Simon';
+    if (currentUser === 'Miriam') document.getElementById('f-left-contrib').value  = 'Miriam';
+    document.getElementById('f-slug').dataset.manual = '';
+    // Seed quick facts rows
+    for (let i = 0; i < 4; i++) addQFRow();
+  } else {
+    populateForm(adminData[idx]);
   }
 }
 
-function slugify(str) {
-  return str.toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-');
+function clearForm() {
+  [
+    'title','date','status','slug','intro',
+    'left-city','left-nbhd','left-contrib','left-title','left-subtitle','left-desc','left-img','left-body','left-extras',
+    'right-city','right-nbhd','right-contrib','right-title','right-subtitle','right-desc','right-img','right-body','right-extras',
+    'topic','scale','system','season','coord-left','coord-right','tags',
+  ].forEach(id => {
+    const el = document.getElementById('f-' + id);
+    if (el) el.value = '';
+  });
+  document.getElementById('qf-rows').innerHTML = '';
+  updateImagePreview('left',  '');
+  updateImagePreview('right', '');
+  updateBodyPreview('left',   '');
+  updateBodyPreview('right',  '');
 }
 
-// ── Quick Facts Editor ────────────────────────────────────────────────────────
-function initQuickFacts() {
-  document.getElementById('qf-add').addEventListener('click', addQFRow);
-  // Seed with 5 empty rows
-  for (let i = 0; i < 5; i++) addQFRow();
+function populateForm(c) {
+  const set = (id, val) => {
+    const el = document.getElementById('f-' + id);
+    if (el) el.value = val || '';
+  };
+
+  set('title',         c.title);
+  set('date',          c.date);
+  set('status',        c.status || 'published');
+  set('slug',          c.slug);
+  set('intro',         c.introduction);
+
+  const m = c.metadata || {};
+  set('topic',         m.topic);
+  set('scale',         m.scale);
+  set('system',        m.system);
+  set('season',        m.season);
+  set('coord-left',    m.coordinates?.left);
+  set('coord-right',   m.coordinates?.right);
+  set('tags',          (c.tags || []).join(', '));
+
+  set('left-city',     c.left?.city);
+  set('left-nbhd',     c.left?.neighbourhood);
+  set('left-title',    c.left?.title);
+  set('left-subtitle', c.left?.subtitle);
+  set('left-desc',     c.left?.description);
+  set('left-contrib',  c.left?.contributor);
+  set('left-img',      c.left?.image);
+  set('left-body',     c.left?.body);
+  set('left-extras',   (c.left?.extraImages || []).join(', '));
+
+  set('right-city',     c.right?.city);
+  set('right-nbhd',     c.right?.neighbourhood);
+  set('right-title',    c.right?.title);
+  set('right-subtitle', c.right?.subtitle);
+  set('right-desc',     c.right?.description);
+  set('right-contrib',  c.right?.contributor);
+  set('right-img',      c.right?.image);
+  set('right-body',     c.right?.body);
+  set('right-extras',   (c.right?.extraImages || []).join(', '));
+
+  document.getElementById('qf-rows').innerHTML = '';
+  (c.quickFacts || []).forEach(r => addQFRow(r.left, r.right));
+
+  updateImagePreview('left',  c.left?.image  || '');
+  updateImagePreview('right', c.right?.image || '');
+  updateBodyPreview('left',   c.left?.body   || '');
+  updateBodyPreview('right',  c.right?.body  || '');
+
+  document.getElementById('f-slug').dataset.manual = '1';
 }
 
+function updateImagePreview(side, src) {
+  const wrap = document.getElementById(`preview-${side}-img`);
+  if (!src) {
+    wrap.innerHTML = '<span class="preview-placeholder">No image</span>';
+    return;
+  }
+  wrap.innerHTML = `<img src="${esc(src)}" alt=""
+    onerror="this.parentElement.innerHTML='<span class=\\'preview-placeholder\\'>Image not found</span>'">`;
+}
+
+function updateBodyPreview(side, md) {
+  const el = document.getElementById(`preview-${side}-body`);
+  if (!md || !md.trim()) {
+    el.innerHTML = '<span class="preview-empty">No text yet</span>';
+    return;
+  }
+  el.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : md.replace(/\n/g, '<br>');
+}
+
+function saveComparison() {
+  const val = id => {
+    const el = document.getElementById('f-' + id);
+    return el ? el.value.trim() : '';
+  };
+
+  const leftBody  = document.getElementById('f-left-body').value;
+  const rightBody = document.getElementById('f-right-body').value;
+
+  const entry = {
+    id:           editingIdx !== null ? adminData[editingIdx].id : String(adminData.length + 1).padStart(3, '0'),
+    title:        val('title'),
+    slug:         val('slug') || slugify(val('title')),
+    date:         val('date'),
+    status:       val('status'),
+    order:        editingIdx !== null ? (adminData[editingIdx].order ?? null) : null,
+    introduction: val('intro'),
+    tags:         val('tags').split(',').map(t => t.trim()).filter(Boolean),
+    quickFacts:   getQuickFacts(),
+    left: {
+      city:          val('left-city'),
+      neighbourhood: val('left-nbhd'),
+      title:         val('left-title'),
+      subtitle:      val('left-subtitle'),
+      description:   val('left-desc'),
+      contributor:   val('left-contrib'),
+      image:         val('left-img') || 'images/site/placeholder.svg',
+      extraImages:   val('left-extras').split(',').map(s => s.trim()).filter(Boolean),
+      body:          leftBody,
+    },
+    right: {
+      city:          val('right-city'),
+      neighbourhood: val('right-nbhd'),
+      title:         val('right-title'),
+      subtitle:      val('right-subtitle'),
+      description:   val('right-desc'),
+      contributor:   val('right-contrib'),
+      image:         val('right-img') || 'images/site/placeholder.svg',
+      extraImages:   val('right-extras').split(',').map(s => s.trim()).filter(Boolean),
+      body:          rightBody,
+    },
+  };
+
+  // Metadata
+  const metadata = {};
+  ['topic','scale','system','season'].forEach(f => { if (val(f)) metadata[f] = val(f); });
+  const cl = val('coord-left'), cr = val('coord-right');
+  if (cl || cr) metadata.coordinates = { left: cl, right: cr };
+  if (Object.keys(metadata).length) entry.metadata = metadata;
+
+  if (editingIdx !== null) {
+    adminData[editingIdx] = entry;
+  } else {
+    adminData.unshift(entry); // new entries appear at top
+    editingIdx = 0;           // now pointing at the new entry
+  }
+
+  const statusEl = document.getElementById('save-status');
+  statusEl.style.color   = '#2a7a4a';
+  statusEl.textContent   = '✓ Saved — go to Publish tab to download and deploy.';
+  setTimeout(() => { statusEl.textContent = ''; }, 5000);
+
+  renderBrowse();
+}
+
+// ── Quick Facts ───────────────────────────────────────────────────────────────
 function addQFRow(leftVal = '', rightVal = '') {
   const container = document.getElementById('qf-rows');
   const row       = document.createElement('div');
@@ -128,306 +362,25 @@ function getQuickFacts() {
     .filter(r => r.left || r.right);
 }
 
-// ── Build meta.json from form ─────────────────────────────────────────────────
-function buildMeta() {
-  const val = id => document.getElementById(id).value.trim();
-
-  const meta = {
-    introduction: val('f-intro'),
-    metadata: {},
-    tags: val('f-tags').split(',').map(t => t.trim()).filter(Boolean),
-    quickFacts: getQuickFacts(),
-    left: {
-      city:         val('f-left-city'),
-      neighbourhood: val('f-left-nbhd'),
-      title:        val('f-left-title'),
-      subtitle:     val('f-left-subtitle'),
-      description:  val('f-left-desc'),
-      contributor:  val('f-left-contrib'),
-      image:        val('f-left-img') || 'left-main.jpg',
-      extraImages:  val('f-left-extras').split(',').map(s => s.trim()).filter(Boolean),
-    },
-    right: {
-      city:         val('f-right-city'),
-      neighbourhood: val('f-right-nbhd'),
-      title:        val('f-right-title'),
-      subtitle:     val('f-right-subtitle'),
-      description:  val('f-right-desc'),
-      contributor:  val('f-right-contrib'),
-      image:        val('f-right-img') || 'right-main.jpg',
-      extraImages:  val('f-right-extras').split(',').map(s => s.trim()).filter(Boolean),
-    },
-  };
-
-  // Metadata fields
-  const fields = ['topic', 'scale', 'system', 'season'];
-  fields.forEach(f => { if (val(`f-${f}`)) meta.metadata[f] = val(`f-${f}`); });
-  const coordL = val('f-coord-left'), coordR = val('f-coord-right');
-  if (coordL || coordR) meta.metadata.coordinates = { left: coordL, right: coordR };
-
-  // Clean up empty objects
-  if (!Object.keys(meta.metadata).length) delete meta.metadata;
-
-  return meta;
-}
-
-// ── Export ────────────────────────────────────────────────────────────────────
-function initExport() {
-  document.getElementById('btn-export').addEventListener('click', exportFolder);
-  document.getElementById('btn-preview').addEventListener('click', previewComparison);
-}
-
-async function exportFolder() {
-  const id    = document.getElementById('f-id').value.trim().padStart(3, '0');
-  const slug  = document.getElementById('f-slug').value.trim();
-  const date  = document.getElementById('f-date').value;
-  const status = document.getElementById('f-status').value;
-  const order = document.getElementById('f-order').value.trim();
-  const title = document.getElementById('f-title').value.trim();
-
-  if (!id || !slug || !title) {
-    setStatus('Please fill in ID, title and slug before exporting.', true);
-    return;
-  }
-
-  const meta      = buildMeta();
-  const leftBody  = document.getElementById('f-left-body').value;
-  const rightBody = document.getElementById('f-right-body').value;
-  const folderName = `${id}-${slug}`;
-
-  const zip = new JSZip();
-  const folder = zip.folder(folderName);
-
-  folder.file('meta.json', JSON.stringify(meta, null, 2));
-  folder.file('left.md',   leftBody);
-  folder.file('right.md',  rightBody);
-  folder.folder('images');  // empty placeholder
-
-  // Generate CSV row
-  const csvRow = `${id},"${title}",${slug},${date},${status},${order}`;
-
-  // Instructions file
-  folder.file('_INSTRUCTIONS.txt',
-    `Urban Parallax — Comparison folder: ${folderName}\n` +
-    `Generated: ${new Date().toISOString()}\n\n` +
-    `FILES:\n` +
-    `  meta.json  — structured metadata, quick-facts, city info\n` +
-    `  left.md    — deep-dive body text for left city\n` +
-    `  right.md   — deep-dive body text for right city\n` +
-    `  images/    — drop your images here (left-main.jpg, right-main.jpg, etc.)\n\n` +
-    `NEXT STEPS:\n` +
-    `  1. Copy this folder into the Google Drive content/ directory\n` +
-    `  2. Add this row to content/index.csv:\n     ${csvRow}\n` +
-    `  3. Run: node scripts/build-data.js\n` +
-    `  4. Push to deploy\n`
-  );
-
-  const blob = await zip.generateAsync({ type: 'blob' });
-  downloadBlob(blob, `${folderName}.zip`);
-  setStatus(`Exported ${folderName}.zip — drop the folder into Google Drive content/ and update index.csv.`);
-}
-
-function previewComparison() {
-  const meta = buildMeta();
-  const leftBody  = document.getElementById('f-left-body').value;
-  const rightBody = document.getElementById('f-right-body').value;
-
-  const win = window.open('', '_blank', 'width=900,height=700');
-  win.document.write(`<!DOCTYPE html><html><head>
-    <title>Preview — ${meta.left.city || 'Left'} vs ${meta.right.city || 'Right'}</title>
-    <style>
-      body { font-family: sans-serif; padding: 32px; max-width: 800px; margin: 0 auto; background: #F5F3EE; }
-      h1   { font-size: 24px; margin-bottom: 8px; }
-      .intro { font-style: italic; color: #555; margin-bottom: 24px; }
-      .grid { display: grid; grid-template-columns: 1fr 1px 1fr; gap: 0; border-top: 1px solid #ccc; padding-top: 24px; }
-      .cell { padding: 0 24px; }
-      .cell:first-child { padding-left: 0; }
-      .cell:last-child  { padding-right: 0; }
-      .divider { background: #ccc; }
-      h2 { font-size: 18px; margin-bottom: 8px; }
-      p  { font-size: 14px; line-height: 1.6; }
-      .qf { margin: 24px 0; border-collapse: collapse; width: 100%; }
-      .qf td { padding: 6px 12px; border-bottom: 1px solid #ccc; font-size: 14px; }
-      .qf td:first-child { text-align: right; }
-      .qf td:last-child  { text-align: left; }
-      .qf td:nth-child(2) { text-align: center; color: #ccc; width: 24px; }
-    </style>
-  </head><body>
-    <p style="font-family:monospace;font-size:11px;color:#888;margin-bottom:16px">PREVIEW — Urban Parallax Admin</p>
-    <h1>${esc(meta.left.city || 'Left')} vs ${esc(meta.right.city || 'Right')}</h1>
-    <p class="intro">${esc(meta.introduction || '')}</p>
-    ${meta.quickFacts && meta.quickFacts.length ? `
-      <table class="qf">
-        <tr><td><strong>${esc(meta.left.city)}</strong></td><td></td><td><strong>${esc(meta.right.city)}</strong></td></tr>
-        ${meta.quickFacts.map(r => `<tr><td>${esc(r.left)}</td><td>—</td><td>${esc(r.right)}</td></tr>`).join('')}
-      </table>` : ''}
-    <div class="grid">
-      <div class="cell">
-        <h2>${esc(meta.left.title)}</h2>
-        <p style="color:#888;font-size:12px;margin-bottom:12px">${esc(meta.left.subtitle)}</p>
-        <div>${leftBody.replace(/\n/g, '<br>')}</div>
-      </div>
-      <div class="divider"></div>
-      <div class="cell">
-        <h2>${esc(meta.right.title)}</h2>
-        <p style="color:#888;font-size:12px;margin-bottom:12px">${esc(meta.right.subtitle)}</p>
-        <div>${rightBody.replace(/\n/g, '<br>')}</div>
-      </div>
-    </div>
-  </body></html>`);
-}
-
-// ── Reorder tab ───────────────────────────────────────────────────────────────
-let reorderData = [];
-let dragSrc     = null;
-
-function initReorder() {
-  document.getElementById('btn-load-json').addEventListener('click', () => {
-    document.getElementById('input-json').click();
+// ── Publish tab ───────────────────────────────────────────────────────────────
+function initPublish() {
+  document.getElementById('btn-download-json').addEventListener('click', () => {
+    const json = JSON.stringify(adminData, null, 2);
+    downloadBlob(new Blob([json], { type: 'application/json' }), 'comparisons.json');
+    const el = document.getElementById('publish-status');
+    el.style.color   = '#2a7a4a';
+    el.textContent   = '✓ Downloaded. Replace public/data/comparisons.json and redeploy.';
   });
-
-  document.getElementById('input-json').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        reorderData = JSON.parse(ev.target.result);
-        renderReorderList();
-        document.getElementById('btn-export-csv').disabled = false;
-      } catch {
-        alert('Invalid JSON file.');
-      }
-    };
-    reader.readAsText(file);
-  });
-
-  document.getElementById('btn-export-csv').addEventListener('click', exportCSV);
-}
-
-function renderReorderList() {
-  const list = document.getElementById('reorder-list');
-  list.innerHTML = '';
-
-  reorderData.forEach((c, idx) => {
-    const item       = document.createElement('div');
-    item.className   = 'reorder-item';
-    item.draggable   = true;
-    item.dataset.idx = idx;
-    item.innerHTML   = `
-      <span class="reorder-handle">⠿</span>
-      <span class="reorder-order">${idx + 1}</span>
-      <span class="reorder-title">${esc(c.title)}</span>
-      <span class="reorder-date">${c.date || ''}</span>`;
-
-    item.addEventListener('dragstart', e => {
-      dragSrc = item;
-      e.dataTransfer.effectAllowed = 'move';
-      item.classList.add('dragging');
-    });
-
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-      updateOrderNumbers();
-    });
-
-    item.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      if (dragSrc && dragSrc !== item) {
-        const rect   = item.getBoundingClientRect();
-        const after  = e.clientY - rect.top > rect.height / 2;
-        list.insertBefore(dragSrc, after ? item.nextSibling : item);
-      }
-    });
-
-    list.appendChild(item);
-  });
-}
-
-function updateOrderNumbers() {
-  document.querySelectorAll('#reorder-list .reorder-item').forEach((item, i) => {
-    item.querySelector('.reorder-order').textContent = i + 1;
-  });
-}
-
-function exportCSV() {
-  const items   = document.querySelectorAll('#reorder-list .reorder-item');
-  const orderedIDs = Array.from(items).map(el => {
-    const idx = parseInt(el.dataset.idx);
-    return reorderData[idx];
-  });
-
-  const header = 'id,title,slug,date,status,order';
-  const rows   = orderedIDs.map((c, i) =>
-    `${c.id},"${c.title}",${c.slug},${c.date},published,${i + 1}`
-  );
-
-  const csv = [header, ...rows].join('\n');
-  downloadBlob(new Blob([csv], { type: 'text/csv' }), 'index.csv');
-  setStatus('Exported index.csv — replace the file in Google Drive content/ and redeploy.');
-}
-
-// ── Load & Edit ───────────────────────────────────────────────────────────────
-function initLoadMeta() {
-  document.getElementById('input-meta').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const meta = JSON.parse(ev.target.result);
-        populateForm(meta);
-        // Switch to Add tab
-        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-        document.querySelector('[data-tab="add"]').classList.add('active');
-        document.getElementById('tab-add').classList.add('active');
-        document.getElementById('load-status').textContent = `Loaded: ${file.name}`;
-      } catch {
-        document.getElementById('load-status').textContent = 'Error: invalid JSON.';
-      }
-    };
-    reader.readAsText(file);
-  });
-}
-
-function populateForm(meta) {
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
-
-  set('f-intro',         meta.introduction);
-  set('f-topic',         meta.metadata?.topic);
-  set('f-scale',         meta.metadata?.scale);
-  set('f-system',        meta.metadata?.system);
-  set('f-season',        meta.metadata?.season);
-  set('f-coord-left',    meta.metadata?.coordinates?.left);
-  set('f-coord-right',   meta.metadata?.coordinates?.right);
-  set('f-tags',          (meta.tags || []).join(', '));
-
-  set('f-left-city',     meta.left?.city);
-  set('f-left-nbhd',     meta.left?.neighbourhood);
-  set('f-left-title',    meta.left?.title);
-  set('f-left-subtitle', meta.left?.subtitle);
-  set('f-left-desc',     meta.left?.description);
-  set('f-left-contrib',  meta.left?.contributor);
-  set('f-left-img',      meta.left?.image);
-  set('f-left-extras',   (meta.left?.extraImages || []).join(', '));
-
-  set('f-right-city',    meta.right?.city);
-  set('f-right-nbhd',    meta.right?.neighbourhood);
-  set('f-right-title',   meta.right?.title);
-  set('f-right-subtitle',meta.right?.subtitle);
-  set('f-right-desc',    meta.right?.description);
-  set('f-right-contrib', meta.right?.contributor);
-  set('f-right-img',     meta.right?.image);
-  set('f-right-extras',  (meta.right?.extraImages || []).join(', '));
-
-  // Quick facts
-  document.getElementById('qf-rows').innerHTML = '';
-  (meta.quickFacts || []).forEach(r => addQFRow(r.left, r.right));
 }
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
+function slugify(str) {
+  return str.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a   = document.createElement('a');
@@ -437,12 +390,6 @@ function downloadBlob(blob, filename) {
   a.click();
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function setStatus(msg, isError = false) {
-  const el    = document.getElementById('export-status');
-  el.textContent = msg;
-  el.style.color = isError ? '#C4553A' : '#4A6670';
 }
 
 function esc(str) {
