@@ -8,19 +8,20 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
 
 /* ─── Tokens ─────────────────────────────────────────────────────────────── */
 :root {
-  --bg:        #F5F3EE;
+  --bg:        #F4F4F2;
   --ink:       #1A1A1A;
   --ink-muted: #666;
   --accent:    #C4553A;
   --slate:     #4A6670;
-  --border:    #D9D5CC;
+  --border:    #D5D5D0;
   --hover-bg:  #EDEAE4;
 
   --font-heading: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
   --font-body:    'Source Sans 3', 'Source Sans Pro', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', 'Courier New', monospace;
 
-  --header-h: 72px;
+  --header-h:         72px;
+  --header-h-scrolled: 44px;
   --max-w: 1200px;
   --pad-h: 40px;
 }
@@ -45,6 +46,20 @@ body {
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   height: var(--header-h);
+  transition: height 0.25s ease;
+}
+
+.site-header.scrolled {
+  height: var(--header-h-scrolled);
+}
+
+.site-header.scrolled .site-tagline {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.site-header.scrolled .site-title {
+  font-size: clamp(16px, 2vw, 22px);
 }
 
 .header-inner {
@@ -77,6 +92,7 @@ body {
   font-size: 10px;
   color: var(--slate);
   letter-spacing: 0.12em;
+  transition: opacity 0.2s ease;
 }
 
 .header-nav {
@@ -119,11 +135,11 @@ body {
 /* ─── Date Header ────────────────────────────────────────────────────────── */
 .up-date-header {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.22em;
   color: var(--slate);
   text-transform: uppercase;
-  padding: 48px 0 14px;
+  padding: 56px 0 14px;
   border-bottom: 1px solid var(--border);
   /* will-change set by JS */
 }
@@ -273,7 +289,7 @@ body {
 
 /* ─── Quick Facts ────────────────────────────────────────────────────────── */
 .up-quickfacts {
-  max-width: 580px;
+  max-width: min(88%, 840px);
   margin: 0 auto 52px;
 }
 
@@ -342,7 +358,7 @@ body {
 .up-body-text h2,
 .up-body-text h3          { font-family: var(--font-heading); font-weight: 600;
                              letter-spacing: 0.03em; margin: 1.5em 0 0.5em; }
-.up-body-text h1          { font-size: 1.4em; }
+.up-body-text h1          { font-size: 26px; }
 .up-body-text h2          { font-size: 1.2em; }
 .up-body-text h3          { font-size: 1.05em; }
 .up-body-text strong      { font-weight: 600; color: var(--ink); }

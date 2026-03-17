@@ -19,7 +19,6 @@
       </a>
       <nav class="header-nav">
         <a href="about.html">About</a>
-        <a href="admin.html">Admin</a>
       </nav>
     </div>
   </header>
@@ -39,5 +38,13 @@
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
   <script src="js/blur-engine.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    (() => {
+      const header = document.querySelector('.site-header');
+      window.addEventListener('scroll', () => {
+        header.classList.toggle('scrolled', window.scrollY > 40);
+      }, { passive: true });
+    })();
+  </script>
 </body>
 </html>

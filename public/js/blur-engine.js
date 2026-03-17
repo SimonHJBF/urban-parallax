@@ -48,8 +48,8 @@ const BlurEngine = (() => {
           el.style.opacity    = '1';
           el.style.transition = 'filter 0.4s ease, opacity 0.4s ease';
         } else {
-          el.style.filter     = 'blur(3px)';
-          el.style.opacity    = '0.4';
+          el.style.filter     = 'blur(2px)';
+          el.style.opacity    = '0.5';
           el.style.transition = 'filter 0.4s ease, opacity 0.4s ease';
         }
         return;

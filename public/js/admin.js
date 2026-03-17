@@ -38,7 +38,9 @@ async function checkAuth() {
 }
 
 function showAdmin(userName) {
-  document.getElementById('auth-gate').hidden = true;
+  const gate = document.getElementById('auth-gate');
+  gate.classList.add('fade-out');
+  setTimeout(() => { gate.hidden = true; }, 400);
   document.getElementById('admin-ui').hidden  = false;
   // Show logged-in user name in header
   const titleEl = document.querySelector('.admin-title');
