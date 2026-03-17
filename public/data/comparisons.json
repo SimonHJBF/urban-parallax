@@ -376,17 +376,9 @@
     "title": "The Morning Commute — III",
     "slug": "morning-commute-3",
     "date": "2026-02-03",
+    "status": "published",
     "order": null,
     "introduction": "The silent hum of electric trams against the roar of the marginal highway.",
-    "metadata": {
-      "topic": "Transport",
-      "scale": "XXL (City-wide)",
-      "system": "The Hard City (Concrete / Built)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      }
-    },
     "tags": [
       "transport",
       "infrastructure",
@@ -409,8 +401,8 @@
       "subtitle": "Controlled Friction",
       "description": "20-minute silent bike rides through engineered calm",
       "contributor": "Miriam",
-      "image": "images/placeholder/1A.jpg",
-      "extraImages": [],
+      "image": "images/comparisons/morning-commute-3/left.jpeg",
+      "extraMedia": [],
       "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
     },
     "right": {
@@ -420,9 +412,18 @@
       "subtitle": "Social Friction",
       "description": "90-minute sensory overload through the marginal",
       "contributor": "Simon",
-      "image": "images/placeholder/1B.jpg",
-      "extraImages": [],
+      "image": "images/comparisons/morning-commute-3/right.jpeg",
+      "extraMedia": [],
       "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
+    },
+    "metadata": {
+      "topic": "Transport",
+      "scale": "XXL (City-wide)",
+      "system": "The Hard City (Concrete / Built)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
     }
   },
   {
