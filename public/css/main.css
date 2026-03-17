@@ -838,7 +838,7 @@ body {
   width: 100%;
   overflow: hidden;
   will-change: height, opacity;
-  border-bottom: 1px solid rgba(128, 128, 128, 0.55);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.80);
   cursor: pointer;
   /* transitions applied dynamically by JS */
 }
@@ -866,7 +866,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2px;
-  max-width: 760px;
+  max-width: 760px; /* overridden per-entry by JS */
   margin: 0 auto;
   padding: 0 40px;
 }

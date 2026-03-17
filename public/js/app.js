@@ -129,6 +129,17 @@ function applyWheel(activeIndex, animate) {
     el.style.height  = entryHeight(dist) + 'px';
     el.style.opacity = entryOpacity(dist);
     el.classList.toggle('is-active', i === activeIndex);
+
+    // Width zoom: active = 115%, distance-1 = 107%, rest = 100%
+    const BASE_W = 760;
+    const pairMaxW = dist === 0 ? BASE_W * 1.15 : dist === 1 ? BASE_W * 1.07 : BASE_W;
+    const pairRow  = el.querySelector('.pair-row');
+    if (pairRow) {
+      pairRow.style.transition = dur
+        ? `max-width ${dur}ms cubic-bezier(0.4,0,0.2,1)`
+        : 'none';
+      pairRow.style.maxWidth = pairMaxW + 'px';
+    }
   });
 
   currentIndex = activeIndex;
