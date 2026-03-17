@@ -25,7 +25,7 @@ const familyVariant = {
 
 let currentMode = localStorage.getItem('up-theme')
   || localStorage.getItem('up-colour-mode')
-  || 'dark-earth';
+  || 'light-earth';
 
 // ── Apply CSS variables ────────────────────────────────────────────────────────
 function applyMode(mode) {
@@ -41,8 +41,8 @@ function applyMode(mode) {
   root.style.setProperty('--page-bg-rgb',   m.pageBgRgb);
   root.style.setProperty('--color-border',  m.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)');
   root.style.setProperty('--nav-border',    m.isDark ? 'none' : '1px solid rgba(0,0,0,0.10)');
-  // Also set body background directly to prevent any flash
-  document.body.style.backgroundColor = m.page;
+  // Set body background directly (guard: body may not exist when script runs in <head>)
+  if (document.body) document.body.style.backgroundColor = m.page;
   root.dataset.theme = mode;
   localStorage.setItem('up-theme', mode);
   currentMode = mode;

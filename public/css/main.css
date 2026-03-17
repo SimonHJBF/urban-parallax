@@ -6,17 +6,17 @@ img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; border: none; background: none; }
 
-/* ─── Colour Tokens — defaults (dark-earth), overridden by theme.js ──────── */
+/* ─── Colour Tokens — defaults (light-earth), overridden by theme.js ─────── */
 :root {
-  --color-nav:     #1A1410;
-  --color-page:    #221C17;
-  --color-surface: #2C2218;
-  --color-text:    #EAD9C4;
-  --color-muted:   #9A8A78;
-  --color-accent:  #C4622D;
-  --color-border:  rgba(255,255,255,0.10);
-  --nav-border:    none;
-  --page-bg-rgb:   34,28,23;
+  --color-nav:     #EDE5D8;
+  --color-page:    #F5EFE6;
+  --color-surface: #FFFFFF;
+  --color-text:    #2A1F15;
+  --color-muted:   #7A6555;
+  --color-accent:  #93511D;
+  --color-border:  rgba(0,0,0,0.10);
+  --nav-border:    1px solid rgba(0,0,0,0.10);
+  --page-bg-rgb:   245,239,230;
 
   /* Typography */
   --font-heading: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
@@ -265,7 +265,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 960px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 24px 40px 120px;
 }
@@ -287,7 +287,6 @@ body {
   letter-spacing: 0.1em;
   color: var(--color-muted);
   text-transform: uppercase;
-  opacity: 0.3;
   margin: 12px 0 4px;
 }
 
@@ -389,7 +388,6 @@ body {
   text-transform: uppercase;
   color: var(--color-muted);
   display: block;
-  opacity: 0.5;
   margin: 0 0 3px;
 }
 
@@ -407,7 +405,6 @@ body {
   font-size: 12px;
   color: var(--color-muted);
   line-height: 1.4;
-  opacity: 0.58;
   margin: 0;
 }
 
