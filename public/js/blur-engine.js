@@ -1,52 +1,63 @@
 /**
  * Urban Parallax — Clarity Overlay Engine
  *
- * Images carry a progressive CSS blur by row position (defined in main.css).
- * When the mouse moves over the feed, a single backdrop-filter overlay covers
- * everything. A mask-image with a soft transparent window at the cursor's
- * Y position creates a horizontal "clarity band" — the rest stays blurred.
+ * The overlay is position:fixed, covering the full viewport.
+ * backdrop-filter blurs everything the cursor is NOT near.
+ * A mask-image with a ~260px clear band follows clientY (viewport-relative).
  *
- * Expand mode: non-expanded rows are dimmed via the .has-expanded class
- * on the feed container (CSS handles the actual filter/opacity).
+ * Key differences from old approach:
+ *  - Overlay is appended to <body>, NOT the feed container.
+ *  - Mouse is tracked on document (whole page), not just the feed.
+ *  - Overlay shows when cursor is anywhere on page; hides on viewport exit.
+ *  - Scroll listener keeps band correctly anchored to cursor viewport position.
+ *  - NO per-element filter/blur is applied anywhere.
+ *  - Expand mode: .has-expanded class on feed; CSS handles dimming.
  */
 const BlurEngine = (() => {
-  let overlayEl   = null;
-  let expandedRow = null;
-  let rafId       = null;
-  let pendingY    = 0;
+  let overlayEl    = null;
+  let expandedRow  = null;
+  let mouseClientY = window.innerHeight / 2; // default to viewport centre
+  let rafId        = null;
 
-  // ── Clarity overlay setup ──────────────────────────────────────────────────
+  // ── Update the band position ───────────────────────────────────────────────
+  function updateBand() {
+    rafId = null;
+    if (!overlayEl) return;
+    // overlay is position:fixed with inset:0, so rect.top is always 0
+    // → relY = mouseClientY - 0 = mouseClientY
+    const rect = overlayEl.getBoundingClientRect();
+    const relY  = mouseClientY - rect.top;
+    overlayEl.style.setProperty('--mouse-y', relY + 'px');
+  }
+
+  function scheduleUpdate() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(updateBand);
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
   function init() {
-    const feed = document.getElementById('feed');
-    if (!feed) return;
-
-    // Create the overlay
+    // Create overlay, append to body (not feed) so it covers the whole page
     overlayEl = document.createElement('div');
     overlayEl.className = 'clarity-overlay';
-    feed.appendChild(overlayEl);
+    document.body.appendChild(overlayEl);
 
-    // Mousemove: update --mouse-y, show overlay
-    feed.addEventListener('mousemove', (e) => {
+    // Track cursor across the entire document
+    document.addEventListener('mousemove', (e) => {
       if (expandedRow !== null) return;
-      const rect = feed.getBoundingClientRect();
-      pendingY = e.clientY - rect.top;
-
-      if (!rafId) {
-        rafId = requestAnimationFrame(() => {
-          rafId = null;
-          feed.style.setProperty('--mouse-y', pendingY + 'px');
-        });
-      }
+      mouseClientY = e.clientY;
+      scheduleUpdate();
       overlayEl.classList.add('visible');
     });
 
-    // Mouse leaves feed: hide overlay
-    feed.addEventListener('mouseleave', () => {
+    // Scroll: content moves but cursor doesn't — recalculate relY
+    window.addEventListener('scroll', () => {
+      scheduleUpdate();
+    }, { passive: true });
+
+    // Cursor leaves the browser window → hide overlay
+    document.addEventListener('mouseleave', () => {
       overlayEl.classList.remove('visible');
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
     });
   }
 
@@ -62,11 +73,11 @@ const BlurEngine = (() => {
     expandedRow = null;
     const feed = document.getElementById('feed');
     if (feed) feed.classList.remove('has-expanded');
+    // Overlay will re-appear on next mousemove
   }
 
   // ── No-ops (kept for API compatibility with app.js) ────────────────────────
   function setElements() {}
-  function scheduleUpdate() {}
 
   return { init, setElements, setExpanded, clearExpanded, scheduleUpdate };
 })();

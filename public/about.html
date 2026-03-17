@@ -18,20 +18,62 @@
         <span class="site-tagline">two cities — one lens</span>
       </a>
 
-      <div class="mode-selector">
-        <button class="mode-swatch" data-mode="dark-vivid"    title="Dark · Vivid"    style="background:#FF3B3B" onclick="applyMode('dark-vivid')"></button>
-        <button class="mode-swatch" data-mode="light-vivid"   title="Light · Vivid"   style="background:#E0200A" onclick="applyMode('light-vivid')"></button>
-        <button class="mode-swatch" data-mode="red-vivid"     title="Red · Vivid"     style="background:#FF4040" onclick="applyMode('red-vivid')"></button>
-        <button class="mode-swatch" data-mode="orange-vivid"  title="Orange · Vivid"  style="background:#FF8000" onclick="applyMode('orange-vivid')"></button>
-        <button class="mode-swatch" data-mode="green-vivid"   title="Green · Vivid"   style="background:#00D44A" onclick="applyMode('green-vivid')"></button>
-        <button class="mode-swatch" data-mode="blue-vivid"    title="Blue · Vivid"    style="background:#2060FF" onclick="applyMode('blue-vivid')"></button>
+      <div class="colour-selector">
 
-        <button class="mode-swatch" data-mode="dark-earth"    title="Dark · Earth"    style="background:#C4622D" onclick="applyMode('dark-earth')"></button>
-        <button class="mode-swatch" data-mode="light-earth"   title="Light · Earth"   style="background:#93511D" onclick="applyMode('light-earth')"></button>
-        <button class="mode-swatch" data-mode="red-earth"     title="Red · Earth"     style="background:#E06040" onclick="applyMode('red-earth')"></button>
-        <button class="mode-swatch" data-mode="orange-earth"  title="Orange · Earth"  style="background:#D4821A" onclick="applyMode('orange-earth')"></button>
-        <button class="mode-swatch" data-mode="green-earth"   title="Green · Earth"   style="background:#4DAA70" onclick="applyMode('green-earth')"></button>
-        <button class="mode-swatch" data-mode="blue-earth"    title="Blue · Earth"    style="background:#5A90C8" onclick="applyMode('blue-earth')"></button>
+        <button class="colour-pill" data-family="dark" onclick="handlePillClick(this)">
+          <span class="pill-dot" style="background:#888880"></span>
+          <span class="pill-label">Dark</span>
+          <span class="pill-ve hidden">
+            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
+            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
+          </span>
+        </button>
+
+        <button class="colour-pill" data-family="light" onclick="handlePillClick(this)">
+          <span class="pill-dot" style="background:#C8C5BE;border:1px solid #aaa"></span>
+          <span class="pill-label">Light</span>
+          <span class="pill-ve hidden">
+            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
+            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
+          </span>
+        </button>
+
+        <button class="colour-pill" data-family="red" onclick="handlePillClick(this)">
+          <span class="pill-dot" style="background:#E06040"></span>
+          <span class="pill-label">Red</span>
+          <span class="pill-ve hidden">
+            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
+            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
+          </span>
+        </button>
+
+        <button class="colour-pill" data-family="orange" onclick="handlePillClick(this)">
+          <span class="pill-dot" style="background:#D4821A"></span>
+          <span class="pill-label">Orange</span>
+          <span class="pill-ve hidden">
+            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
+            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
+          </span>
+        </button>
+
+        <button class="colour-pill" data-family="green" onclick="handlePillClick(this)">
+          <span class="pill-dot" style="background:#4DAA70"></span>
+          <span class="pill-label">Green</span>
+          <span class="pill-ve hidden">
+            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
+            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
+          </span>
+        </button>
+
+        <button class="colour-pill" data-family="blue" onclick="handlePillClick(this)">
+          <span class="pill-dot" style="background:#5A90C8"></span>
+          <span class="pill-label">Blue</span>
+          <span class="pill-ve hidden">
+            <span class="ve-opt" data-v="earth" onclick="handleVariantClick(event,this)">Earth</span>
+            <span class="ve-opt" data-v="vivid" onclick="handleVariantClick(event,this)">Vivid</span>
+          </span>
+        </button>
+
       </div>
 
       <nav class="header-nav">
@@ -43,7 +85,6 @@
 
   <main class="about-page">
     <div class="about-inner">
-
       <div class="about-grid">
         <div class="about-text">
           <h2 class="about-heading">What is this?</h2>
@@ -77,7 +118,6 @@
           <img src="images/site/about-photo.jpg" alt="Urban Parallax" onerror="this.style.display='none'">
         </div>
       </div>
-
     </div>
   </main>
 
