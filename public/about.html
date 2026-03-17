@@ -7,6 +7,7 @@
   <link rel="icon" href="images/site/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/main.css">
+  <script src="js/theme.js"></script>
 </head>
 <body>
 
@@ -16,8 +17,26 @@
         <h1 class="site-title">URBAN PARALLAX</h1>
         <span class="site-tagline">two cities — one lens</span>
       </a>
+
+      <div class="mode-selector">
+        <button class="mode-swatch" data-mode="dark-vivid"    title="Dark · Vivid"    style="background:#FF3B3B" onclick="applyMode('dark-vivid')"></button>
+        <button class="mode-swatch" data-mode="light-vivid"   title="Light · Vivid"   style="background:#E0200A" onclick="applyMode('light-vivid')"></button>
+        <button class="mode-swatch" data-mode="red-vivid"     title="Red · Vivid"     style="background:#FF4040" onclick="applyMode('red-vivid')"></button>
+        <button class="mode-swatch" data-mode="orange-vivid"  title="Orange · Vivid"  style="background:#FF8000" onclick="applyMode('orange-vivid')"></button>
+        <button class="mode-swatch" data-mode="green-vivid"   title="Green · Vivid"   style="background:#00D44A" onclick="applyMode('green-vivid')"></button>
+        <button class="mode-swatch" data-mode="blue-vivid"    title="Blue · Vivid"    style="background:#2060FF" onclick="applyMode('blue-vivid')"></button>
+
+        <button class="mode-swatch" data-mode="dark-earth"    title="Dark · Earth"    style="background:#C4622D" onclick="applyMode('dark-earth')"></button>
+        <button class="mode-swatch" data-mode="light-earth"   title="Light · Earth"   style="background:#93511D" onclick="applyMode('light-earth')"></button>
+        <button class="mode-swatch" data-mode="red-earth"     title="Red · Earth"     style="background:#E06040" onclick="applyMode('red-earth')"></button>
+        <button class="mode-swatch" data-mode="orange-earth"  title="Orange · Earth"  style="background:#D4821A" onclick="applyMode('orange-earth')"></button>
+        <button class="mode-swatch" data-mode="green-earth"   title="Green · Earth"   style="background:#4DAA70" onclick="applyMode('green-earth')"></button>
+        <button class="mode-swatch" data-mode="blue-earth"    title="Blue · Earth"    style="background:#5A90C8" onclick="applyMode('blue-earth')"></button>
+      </div>
+
       <nav class="header-nav">
         <a href="about.html" class="active">About</a>
+        <a href="admin.html">Admin</a>
       </nav>
     </div>
   </header>
@@ -69,6 +88,5 @@
     </div>
   </footer>
 
-  <link rel="stylesheet" href="css/fonts.css">
 </body>
 </html>

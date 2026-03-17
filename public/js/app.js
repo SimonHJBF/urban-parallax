@@ -15,7 +15,7 @@ async function init() {
     comparisons = await res.json();
   } catch (err) {
     document.getElementById('feed').innerHTML =
-      `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:#888;">
+      `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:var(--color-muted);">
         Could not load comparisons.json — run the build script first.<br>
         <code style="font-size:11px">node scripts/build-data.js</code>
       </p>`;
@@ -34,7 +34,7 @@ function renderFeed() {
 
   if (!comparisons.length) {
     feed.innerHTML =
-      `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:#888;">No published comparisons yet.</p>`;
+      `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:var(--color-muted);">No published comparisons yet.</p>`;
     return;
   }
 

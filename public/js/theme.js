@@ -1,235 +1,168 @@
 /**
- * Urban Parallax — Theme System
- * 6 base themes × 2 moods (earthy / vivid) = 12 combinations
- * Persists to localStorage. Drives all colors via CSS custom properties.
+ * Urban Parallax — Colour Mode System
+ * 12 modes: 6 colour families × 2 variants (vivid / earth)
+ * localStorage key: 'up-colour-mode'   Default: 'dark-earth'
  */
 
-const THEMES = {
-  light: {
-    earthy: {
-      bg:          '#F4F4F2',
-      bgSurface:   '#EDEDE8',
-      lens:        'rgba(255,255,255,0.45)',
-      lensBorder:  'rgba(0,0,0,0.05)',
-      text:        '#1A1A1A',
-      textMuted:   '#7A7A76',
-      textHint:    '#A5A5A0',
-      accent:      '#C4553A',
-      divider:     '#D5D5D0',
-      imgBg:       '#DDD8D0',
-      imgBgAlt:    '#D5D0C8',
-      border:      '#D0CEC8',
-    },
-    vivid: {
-      bg:          '#EFEFED',
-      bgSurface:   '#E6E6E2',
-      lens:        'rgba(255,255,255,0.55)',
-      lensBorder:  'rgba(0,0,0,0.07)',
-      text:        '#0A0A0A',
-      textMuted:   '#555555',
-      textHint:    '#888888',
-      accent:      '#E8432A',
-      divider:     '#C5C5C0',
-      imgBg:       '#D0CAC0',
-      imgBgAlt:    '#C8C2B8',
-      border:      '#BBBBB5',
-    },
+const COLOUR_MODES = {
+  'dark-vivid': {
+    nav:      '#0A0A0A',
+    page:     '#111111',
+    surface:  '#1C1C1C',
+    text:     '#FFFFFF',
+    muted:    '#AAAAAA',
+    accent:   '#FF3B3B',
+    pageBgRgb: '17,17,17',
+    isDark: true,
   },
-  dark: {
-    earthy: {
-      bg:          '#1A1A18',
-      bgSurface:   '#222220',
-      lens:        'rgba(255,255,255,0.04)',
-      lensBorder:  'rgba(255,255,255,0.07)',
-      text:        '#E0DED8',
-      textMuted:   '#888580',
-      textHint:    '#5A5850',
-      accent:      '#D08060',
-      divider:     '#333330',
-      imgBg:       '#2A2826',
-      imgBgAlt:    '#262422',
-      border:      '#3A3A36',
-    },
-    vivid: {
-      bg:          '#0E0E12',
-      bgSurface:   '#18181E',
-      lens:        'rgba(255,255,255,0.06)',
-      lensBorder:  'rgba(255,255,255,0.10)',
-      text:        '#F5F3F0',
-      textMuted:   '#A0A0B0',
-      textHint:    '#606070',
-      accent:      '#FF6040',
-      divider:     '#2A2A35',
-      imgBg:       '#1C1C24',
-      imgBgAlt:    '#18181E',
-      border:      '#35353E',
-    },
+  'dark-earth': {
+    nav:      '#1A1410',
+    page:     '#221C17',
+    surface:  '#2A221C',
+    text:     '#E8D9C5',
+    muted:    '#9A8A78',
+    accent:   '#C4622D',
+    pageBgRgb: '34,28,23',
+    isDark: true,
   },
-  red: {
-    earthy: {
-      bg:          '#F2E8E5',
-      bgSurface:   '#ECDEDA',
-      lens:        'rgba(255,255,255,0.45)',
-      lensBorder:  'rgba(160,80,60,0.10)',
-      text:        '#3A1A14',
-      textMuted:   '#8A5A4A',
-      textHint:    '#B08878',
-      accent:      '#A84030',
-      divider:     '#D8C0B8',
-      imgBg:       '#E0CCC5',
-      imgBgAlt:    '#D8C4BB',
-      border:      '#D0B8B0',
-    },
-    vivid: {
-      bg:          '#FFE8E0',
-      bgSurface:   '#FFDDD0',
-      lens:        'rgba(255,255,255,0.50)',
-      lensBorder:  'rgba(255,60,40,0.12)',
-      text:        '#2A0A05',
-      textMuted:   '#AA4030',
-      textHint:    '#CC8070',
-      accent:      '#E82010',
-      divider:     '#FFBAA8',
-      imgBg:       '#FFD0C0',
-      imgBgAlt:    '#FFC4B0',
-      border:      '#FFB0A0',
-    },
+  'light-vivid': {
+    nav:      '#FFFFFF',
+    page:     '#F0F0EE',
+    surface:  '#FFFFFF',
+    text:     '#0A0A0A',
+    muted:    '#666666',
+    accent:   '#E0200A',
+    pageBgRgb: '240,240,238',
+    isDark: false,
   },
-  orange: {
-    earthy: {
-      bg:          '#F2ECE0',
-      bgSurface:   '#ECE4D6',
-      lens:        'rgba(255,255,255,0.45)',
-      lensBorder:  'rgba(160,120,40,0.10)',
-      text:        '#3A2A10',
-      textMuted:   '#8A7040',
-      textHint:    '#B09868',
-      accent:      '#A07020',
-      divider:     '#D8CCB0',
-      imgBg:       '#E0D4C0',
-      imgBgAlt:    '#D8CCB5',
-      border:      '#D0C4A8',
-    },
-    vivid: {
-      bg:          '#FFF2D5',
-      bgSurface:   '#FFE8C0',
-      lens:        'rgba(255,255,255,0.50)',
-      lensBorder:  'rgba(255,160,0,0.12)',
-      text:        '#2A1800',
-      textMuted:   '#AA7010',
-      textHint:    '#CCA030',
-      accent:      '#E88A00',
-      divider:     '#FFD890',
-      imgBg:       '#FFE4A8',
-      imgBgAlt:    '#FFDC95',
-      border:      '#FFD080',
-    },
+  'light-earth': {
+    nav:      '#F0E8DC',
+    page:     '#F5EFE6',
+    surface:  '#EDE5D8',
+    text:     '#2A1F15',
+    muted:    '#7A6555',
+    accent:   '#93511D',
+    pageBgRgb: '245,239,230',
+    isDark: false,
   },
-  green: {
-    earthy: {
-      bg:          '#E8EEE4',
-      bgSurface:   '#E0E6DA',
-      lens:        'rgba(255,255,255,0.45)',
-      lensBorder:  'rgba(80,130,60,0.10)',
-      text:        '#1A2A14',
-      textMuted:   '#507040',
-      textHint:    '#7A9A68',
-      accent:      '#4A7A30',
-      divider:     '#C0D0B8',
-      imgBg:       '#CEDCC5',
-      imgBgAlt:    '#C5D4BB',
-      border:      '#B8C8B0',
-    },
-    vivid: {
-      bg:          '#E0FFE0',
-      bgSurface:   '#D0F8D0',
-      lens:        'rgba(255,255,255,0.50)',
-      lensBorder:  'rgba(40,200,40,0.12)',
-      text:        '#0A2000',
-      textMuted:   '#308020',
-      textHint:    '#60B048',
-      accent:      '#20AA10',
-      divider:     '#90EE90',
-      imgBg:       '#B0FFB0',
-      imgBgAlt:    '#A0F8A0',
-      border:      '#80E880',
-    },
+  'red-vivid': {
+    nav:      '#1A0505',
+    page:     '#200808',
+    surface:  '#2D0A0A',
+    text:     '#FFFFFF',
+    muted:    '#CC8888',
+    accent:   '#FF4040',
+    pageBgRgb: '32,8,8',
+    isDark: true,
   },
-  blue: {
-    earthy: {
-      bg:          '#E4EAF0',
-      bgSurface:   '#DCE2EA',
-      lens:        'rgba(255,255,255,0.45)',
-      lensBorder:  'rgba(60,100,160,0.10)',
-      text:        '#14202A',
-      textMuted:   '#406080',
-      textHint:    '#6888A8',
-      accent:      '#306898',
-      divider:     '#B8C8D8',
-      imgBg:       '#C5D0DC',
-      imgBgAlt:    '#BCC8D4',
-      border:      '#B0C0D0',
-    },
-    vivid: {
-      bg:          '#DDF0FF',
-      bgSurface:   '#D0E8FF',
-      lens:        'rgba(255,255,255,0.50)',
-      lensBorder:  'rgba(40,120,255,0.12)',
-      text:        '#001830',
-      textMuted:   '#2060B0',
-      textHint:    '#4090DD',
-      accent:      '#0070EE',
-      divider:     '#90C8FF',
-      imgBg:       '#A8DAFF',
-      imgBgAlt:    '#98D0FF',
-      border:      '#80C0FF',
-    },
+  'red-earth': {
+    nav:      '#2E1410',
+    page:     '#3D1E18',
+    surface:  '#4A2018',
+    text:     '#F0D5CB',
+    muted:    '#B08878',
+    accent:   '#E06040',
+    pageBgRgb: '61,30,24',
+    isDark: true,
+  },
+  'orange-vivid': {
+    nav:      '#150A00',
+    page:     '#1C0F00',
+    surface:  '#241400',
+    text:     '#FFFFFF',
+    muted:    '#CC9966',
+    accent:   '#FF8000',
+    pageBgRgb: '28,15,0',
+    isDark: true,
+  },
+  'orange-earth': {
+    nav:      '#221600',
+    page:     '#2E1E06',
+    surface:  '#3A2408',
+    text:     '#F5DEB0',
+    muted:    '#AA9070',
+    accent:   '#D4821A',
+    pageBgRgb: '46,30,6',
+    isDark: true,
+  },
+  'green-vivid': {
+    nav:      '#041408',
+    page:     '#061A0C',
+    surface:  '#0A2412',
+    text:     '#FFFFFF',
+    muted:    '#66BB88',
+    accent:   '#00D44A',
+    pageBgRgb: '6,26,12',
+    isDark: true,
+  },
+  'green-earth': {
+    nav:      '#0F2018',
+    page:     '#152B20',
+    surface:  '#1A3325',
+    text:     '#C5E0D0',
+    muted:    '#7AAA90',
+    accent:   '#4DAA70',
+    pageBgRgb: '21,43,32',
+    isDark: true,
+  },
+  'blue-vivid': {
+    nav:      '#040A18',
+    page:     '#061020',
+    surface:  '#0A1628',
+    text:     '#FFFFFF',
+    muted:    '#7AABDD',
+    accent:   '#2060FF',
+    pageBgRgb: '6,16,32',
+    isDark: true,
+  },
+  'blue-earth': {
+    nav:      '#0E1E30',
+    page:     '#132438',
+    surface:  '#172D42',
+    text:     '#C5D5E8',
+    muted:    '#7A9AB5',
+    accent:   '#5A90C8',
+    pageBgRgb: '19,36,56',
+    isDark: true,
   },
 };
 
-// camelCase → kebab-case
-function toKebab(str) {
-  return str.replace(/([A-Z])/g, m => '-' + m.toLowerCase());
-}
+let currentMode = localStorage.getItem('up-colour-mode') || 'dark-earth';
 
-let currentTheme = localStorage.getItem('up-theme') || 'light';
-let currentMood  = localStorage.getItem('up-mood')  || 'earthy';
+function applyMode(mode) {
+  const m = COLOUR_MODES[mode];
+  if (!m) return;
 
-function applyTheme(theme, mood) {
-  const t    = THEMES[theme][mood];
   const root = document.documentElement;
+  root.style.setProperty('--color-nav',     m.nav);
+  root.style.setProperty('--color-page',    m.page);
+  root.style.setProperty('--color-surface', m.surface);
+  root.style.setProperty('--color-text',    m.text);
+  root.style.setProperty('--color-muted',   m.muted);
+  root.style.setProperty('--color-accent',  m.accent);
+  root.style.setProperty('--page-bg-rgb',   m.pageBgRgb);
 
-  Object.keys(t).forEach(key => {
-    root.style.setProperty('--up-' + toKebab(key), t[key]);
+  // Derived border/divider (not in spec, computed here)
+  root.style.setProperty('--color-border',
+    m.isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)');
+
+  // Nav bottom border: light modes get a subtle line, dark modes none
+  root.style.setProperty('--nav-border',
+    m.isDark ? 'none' : '1px solid rgba(0,0,0,0.10)');
+
+  localStorage.setItem('up-colour-mode', mode);
+  currentMode = mode;
+
+  // Sync active swatch ring
+  document.querySelectorAll('.mode-swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.mode === mode);
   });
-
-  document.body.dataset.theme = theme;
-  document.body.dataset.mood  = mood;
-
-  localStorage.setItem('up-theme', theme);
-  localStorage.setItem('up-mood',  mood);
-
-  currentTheme = theme;
-  currentMood  = mood;
-
-  // Update swatch active state
-  document.querySelectorAll('.theme-swatch').forEach(s => {
-    s.classList.toggle('active', s.dataset.theme === theme);
-  });
-
-  // Update mood toggle label
-  const toggle = document.getElementById('mood-toggle');
-  if (toggle) toggle.textContent = mood;
 }
 
-function toggleMood() {
-  applyTheme(currentTheme, currentMood === 'earthy' ? 'vivid' : 'earthy');
-}
+// Apply before first paint — eliminates flash on reload
+applyMode(currentMode);
 
-// Apply immediately (before paint) to avoid flash
-applyTheme(currentTheme, currentMood);
-
-// After DOM ready: sync UI state (swatches + mood label)
+// Re-sync UI elements after DOM is ready (swatches exist now)
 document.addEventListener('DOMContentLoaded', () => {
-  applyTheme(currentTheme, currentMood);
+  applyMode(currentMode);
 });
