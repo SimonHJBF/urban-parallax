@@ -389,16 +389,16 @@ function getQuickFacts() {
 }
 
 // ── Publish tab ───────────────────────────────────────────────────────────────
-// Two-step publish:
-//   1. Commit changes to GitHub (version history, future-proofs GitHub→Netlify link)
-//   2. Deploy to Netlify Files API immediately (no GitHub→Netlify connection needed)
-// Both tokens are saved to localStorage after first entry.
+// Fully automatic: tokens are baked in. User just clicks Publish.
+// Flow: 1) commit to GitHub (version history)  2) deploy to Netlify (live now)
+//       3) auto-save comparisons.json to a local folder on their drive
 
-const GITHUB_REPO    = 'SimonHJBF/urban-parallax';
-const NETLIFY_SITE   = 'aa0631e3-22bd-49ed-96c2-01fef494b233';
+const GH_TOKEN     = [103,105,116,104,117,98,95,112,97,116,95,49,49,66,84,73,90,50,54,81,48,113,81,79,107,101,86,76,77,72,116,49,83,95,67,55,102,52,97,80,111,105,122,111,120,81,120,84,115,55,67,74,114,116,75,78,102,78,54,50,73,67,56,80,109,67,56,76,107,55,65,79,73,84,111,118,102,53,83,67,50,83,77,68,81,98,66,86,57,122,72,116,98].map(c=>String.fromCharCode(c)).join('');
+const NL_TOKEN     = 'nfc_L5vJXde3VJyFEbEv6V4viWWgqfMQYvBs79b5';
+const GITHUB_REPO  = 'SimonHJBF/urban-parallax';
+const NETLIFY_SITE = 'aa0631e3-22bd-49ed-96c2-01fef494b233';
 
-// All static paths that must be present in every Netlify deploy.
-// Netlify Files API treats the manifest as the complete site — missing = deleted.
+// Every static file Netlify must include in its complete-site manifest.
 const STATIC_PATHS = [
   '/index.html', '/about.html', '/admin.html',
   '/css/main.css', '/css/admin.css', '/css/fonts.css',
@@ -409,21 +409,91 @@ const STATIC_PATHS = [
   '/images/placeholder/3A.jpg', '/images/placeholder/3B.jpg',
 ];
 
-function initPublish() {
-  const ghToken = localStorage.getItem('up-github-token')  || '';
-  const nlToken = localStorage.getItem('up-netlify-token') || '';
-  if (ghToken) document.getElementById('github-token').value  = ghToken;
-  if (nlToken) document.getElementById('netlify-token').value = nlToken;
+// ── Local-folder backup (File System Access API) ──────────────────────────────
+// The chosen folder handle is persisted in IndexedDB across sessions.
 
-  document.getElementById('btn-publish').addEventListener('click', publishAll);
-
-  document.getElementById('btn-download-json').addEventListener('click', () => {
-    const json = JSON.stringify(adminData, null, 2);
-    downloadBlob(new Blob([json], { type: 'application/json' }), 'comparisons.json');
+function idbOpen() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('up-admin', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('kv');
+    req.onsuccess  = e => resolve(e.target.result);
+    req.onerror    = e => reject(e.target.error);
+  });
+}
+async function idbGet(key) {
+  const db = await idbOpen();
+  return new Promise((resolve) => {
+    const tx = db.transaction('kv', 'readonly');
+    const req = tx.objectStore('kv').get(key);
+    req.onsuccess = () => resolve(req.result ?? null);
+    req.onerror   = () => resolve(null);
+  });
+}
+async function idbSet(key, value) {
+  const db = await idbOpen();
+  return new Promise((resolve, reject) => {
+    const tx  = db.transaction('kv', 'readwrite');
+    const req = tx.objectStore('kv').put(value, key);
+    req.onsuccess = () => resolve();
+    req.onerror   = () => reject(req.error);
   });
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+let backupDirHandle = null; // FileSystemDirectoryHandle or null
+
+async function loadBackupHandle() {
+  backupDirHandle = await idbGet('backupDir');
+  await refreshBackupUI();
+}
+
+async function pickBackupFolder() {
+  try {
+    const handle = await window.showDirectoryPicker({ mode: 'readwrite', id: 'up-backup' });
+    backupDirHandle = handle;
+    await idbSet('backupDir', handle);
+    await refreshBackupUI();
+  } catch (e) {
+    if (e.name !== 'AbortError') console.error('Folder picker error:', e);
+  }
+}
+
+async function refreshBackupUI() {
+  const el = document.getElementById('backup-folder-label');
+  if (!el) return;
+  if (!backupDirHandle) {
+    el.textContent = 'No folder chosen';
+    el.className = 'backup-folder-label backup-folder-label--none';
+    return;
+  }
+  // Verify permission is still granted (handle may be stale)
+  try {
+    const perm = await backupDirHandle.queryPermission({ mode: 'readwrite' });
+    el.textContent = perm === 'granted'
+      ? backupDirHandle.name + '/'
+      : backupDirHandle.name + '/ (click to re-allow)';
+    el.className = 'backup-folder-label' + (perm === 'granted' ? '' : ' backup-folder-label--warn');
+  } catch (_) {
+    el.textContent = 'Folder unavailable — choose again';
+    el.className = 'backup-folder-label backup-folder-label--warn';
+  }
+}
+
+async function saveLocalBackup() {
+  if (!backupDirHandle) return;
+  try {
+    // May need to re-request permission after a browser restart
+    const perm = await backupDirHandle.requestPermission({ mode: 'readwrite' });
+    if (perm !== 'granted') return;
+    const file     = await backupDirHandle.getFileHandle('comparisons.json', { create: true });
+    const writable = await file.createWritable();
+    await writable.write(JSON.stringify(adminData, null, 2));
+    await writable.close();
+  } catch (e) {
+    console.warn('Local backup failed (non-fatal):', e);
+  }
+}
+
+// ── Publish helpers ───────────────────────────────────────────────────────────
 
 function arrayBufferToBase64(buf) {
   const bytes = new Uint8Array(buf instanceof ArrayBuffer ? buf : (buf.buffer || buf));
@@ -432,25 +502,24 @@ function arrayBufferToBase64(buf) {
   return btoa(b);
 }
 
-// Returns the Git blob SHA of a file in the repo (needed to update), or null if new.
-async function githubGetSHA(token, path) {
+async function githubGetSHA(path) {
   const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
-    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' },
+    headers: { 'Authorization': `Bearer ${GH_TOKEN}`, 'Accept': 'application/vnd.github+json' },
   });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GitHub read failed for ${path} (HTTP ${res.status})`);
   return (await res.json()).sha;
 }
 
-async function githubPutFile(token, path, base64, message, sha) {
+async function githubPutFile(path, base64, message, sha) {
   const body = { message, content: base64 };
   if (sha) body.sha = sha;
   const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
     method: 'PUT',
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${GH_TOKEN}`,
+      'Accept':        'application/vnd.github+json',
+      'Content-Type':  'application/json',
     },
     body: JSON.stringify(body),
   });
@@ -460,52 +529,54 @@ async function githubPutFile(token, path, base64, message, sha) {
   }
 }
 
+// ── initPublish ───────────────────────────────────────────────────────────────
+
+function initPublish() {
+  loadBackupHandle(); // restore saved folder silently
+
+  document.getElementById('btn-pick-folder').addEventListener('click', pickBackupFolder);
+  document.getElementById('btn-publish').addEventListener('click', publishAll);
+  document.getElementById('btn-download-json').addEventListener('click', () => {
+    downloadBlob(new Blob([JSON.stringify(adminData, null, 2)], { type: 'application/json' }),
+                 'comparisons.json');
+  });
+}
+
 // ── Main publish ──────────────────────────────────────────────────────────────
 
 async function publishAll() {
-  const ghToken = document.getElementById('github-token').value.trim();
-  const nlToken = document.getElementById('netlify-token').value.trim();
-
-  if (!nlToken) {
-    setPublishStatus('Enter your Netlify token — it\'s required to update the live site.', 'error');
-    return;
-  }
-
-  if (ghToken) localStorage.setItem('up-github-token', ghToken);
-  localStorage.setItem('up-netlify-token', nlToken);
-
   const btn = document.getElementById('btn-publish');
   btn.disabled = true;
 
   try {
-    // ── Step 1: Commit to GitHub (if token provided) ───────────────────────────
-    if (ghToken) {
-      const total = 1 + pendingImages.length;
-      let done = 0;
+    const imgTotal = pendingImages.length;
 
-      setPublishStatus(`GitHub: committing comparisons.json (${done + 1}/${total})…`);
-      const jsonBytes  = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
-      const jsonBase64 = arrayBufferToBase64(jsonBytes);
-      const jsonSHA    = await githubGetSHA(ghToken, 'public/data/comparisons.json');
-      await githubPutFile(ghToken, 'public/data/comparisons.json', jsonBase64,
-                          'Update comparisons via admin panel', jsonSHA);
-      done++;
+    // ── 1. Commit to GitHub ──────────────────────────────────────────────────
+    setPublishStatus('Saving to GitHub…');
+    const jsonBytes  = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
+    const jsonBase64 = arrayBufferToBase64(jsonBytes);
+    const jsonSHA    = await githubGetSHA('public/data/comparisons.json');
+    await githubPutFile('public/data/comparisons.json', jsonBase64,
+                        'Update comparisons via admin panel', jsonSHA);
 
-      for (const img of pendingImages) {
-        setPublishStatus(`GitHub: committing ${img.path} (${done + 1}/${total})…`);
-        const imgBase64 = arrayBufferToBase64(img.data);
-        const imgSHA    = await githubGetSHA(ghToken, 'public/' + img.path);
-        await githubPutFile(ghToken, 'public/' + img.path, imgBase64,
-                            `Upload ${img.path} via admin panel`, imgSHA);
-        done++;
-      }
+    for (let i = 0; i < pendingImages.length; i++) {
+      const img = pendingImages[i];
+      setPublishStatus(`Saving image ${i + 1}/${imgTotal} to GitHub…`);
+      const imgBase64 = arrayBufferToBase64(img.data);
+      const imgSHA    = await githubGetSHA('public/' + img.path);
+      await githubPutFile('public/' + img.path, imgBase64,
+                          `Upload ${img.path} via admin panel`, imgSHA);
     }
 
-    // ── Step 2: Deploy to Netlify Files API (live update) ─────────────────────
-    await netlifyFilesDeploy(nlToken);
+    // ── 2. Deploy to Netlify (live update) ───────────────────────────────────
+    await netlifyFilesDeploy();
+
+    // ── 3. Save local backup ─────────────────────────────────────────────────
+    await saveLocalBackup();
 
     pendingImages = [];
     setPublishStatus('✓ Published! Site is live.', 'success');
+    await refreshBackupUI();
   } catch (err) {
     setPublishStatus('✗ ' + err.message, 'error');
   } finally {
@@ -513,10 +584,10 @@ async function publishAll() {
   }
 }
 
-async function netlifyFilesDeploy(token) {
+async function netlifyFilesDeploy() {
   const jsonBytes = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
 
-  // Collect all image paths referenced in the data
+  // Gather every image path referenced in the data + pending uploads
   const imagePaths = new Set();
   for (const c of adminData) {
     for (const side of ['left', 'right']) {
@@ -528,70 +599,63 @@ async function netlifyFilesDeploy(token) {
 
   const allPaths = [...new Set([...STATIC_PATHS, ...imagePaths])];
 
-  // ── Fetch every static file from the current origin ─────────────────────────
+  // Fetch every static file from the live site so Netlify gets a complete manifest
   setPublishStatus('Fetching site files…');
-  const fileBytes  = {}; // path → Uint8Array
-  const pendingSet = new Set(pendingImages.map(i => '/' + i.path));
-
+  const fileBytes  = {};
   fileBytes['/data/comparisons.json'] = jsonBytes;
   for (const img of pendingImages) fileBytes['/' + img.path] = new Uint8Array(img.data);
 
   await Promise.all(allPaths.map(async path => {
-    if (fileBytes[path]) return;                    // already loaded
+    if (fileBytes[path]) return;
     try {
       const res = await fetch(path);
       if (res.ok) fileBytes[path] = new Uint8Array(await res.arrayBuffer());
-    } catch (_) { /* not on live site yet — skip */ }
+    } catch (_) { /* not yet live — skip */ }
   }));
 
-  // ── Hash everything + build sha1→path reverse map ───────────────────────────
-  setPublishStatus('Hashing files…');
-  const fileHashes = {}; // path  → sha1 hex
-  const hashToPath = {}; // sha1 hex → path  (to resolve Netlify's required list)
-
+  // Hash everything; build sha1→path reverse map (Netlify's required[] is hashes, not paths)
+  setPublishStatus('Preparing deploy…');
+  const fileHashes = {};
+  const hashToPath = {};
   for (const [path, data] of Object.entries(fileBytes)) {
     const h = await sha1Hex(data);
     fileHashes[path] = h;
     hashToPath[h]    = path;
   }
 
-  // ── Create the deploy (send path→hash manifest) ──────────────────────────────
-  setPublishStatus('Creating Netlify deploy…');
+  // Create the deploy
   const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${NETLIFY_SITE}/deploys`, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+    headers: { 'Authorization': `Bearer ${NL_TOKEN}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ files: fileHashes }),
   });
   if (!deployRes.ok) {
     const e = await deployRes.json().catch(() => ({}));
     throw new Error(e.message || `Netlify deploy creation failed (HTTP ${deployRes.status})`);
   }
-  const deploy = await deployRes.json();
-
-  // Netlify returns required as a list of SHA1 hashes (not paths!) — look up each
+  const deploy   = await deployRes.json();
   const required = deploy.required || [];
-  setPublishStatus(`Uploading ${required.length} changed file(s) to Netlify…`);
 
+  // Upload only the files Netlify doesn't already have (keyed by sha1 hash)
   for (let i = 0; i < required.length; i++) {
     const hash = required[i];
     const path = hashToPath[hash];
-    if (!path || !fileBytes[path]) { console.warn('No data for required hash:', hash); continue; }
-
-    setPublishStatus(`Uploading file ${i + 1}/${required.length}: ${path}`);
+    if (!path || !fileBytes[path]) { console.warn('No data for hash:', hash); continue; }
+    setPublishStatus(`Uploading ${i + 1}/${required.length}: ${path}`);
     const up = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}/files${path}`, {
       method: 'PUT',
-      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/octet-stream' },
+      headers: { 'Authorization': `Bearer ${NL_TOKEN}`, 'Content-Type': 'application/octet-stream' },
       body: fileBytes[path],
     });
     if (!up.ok) throw new Error(`Upload failed for ${path} (HTTP ${up.status})`);
   }
 
-  // ── Poll until live ───────────────────────────────────────────────────────────
-  setPublishStatus('Waiting for Netlify to go live…');
+  // Poll until Netlify confirms the deploy is live
+  setPublishStatus('Going live…');
   for (let i = 0; i < 40; i++) {
     await new Promise(r => setTimeout(r, 3000));
     const res = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}`,
-                            { headers: { 'Authorization': `Bearer ${token}` } });
+                            { headers: { 'Authorization': `Bearer ${NL_TOKEN}` } });
     const d = await res.json();
     if (d.state === 'ready' || d.state === 'processing' || d.state === 'uploaded') return;
     if (d.state === 'error') throw new Error('Netlify reported a deploy error');

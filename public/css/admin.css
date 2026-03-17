@@ -93,6 +93,18 @@ body {
 }
 .netlify-hint a { color: var(--accent); }
 
+.backup-folder-label {
+  font-size: 13px;
+  font-family: var(--font-mono, monospace);
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+.backup-folder-label--none { color: var(--muted); }
+.backup-folder-label--warn { color: #9a6800; background: #fff8e6; }
+.backup-folder-label:not(.backup-folder-label--none):not(.backup-folder-label--warn) {
+  color: #2a7a4a; background: #e8f5ee;
+}
+
 .status--success { color: #2a7a4a; }
 .status--error   { color: var(--accent); }
 
