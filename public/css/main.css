@@ -203,43 +203,42 @@ body {
 
 [data-theme*="light"] .ve-sep { background: rgba(0,0,0,0.12); }
 
-.ve-toggle-standalone {
+.ve-standalone {
   display: flex;
   align-items: center;
-  gap: 0;
-  background: rgba(255,255,255,0.06);
-  border: 0.5px solid rgba(255,255,255,0.10);
   border-radius: 5px;
   overflow: hidden;
+  border: 0.5px solid rgba(255,255,255,0.15);
+  margin-left: 4px;
   flex-shrink: 0;
 }
 
-.ve-btn-standalone {
+.ve-standalone .ve-opt {
   font-size: 9px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 5px 9px;
-  cursor: pointer;
-  color: rgba(255,255,255,0.45);
+  padding: 6px 11px;
   background: transparent;
   border: none;
+  cursor: pointer;
+  color: rgba(255,255,255,0.4);
   font-family: inherit;
+  line-height: 1;
   transition: background 0.15s, color 0.15s;
 }
 
-.ve-btn-standalone.active {
+.ve-standalone .ve-opt.active {
   background: rgba(255,255,255,0.18);
   color: rgba(255,255,255,0.95);
 }
 
-[data-theme*="light"] .ve-toggle-standalone {
-  background: rgba(0,0,0,0.05);
-  border-color: rgba(0,0,0,0.10);
+[data-theme*="light"] .ve-standalone {
+  border-color: rgba(0,0,0,0.15);
 }
-[data-theme*="light"] .ve-btn-standalone { color: rgba(0,0,0,0.40); }
-[data-theme*="light"] .ve-btn-standalone.active {
-  background: rgba(0,0,0,0.12);
-  color: rgba(0,0,0,0.90);
+[data-theme*="light"] .ve-standalone .ve-opt { color: rgba(0,0,0,0.38); }
+[data-theme*="light"] .ve-standalone .ve-opt.active {
+  background: rgba(0,0,0,0.10);
+  color: rgba(0,0,0,0.88);
 }
 
 /* ─── Header Nav ─────────────────────────────────────────────────────────── */
@@ -263,13 +262,12 @@ body {
 
 /* ─── Feed ───────────────────────────────────────────────────────────────── */
 .feed {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 32px 120px;
-  align-items: start;
 }
 
 .feed-loading {
@@ -284,28 +282,18 @@ body {
 
 /* ─── Date Header ────────────────────────────────────────────────────────── */
 .up-date-header {
-  grid-column: 1 / -1;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
+  font-size: 9px;
+  letter-spacing: 0.1em;
   color: var(--color-muted);
   text-transform: uppercase;
-  opacity: 0.35;
-  padding: 32px 0 10px;
-  border-bottom: 1px solid var(--color-border);
+  opacity: 0.3;
+  margin: 20px 0 6px;
 }
 
-/* ─── Row (card in 3-col grid) ───────────────────────────────────────────── */
+/* ─── Row (full-width comparison pair) ──────────────────────────────────── */
 .up-row {
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  overflow: hidden;
   transition: filter 0.4s ease, opacity 0.4s ease;
-  background: var(--color-surface);
-}
-
-.up-row.expanded {
-  grid-column: 1 / -1;
 }
 
 /* Expand-mode dimming — CSS only, no JS style writes */
@@ -314,35 +302,47 @@ body {
   opacity: 0.5;
 }
 
-/* ─── Preview Grid ───────────────────────────────────────────────────────── */
+/* ─── Preview Grid (the 2-city pair) ────────────────────────────────────── */
 .up-row-grid {
   display: grid;
-  grid-template-columns: 1fr 1px 1fr;
-  padding: 16px;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  padding: 0;
   cursor: pointer;
   transition: transform 0.3s ease;
   outline: none;
-  gap: 0;
 }
+
+/* Hide the old 1px vertical divider — gap handles spacing now */
+.up-row-grid .up-divider-v { display: none; }
 
 .up-row-grid:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
 .up-row:not(.expanded) .up-row-grid:hover { transform: scale(1.003); }
 
-/* ─── Cell ───────────────────────────────────────────────────────────────── */
-.up-cell        { padding: 0 12px; }
-.up-cell--left  { padding-left: 0; }
-.up-cell--right { padding-right: 0; }
+/* ─── Cell (one city card inside a pair) ────────────────────────────────── */
+.up-cell {
+  background: var(--color-surface);
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.up-cell--left  {}
+.up-cell--right {}
+
+/* Text area below the image */
+.up-cell-text { padding: 10px 12px 14px; }
 
 /* ─── Image Wrap ─────────────────────────────────────────────────────────── */
 /* Images are always sharp at full opacity — NO default blur or filter here.  */
 /* Two overlays via ::before (vignette) and ::after (cylinder highlight).     */
 .up-image-wrap {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 7;
   overflow: hidden;
   background: var(--color-surface);
-  margin-bottom: 12px;
+  margin-bottom: 0;
   position: relative;
 }
 
@@ -389,7 +389,8 @@ body {
   text-transform: uppercase;
   color: var(--color-muted);
   display: block;
-  margin-bottom: 4px;
+  opacity: 0.5;
+  margin: 0 0 3px;
 }
 
 .up-cell-title {
@@ -397,16 +398,17 @@ body {
   font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  line-height: 1.15;
-  margin-bottom: 6px;
+  line-height: 1.25;
+  margin: 0 0 4px;
   color: var(--color-text);
 }
 
 .up-cell-desc {
   font-size: 12px;
   color: var(--color-muted);
-  line-height: 1.45;
-  opacity: 0.6;
+  line-height: 1.4;
+  opacity: 0.58;
+  margin: 0;
 }
 
 /* ─── Vertical Divider ───────────────────────────────────────────────────── */
@@ -688,19 +690,11 @@ body {
 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 
-/* 900px → 2-column feed */
-@media (max-width: 900px) {
-  .feed { grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 24px 80px; }
-}
-
-/* 768px tablet — stack cells inside cards, adjust expand panel */
-@media (max-width: 768px) {
-  :root { --pad-h: 20px; }
-
-  .up-row-grid { grid-template-columns: 1fr; }
-  .up-row-grid .up-divider-v { display: none; }
-  .up-cell { padding: 0 0 12px; }
-  .up-cell--right { padding-bottom: 0; }
+/* 800px tablet — slightly reduce outer padding */
+@media (max-width: 800px) {
+  .feed { padding: 0 20px 80px; }
+  .up-row-grid { gap: 2px; }
+  .up-image-wrap { aspect-ratio: 16 / 8; }
 
   .up-expand-grid { grid-template-columns: 1fr; }
   .up-expand-grid .up-divider-v { display: none; }
@@ -714,22 +708,24 @@ body {
   .about-contributors { grid-template-columns: 1fr; gap: 24px; }
 }
 
-/* 600px → 1-column feed + mobile header + card tweaks */
-@media (max-width: 600px) {
-  :root { --pad-h: 16px; --header-h: 80px; }
+/* 580px mobile — stack pair cards vertically + mobile header */
+@media (max-width: 580px) {
+  :root { --pad-h: 12px; --header-h: 80px; }
 
   /* Feed */
-  .feed { grid-template-columns: 1fr; gap: 12px; padding: 0 16px 80px; }
+  .feed { padding: 0 12px 80px; gap: 12px; }
 
-  /* Cards: wider image, compact text */
+  /* Pairs stack vertically */
+  .up-row-grid { grid-template-columns: 1fr; gap: 8px; }
+  .up-cell { border-radius: 4px; }
   .up-image-wrap { aspect-ratio: 16 / 9; }
-  .up-row-grid { padding: 10px 12px 14px; }
   .up-cell-title { font-size: 14px; }
   .up-cell-desc { font-size: 11px; }
 
-  /* Header: 2-row stacked layout ─────────────────────────────────────────── */
-  /* Row 1: logo (left) + nav links (right)                                   */
-  /* Row 2: colour picker, full-width, horizontally scrollable                */
+  /* Date header */
+  .up-date-header { margin: 16px 0 4px; }
+
+  /* Header: 2-row stacked layout */
   .site-header { height: auto; }
   .site-header.scrolled { height: auto; }
   .site-header.scrolled .site-title { font-size: clamp(20px, 5vw, 28px); }
@@ -737,16 +733,16 @@ body {
   .header-inner {
     flex-wrap: wrap;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 12px;
     gap: 0;
     height: auto;
   }
 
-  /* Row 1 items */
+  /* Row 1: logo + nav */
   .site-brand { flex: 1; padding: 10px 0; order: 1; }
   .site-tagline { display: none; }
 
-  .header-nav { order: 2; gap: 16px; padding: 10px 0; }
+  .header-nav { order: 2; gap: 14px; padding: 10px 0; }
   .header-nav a {
     min-height: 44px;
     display: flex;
@@ -755,7 +751,7 @@ body {
     letter-spacing: 0.1em;
   }
 
-  /* Row 2: colour selector pushed to its own row */
+  /* Row 2: colour picker — full width, scrollable */
   .colour-selector {
     order: 3;
     width: 100%;
@@ -774,6 +770,6 @@ body {
   /* Touch targets */
   .colour-pill { min-height: 44px; flex-shrink: 0; padding: 0 10px; }
   .ve-sep { flex-shrink: 0; }
-  .ve-toggle-standalone { flex-shrink: 0; }
-  .ve-btn-standalone { min-height: 36px; padding: 0 9px; }
+  .ve-standalone { flex-shrink: 0; }
+  .ve-standalone .ve-opt { min-height: 36px; padding: 0 9px; }
 }
