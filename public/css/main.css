@@ -264,7 +264,7 @@ body {
 .feed {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 32px;
   max-width: 760px;
   margin: 0 auto;
   padding: 24px 40px 120px;
@@ -305,7 +305,7 @@ body {
 .up-row-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 2px;
   padding: 0;
   cursor: pointer;
   transition: transform 0.3s ease;
@@ -320,18 +320,25 @@ body {
 .up-row:not(.expanded) .up-row-grid:hover { transform: scale(1.003); }
 
 /* ─── Cell (one city card inside a pair) ────────────────────────────────── */
+/* No card boxing — image and text sit directly on the page background */
 .up-cell {
-  background: var(--color-surface);
-  border-radius: 4px;
-  overflow: hidden;
   padding: 0;
 }
 
 .up-cell--left  {}
 .up-cell--right {}
 
-/* Text area below the image */
-.up-cell-text { padding: 14px 16px 18px; }
+/* Text area below the image — flush left, tight top, no bottom padding */
+.up-cell-text { padding: 8px 0 0; }
+
+/* Horizontal separator above consecutive pairs */
+.up-row + .up-row {
+  border-top: 0.5px solid rgba(0,0,0,0.15);
+  padding-top: 32px;
+}
+[data-theme]:not([data-theme*="light"]) .up-row + .up-row {
+  border-top: 0.5px solid rgba(255,255,255,0.15);
+}
 
 /* ─── Image Wrap ─────────────────────────────────────────────────────────── */
 /* Images are always sharp at full opacity — NO default blur or filter here.  */
@@ -341,6 +348,7 @@ body {
   aspect-ratio: 16 / 7;
   overflow: hidden;
   background: var(--color-surface);
+  border-radius: 3px;
   margin-bottom: 0;
   position: relative;
 }
@@ -387,6 +395,7 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-muted);
+  opacity: 0.5;
   display: block;
   margin: 0 0 3px;
 }
@@ -690,7 +699,8 @@ body {
 
 /* 700px — reduce padding, adjust expand panel */
 @media (max-width: 700px) {
-  .feed { padding: 16px 16px 80px; gap: 16px; }
+  .feed { padding: 16px 16px 80px; gap: 24px; }
+  .up-row + .up-row { padding-top: 24px; }
 
   /* Expand panel: single column */
   .up-expand-grid { grid-template-columns: 1fr; }
@@ -708,7 +718,7 @@ body {
 /* 500px — compact card text, shorter images */
 @media (max-width: 500px) {
   .up-image-wrap { aspect-ratio: 16 / 9; }
-  .up-cell-text { padding: 8px 8px 10px; }
+  .up-cell-text { padding: 6px 0 0; }
   .up-city-label { display: none; }
   .up-cell-title { font-size: 13px; }
   .up-cell-desc { display: none; }
