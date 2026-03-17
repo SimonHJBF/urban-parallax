@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <rect width="800" height="500" fill="#E8E4DE"/>
+  <!-- Sky gradient -->
+  <rect width="800" height="320" fill="#D4D0C8"/>
+
+  <!-- Canal/flat horizon line -->
+  <rect y="320" width="800" height="3" fill="#C0BBB0"/>
+
+  <!-- Bicycle lane markings -->
+  <rect y="323" width="800" height="177" fill="#CCCAC3"/>
+  <rect y="340" x="0" width="800" height="6" fill="#B8B4AC" opacity="0.6"/>
+  <rect y="440" x="0" width="800" height="4" fill="#B8B4AC" opacity="0.6"/>
+
+  <!-- Dashed centre line -->
+  <line x1="0" y1="392" x2="100" y2="392" stroke="#A8A49C" stroke-width="2" stroke-dasharray="40 20"/>
+  <line x1="120" y1="392" x2="260" y2="392" stroke="#A8A49C" stroke-width="2" stroke-dasharray="40 20"/>
+  <line x1="280" y1="392" x2="420" y2="392" stroke="#A8A49C" stroke-width="2" stroke-dasharray="40 20"/>
+  <line x1="440" y1="392" x2="580" y2="392" stroke="#A8A49C" stroke-width="2" stroke-dasharray="40 20"/>
+  <line x1="600" y1="392" x2="740" y2="392" stroke="#A8A49C" stroke-width="2" stroke-dasharray="40 20"/>
+  <line x1="760" y1="392" x2="800" y2="392" stroke="#A8A49C" stroke-width="2" stroke-dasharray="40 20"/>
+
+  <!-- Tram tracks -->
+  <line x1="0" y1="370" x2="800" y2="370" stroke="#9C9890" stroke-width="3"/>
+  <line x1="0" y1="376" x2="800" y2="376" stroke="#9C9890" stroke-width="3"/>
+
+  <!-- Rotterdam low-rise silhouette -->
+  <!-- Cube houses reference -->
+  <polygon points="120,320 120,260 140,240 160,260 160,320" fill="#B8B4A8"/>
+  <polygon points="155,320 155,265 175,245 195,265 195,320" fill="#ACA89C"/>
+  <polygon points="190,320 190,268 210,248 230,268 230,320" fill="#B0ACA0"/>
+
+  <!-- Typical Rotterdam brick building -->
+  <rect x="280" y="240" width="80" height="80" fill="#C0B8A8"/>
+  <rect x="286" y="246" width="16" height="20" fill="#8C8478"/>
+  <rect x="310" y="246" width="16" height="20" fill="#8C8478"/>
+  <rect x="334" y="246" width="16" height="20" fill="#8C8478"/>
+  <rect x="286" y="276" width="16" height="20" fill="#8C8478"/>
+  <rect x="310" y="276" width="16" height="20" fill="#8C8478"/>
+  <rect x="334" y="276" width="16" height="20" fill="#8C8478"/>
+
+  <!-- Church/tower -->
+  <rect x="460" y="200" width="30" height="120" fill="#B4B0A4"/>
+  <polygon points="460,200 490,200 475,170" fill="#A8A498"/>
+  <rect x="485" y="250" width="50" height="70" fill="#BEB8AC"/>
+
+  <!-- Bicycle silhouette -->
+  <g transform="translate(580, 340)" fill="none" stroke="#6B6660" stroke-width="3">
+    <!-- Wheels -->
+    <circle cx="0"  cy="20" r="18"/>
+    <circle cx="58" cy="20" r="18"/>
+    <!-- Frame -->
+    <line x1="0"  y1="20" x2="20" y2="-5"/>
+    <line x1="20" y1="-5" x2="42" y2="20"/>
+    <line x1="20" y1="-5" x2="58" y2="20"/>
+    <line x1="20" y1="-5" x2="20" y2="5"/>
+    <!-- Handlebar -->
+    <line x1="55" y1="0" x2="65" y2="0"/>
+    <line x1="60" y1="-3" x2="60" y2="3"/>
+    <!-- Saddle -->
+    <line x1="18" y1="0" x2="26" y2="0"/>
+  </g>
+
+  <!-- Rider silhouette -->
+  <ellipse cx="610" cy="318" rx="6" ry="7" fill="#6B6660"/>
+  <path d="M610 325 Q615 330 620 340 L640 340 L640 330 Q630 320 615 320 Z" fill="#6B6660"/>
+
+</svg>

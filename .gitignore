@@ -3,5 +3,3 @@ node_modules/
 Thumbs.db
 *.log
 .env
-public/data/comparisons.json
-public/images/comparisons/
