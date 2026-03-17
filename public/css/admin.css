@@ -1,0 +1,405 @@
+/* Urban Parallax — Admin Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+a { color: inherit; }
+button { font: inherit; cursor: pointer; }
+input, select, textarea { font: inherit; }
+
+:root {
+  --bg:     #F5F3EE;
+  --ink:    #1A1A1A;
+  --muted:  #888;
+  --accent: #C4553A;
+  --slate:  #4A6670;
+  --border: #D9D5CC;
+  --panel:  #FFFFFF;
+
+  --font-heading: 'Barlow Condensed', Arial Narrow, sans-serif;
+  --font-body:    'Source Sans 3', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ─── Auth Gate ──────────────────────────────────────────────────────────── */
+.auth-gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 48px 56px;
+  text-align: center;
+  width: 320px;
+}
+
+.auth-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  margin-bottom: 6px;
+}
+
+.auth-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-form input {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  background: var(--bg);
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+}
+.auth-form input:focus { border-color: var(--accent); }
+
+.auth-form button {
+  background: var(--ink);
+  color: #fff;
+  padding: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.auth-form button:hover { background: var(--accent); }
+
+.auth-error {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  margin-top: 10px;
+}
+
+/* ─── Admin UI ───────────────────────────────────────────────────────────── */
+.admin-ui { display: flex; flex-direction: column; min-height: 100vh; }
+
+.admin-header {
+  background: var(--ink);
+  color: #fff;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.admin-logo {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #aaa;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.admin-logo:hover { color: #fff; }
+
+.admin-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ─── Tabs ───────────────────────────────────────────────────────────────── */
+.admin-tabs {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  gap: 0;
+}
+
+.admin-tab {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 14px 20px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.admin-tab:hover { color: var(--ink); }
+.admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ─── Panel ──────────────────────────────────────────────────────────────── */
+.admin-panel { display: none; }
+.admin-panel.active { display: block; }
+
+.admin-form-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+.admin-section-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.admin-subsection {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin: 32px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.admin-hint code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg);
+  padding: 1px 5px;
+}
+
+.admin-empty {
+  color: var(--muted);
+  font-style: italic;
+  padding: 20px 0;
+}
+
+/* ─── Form Fields ────────────────────────────────────────────────────────── */
+.admin-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.admin-field--wide { flex: 2; min-width: 200px; }
+
+.admin-field label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+.admin-field input,
+.admin-field select,
+.admin-field textarea {
+  border: 1px solid var(--border);
+  padding: 8px 11px;
+  background: var(--panel);
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+  resize: vertical;
+}
+.admin-field input:focus,
+.admin-field select:focus,
+.admin-field textarea:focus {
+  border-color: var(--accent);
+}
+
+/* ─── Quick-Facts Editor ─────────────────────────────────────────────────── */
+.qf-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.qf-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.qf-row input {
+  flex: 1;
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  background: var(--panel);
+  font-size: 14px;
+  outline: none;
+}
+.qf-row input:focus { border-color: var(--accent); }
+
+.qf-row-sep {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--border);
+  flex-shrink: 0;
+}
+
+.qf-remove {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 4px;
+  background: none;
+  border: none;
+  transition: color 0.15s;
+}
+.qf-remove:hover { color: var(--accent); }
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+.admin-btn {
+  padding: 10px 24px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.admin-btn--ghost {
+  background: none;
+  color: var(--ink);
+  border-color: var(--border);
+}
+.admin-btn--ghost:hover { border-color: var(--ink); }
+
+.admin-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.admin-btn--primary:hover { background: #a8442e; border-color: #a8442e; }
+
+.admin-btn--sm { padding: 7px 16px; font-size: 9px; }
+
+.admin-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+}
+
+.export-status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--slate);
+  margin-top: 12px;
+  letter-spacing: 0.1em;
+}
+
+/* ─── Reorder list ───────────────────────────────────────────────────────── */
+.reorder-list {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  min-height: 80px;
+  padding: 8px;
+  margin: 20px 0;
+}
+
+.reorder-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  cursor: grab;
+  user-select: none;
+  background: var(--panel);
+  transition: background 0.1s;
+}
+.reorder-item:hover { background: var(--bg); }
+.reorder-item.dragging { opacity: 0.5; border-color: var(--accent); }
+
+.reorder-handle {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--border);
+}
+
+.reorder-order {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  width: 24px;
+  text-align: center;
+}
+
+.reorder-title {
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.reorder-date {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+/* ─── Admin logout ───────────────────────────────────────────────────────── */
+#admin-logout {
+  margin-left: auto;
+  font-size: 9px;
+  padding: 6px 14px;
+  border-color: #555;
+  color: #aaa;
+}
+#admin-logout:hover { border-color: #fff; color: #fff; }

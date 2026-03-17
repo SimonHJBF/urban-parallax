@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Urban Parallax</title>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Password Gate -->
+  <div id="auth-gate" class="auth-gate">
+    <div class="auth-box">
+      <h1 class="auth-title">URBAN PARALLAX</h1>
+      <p class="auth-sub">Admin Panel</p>
+      <form id="auth-form" class="auth-form">
+        <input type="password" id="auth-input" placeholder="Password" autocomplete="current-password">
+        <button type="submit">Enter</button>
+      </form>
+      <p id="auth-error" class="auth-error" hidden>Incorrect password.</p>
+    </div>
+  </div>
+
+  <!-- Admin UI (shown after auth) -->
+  <div id="admin-ui" class="admin-ui" hidden>
+    <header class="admin-header">
+      <a href="/" class="admin-logo">← Urban Parallax</a>
+      <h1 class="admin-title">Admin Panel</h1>
+      <button id="admin-logout" class="admin-btn admin-btn--ghost">Log out</button>
+    </header>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="add">Add Comparison</button>
+      <button class="admin-tab" data-tab="reorder">Reorder</button>
+      <button class="admin-tab" data-tab="load">Load &amp; Edit</button>
+    </div>
+
+    <!-- ── Tab: Add Comparison ── -->
+    <div id="tab-add" class="admin-panel active">
+      <div class="admin-form-wrap">
+        <h2 class="admin-section-title">New Comparison</h2>
+
+        <!-- Index fields -->
+        <div class="admin-row">
+          <div class="admin-field">
+            <label>ID (zero-padded)</label>
+            <input type="text" id="f-id" placeholder="004" maxlength="3">
+          </div>
+          <div class="admin-field">
+            <label>Date</label>
+            <input type="date" id="f-date">
+          </div>
+          <div class="admin-field">
+            <label>Status</label>
+            <select id="f-status">
+              <option value="draft">Draft</option>
+              <option value="left-only">Left only</option>
+              <option value="right-only">Right only</option>
+              <option value="published" selected>Published</option>
+            </select>
+          </div>
+          <div class="admin-field">
+            <label>Order (pin to top)</label>
+            <input type="number" id="f-order" placeholder="blank = date order">
+          </div>
+        </div>
+
+        <div class="admin-row">
+          <div class="admin-field admin-field--wide">
+            <label>Title</label>
+            <input type="text" id="f-title" placeholder="The Morning Commute">
+          </div>
+          <div class="admin-field admin-field--wide">
+            <label>Slug (URL)</label>
+            <input type="text" id="f-slug" placeholder="morning-commute">
+          </div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="admin-field">
+          <label>Introduction (shared, full-width italic)</label>
+          <textarea id="f-intro" rows="2" placeholder="One poetic sentence that frames both cities…"></textarea>
+        </div>
+
+        <!-- Metadata -->
+        <h3 class="admin-subsection">Metadata</h3>
+        <div class="admin-row">
+          <div class="admin-field">
+            <label>Topic</label>
+            <input type="text" id="f-topic" placeholder="Transport">
+          </div>
+          <div class="admin-field">
+            <label>Scale</label>
+            <select id="f-scale">
+              <option value="">—</option>
+              <option>S (Room/Building)</option>
+              <option>M (Street/Block)</option>
+              <option>L (Neighbourhood)</option>
+              <option>XL (District)</option>
+              <option>XXL (City-wide)</option>
+            </select>
+          </div>
+          <div class="admin-field">
+            <label>System</label>
+            <select id="f-system">
+              <option value="">—</option>
+              <option>The Hard City (Concrete / Built)</option>
+              <option>The Soft City (Social / Cultural)</option>
+              <option>The Green City (Nature / Ecology)</option>
+              <option>The Liquid City (Water / Climate)</option>
+            </select>
+          </div>
+          <div class="admin-field">
+            <label>Season</label>
+            <input type="text" id="f-season" placeholder="Winter">
+          </div>
+        </div>
+        <div class="admin-row">
+          <div class="admin-field">
+            <label>Coordinates left</label>
+            <input type="text" id="f-coord-left" placeholder="51.92° N">
+          </div>
+          <div class="admin-field">
+            <label>Coordinates right</label>
+            <input type="text" id="f-coord-right" placeholder="23.55° S">
+          </div>
+          <div class="admin-field">
+            <label>Tags (comma-separated)</label>
+            <input type="text" id="f-tags" placeholder="transport, daily-life">
+          </div>
+        </div>
+
+        <!-- Quick Facts -->
+        <h3 class="admin-subsection">Quick Facts <span class="admin-hint">(5–8 rows, evocative contrasts)</span></h3>
+        <div id="qf-rows" class="qf-editor"></div>
+        <button type="button" id="qf-add" class="admin-btn admin-btn--ghost admin-btn--sm">+ Add row</button>
+
+        <!-- Left city -->
+        <h3 class="admin-subsection">Left City</h3>
+        <div class="admin-row">
+          <div class="admin-field"><label>City</label><input type="text" id="f-left-city" placeholder="Rotterdam"></div>
+          <div class="admin-field"><label>Neighbourhood</label><input type="text" id="f-left-nbhd" placeholder="Centrum"></div>
+          <div class="admin-field"><label>Contributor</label><input type="text" id="f-left-contrib" placeholder="Miriam"></div>
+        </div>
+        <div class="admin-row">
+          <div class="admin-field admin-field--wide"><label>Title</label><input type="text" id="f-left-title" placeholder="The Dutch Flow"></div>
+          <div class="admin-field admin-field--wide"><label>Subtitle</label><input type="text" id="f-left-subtitle" placeholder="Controlled Friction"></div>
+        </div>
+        <div class="admin-field">
+          <label>Description (one line)</label>
+          <input type="text" id="f-left-desc" placeholder="20-minute silent bike rides through engineered calm">
+        </div>
+        <div class="admin-field">
+          <label>Main image filename</label>
+          <input type="text" id="f-left-img" placeholder="left-main.jpg" value="left-main.jpg">
+        </div>
+        <div class="admin-field">
+          <label>Extra image filenames (comma-separated)</label>
+          <input type="text" id="f-left-extras" placeholder="left-2.jpg, left-3.jpg">
+        </div>
+        <div class="admin-field">
+          <label>Body text (Markdown)</label>
+          <textarea id="f-left-body" rows="12" placeholder="Write the deep-dive text for the left city…"></textarea>
+        </div>
+
+        <!-- Right city -->
+        <h3 class="admin-subsection">Right City</h3>
+        <div class="admin-row">
+          <div class="admin-field"><label>City</label><input type="text" id="f-right-city" placeholder="São Paulo"></div>
+          <div class="admin-field"><label>Neighbourhood</label><input type="text" id="f-right-nbhd" placeholder="Paulista"></div>
+          <div class="admin-field"><label>Contributor</label><input type="text" id="f-right-contrib" placeholder="Simon"></div>
+        </div>
+        <div class="admin-row">
+          <div class="admin-field admin-field--wide"><label>Title</label><input type="text" id="f-right-title" placeholder="The Paulista Chaos"></div>
+          <div class="admin-field admin-field--wide"><label>Subtitle</label><input type="text" id="f-right-subtitle" placeholder="Social Friction"></div>
+        </div>
+        <div class="admin-field">
+          <label>Description (one line)</label>
+          <input type="text" id="f-right-desc" placeholder="90-minute sensory overload through the marginal">
+        </div>
+        <div class="admin-field">
+          <label>Main image filename</label>
+          <input type="text" id="f-right-img" placeholder="right-main.jpg" value="right-main.jpg">
+        </div>
+        <div class="admin-field">
+          <label>Extra image filenames (comma-separated)</label>
+          <input type="text" id="f-right-extras" placeholder="right-2.jpg">
+        </div>
+        <div class="admin-field">
+          <label>Body text (Markdown)</label>
+          <textarea id="f-right-body" rows="12" placeholder="Write the deep-dive text for the right city…"></textarea>
+        </div>
+
+        <div class="admin-actions">
+          <button id="btn-preview" class="admin-btn">Preview</button>
+          <button id="btn-export" class="admin-btn admin-btn--primary">Export folder (.zip)</button>
+        </div>
+        <p id="export-status" class="export-status"></p>
+      </div>
+    </div>
+
+    <!-- ── Tab: Reorder ── -->
+    <div id="tab-reorder" class="admin-panel">
+      <div class="admin-form-wrap">
+        <h2 class="admin-section-title">Reorder Comparisons</h2>
+        <p class="admin-hint">Drag to reorder. Items at the top will appear first on the site (they get an <code>order</code> value). Items without a position follow date order.</p>
+        <div id="reorder-list" class="reorder-list">
+          <p class="admin-empty">Load <code>comparisons.json</code> to enable reordering.</p>
+        </div>
+        <div class="admin-actions">
+          <button id="btn-load-json" class="admin-btn admin-btn--ghost">Load comparisons.json</button>
+          <input type="file" id="input-json" accept=".json" style="display:none">
+          <button id="btn-export-csv" class="admin-btn admin-btn--primary" disabled>Export updated index.csv</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab: Load & Edit ── -->
+    <div id="tab-load" class="admin-panel">
+      <div class="admin-form-wrap">
+        <h2 class="admin-section-title">Load &amp; Edit</h2>
+        <p class="admin-hint">Upload a <code>meta.json</code> file to load an existing comparison for editing.</p>
+        <div class="admin-actions">
+          <label class="admin-btn admin-btn--ghost">
+            Load meta.json
+            <input type="file" id="input-meta" accept=".json" style="display:none">
+          </label>
+        </div>
+        <p id="load-status" class="export-status"></p>
+      </div>
+    </div>
+
+  </div><!-- /admin-ui -->
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "urban-parallax",
+  "version": "1.0.0",
+  "description": "A visual research blog comparing urban spaces across cities",
+  "scripts": {
+    "build": "node scripts/build-data.js",
+    "build:prod": "node scripts/build-data.js && node scripts/optimize-images.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "csv-parse": "^5.5.3",
+    "fs-extra": "^11.2.0",
+    "marked": "^12.0.0"
+  }
+}
