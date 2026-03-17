@@ -3,46 +3,51 @@
  * Client-side only. Generates downloadable folder (meta.json + left.md + right.md).
  * Password gate using SHA-256. No server needed.
  *
- * To change the password:
- *   1. Run: echo -n "yourpassword" | sha256sum
- *   2. Update PASSWORD_HASH below
- *
- * Default password: urbanparallax
+ * Accounts: Simon / Miriam (see ACCOUNTS below)
  */
 
-// SHA-256 hash of "urbanparallax"
-const PASSWORD_HASH = 'b6c1c7ea7d5a5bfe9c8b1a2fe1f6c1e8c5a3b2d9e8f7c6b5a4d3c2b1a0e9f8d7';
+// ── Accounts ──────────────────────────────────────────────────────────────────
+const ACCOUNTS = [
+  { name: 'Simon',  hash: '396c4b08a294fcbd7a0d6c35f62db534b2bb1fd6c416297f63c272396c954ce0' },
+  { name: 'Miriam', hash: 'a6b187d8a7c631f81481b1ba9223843333a80eacf0a1929db7ab54ba1219c19c' },
+];
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 async function hashPassword(pw) {
-  const buf    = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 async function checkAuth() {
-  if (sessionStorage.getItem('up-admin') === '1') return showAdmin();
+  const savedUser = sessionStorage.getItem('up-admin-user');
+  if (savedUser) return showAdmin(savedUser);
 
   document.getElementById('auth-form').addEventListener('submit', async e => {
     e.preventDefault();
+    const name = document.getElementById('auth-name').value.trim();
     const pw   = document.getElementById('auth-input').value;
     const hash = await hashPassword(pw);
-    if (hash === PASSWORD_HASH) {
-      sessionStorage.setItem('up-admin', '1');
-      showAdmin();
+    const account = ACCOUNTS.find(a => a.name.toLowerCase() === name.toLowerCase() && a.hash === hash);
+    if (account) {
+      sessionStorage.setItem('up-admin-user', account.name);
+      showAdmin(account.name);
     } else {
       document.getElementById('auth-error').hidden = false;
     }
   });
 }
 
-function showAdmin() {
+function showAdmin(userName) {
   document.getElementById('auth-gate').hidden = true;
   document.getElementById('admin-ui').hidden  = false;
-  initAdmin();
+  // Show logged-in user name in header
+  const titleEl = document.querySelector('.admin-title');
+  if (titleEl) titleEl.textContent = `Admin Panel — ${userName}`;
+  initAdmin(userName);
 }
 
 document.getElementById('admin-logout').addEventListener('click', () => {
-  sessionStorage.removeItem('up-admin');
+  sessionStorage.removeItem('up-admin-user');
   location.reload();
 });
 
@@ -57,7 +62,7 @@ document.querySelectorAll('.admin-tab').forEach(tab => {
 });
 
 // ── Admin init ────────────────────────────────────────────────────────────────
-function initAdmin() {
+function initAdmin(userName) {
   initQuickFacts();
   initExport();
   initReorder();
@@ -76,6 +81,13 @@ function initAdmin() {
 
   // Set today's date
   document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
+
+  // Pre-fill contributor fields based on logged-in user
+  if (userName === 'Simon') {
+    document.getElementById('f-right-contrib').value = 'Simon';
+  } else if (userName === 'Miriam') {
+    document.getElementById('f-left-contrib').value = 'Miriam';
+  }
 }
 
 function slugify(str) {
