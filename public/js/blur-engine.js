@@ -37,6 +37,10 @@ const BlurEngine = (() => {
 
   // ── Init ───────────────────────────────────────────────────────────────────
   function init() {
+    // Skip on touch-only devices — no mouse cursor means the overlay
+    // would permanently obscure content with no way to dismiss it
+    if (window.matchMedia('(hover: none)').matches) return;
+
     // Create overlay, append to body (not feed) so it covers the whole page
     overlayEl = document.createElement('div');
     overlayEl.className = 'clarity-overlay';

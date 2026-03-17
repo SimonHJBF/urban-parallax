@@ -686,29 +686,21 @@ body {
   top: calc(var(--header-h) + 32px);
 }
 
-/* ─── Responsive Feed Grid ───────────────────────────────────────────────── */
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+
+/* 900px → 2-column feed */
 @media (max-width: 900px) {
-  .feed { grid-template-columns: repeat(2, 1fr); }
+  .feed { grid-template-columns: repeat(2, 1fr); gap: 14px; padding: 0 24px 80px; }
 }
 
-@media (max-width: 600px) {
-  .feed { grid-template-columns: 1fr; padding: 0 16px 80px; }
-}
-
-/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+/* 768px tablet — stack cells inside cards, adjust expand panel */
 @media (max-width: 768px) {
-  :root { --pad-h: 20px; --header-h: 56px; }
+  :root { --pad-h: 20px; }
 
-  .site-tagline { display: none; }
-
-  .colour-selector { gap: 2px; }
-  .colour-pill { padding: 4px 6px; }
-  .ve-btn-standalone { padding: 4px 6px; }
-
-  .up-row-grid { grid-template-columns: 1fr; padding: 24px 0; }
+  .up-row-grid { grid-template-columns: 1fr; }
   .up-row-grid .up-divider-v { display: none; }
-  .up-cell { padding: 0 0 24px; }
-  .up-cell--right { padding: 0; }
+  .up-cell { padding: 0 0 12px; }
+  .up-cell--right { padding-bottom: 0; }
 
   .up-expand-grid { grid-template-columns: 1fr; }
   .up-expand-grid .up-divider-v { display: none; }
@@ -720,4 +712,68 @@ body {
   .about-grid { grid-template-columns: 1fr; gap: 40px; }
   .about-photo { display: none; }
   .about-contributors { grid-template-columns: 1fr; gap: 24px; }
+}
+
+/* 600px → 1-column feed + mobile header + card tweaks */
+@media (max-width: 600px) {
+  :root { --pad-h: 16px; --header-h: 80px; }
+
+  /* Feed */
+  .feed { grid-template-columns: 1fr; gap: 12px; padding: 0 16px 80px; }
+
+  /* Cards: wider image, compact text */
+  .up-image-wrap { aspect-ratio: 16 / 9; }
+  .up-row-grid { padding: 10px 12px 14px; }
+  .up-cell-title { font-size: 14px; }
+  .up-cell-desc { font-size: 11px; }
+
+  /* Header: 2-row stacked layout ─────────────────────────────────────────── */
+  /* Row 1: logo (left) + nav links (right)                                   */
+  /* Row 2: colour picker, full-width, horizontally scrollable                */
+  .site-header { height: auto; }
+  .site-header.scrolled { height: auto; }
+  .site-header.scrolled .site-title { font-size: clamp(20px, 5vw, 28px); }
+
+  .header-inner {
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0 16px;
+    gap: 0;
+    height: auto;
+  }
+
+  /* Row 1 items */
+  .site-brand { flex: 1; padding: 10px 0; order: 1; }
+  .site-tagline { display: none; }
+
+  .header-nav { order: 2; gap: 16px; padding: 10px 0; }
+  .header-nav a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  /* Row 2: colour selector pushed to its own row */
+  .colour-selector {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 6px 0 8px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .colour-selector::-webkit-scrollbar { display: none; }
+
+  /* Touch targets */
+  .colour-pill { min-height: 44px; flex-shrink: 0; padding: 0 10px; }
+  .ve-sep { flex-shrink: 0; }
+  .ve-toggle-standalone { flex-shrink: 0; }
+  .ve-btn-standalone { min-height: 36px; padding: 0 9px; }
 }
