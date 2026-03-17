@@ -1,168 +1,234 @@
 /**
- * Urban Parallax — Main App
- * Fetches comparisons.json, renders the feed, handles expand / collapse.
+ * Urban Parallax — Wheel / Drum Layout
+ *
+ * One comparison is always centred and fully expanded.
+ * Every other entry compresses exponentially by distance, down to a 1px line.
+ * Click any entry to jump to it. Click the active entry to open the full detail.
  */
 
-// ── State ─────────────────────────────────────────────────────────────────────
+// ── State ──────────────────────────────────────────────────────────────────────
 let comparisons  = [];
-let expandedIdx  = null;
+let currentIndex = 0;
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
+// ── Wheel constants ────────────────────────────────────────────────────────────
+const FULL_H     = 200;  // height of the active (centred) entry in px
+const MIN_H      = 1;    // floor — every entry is at least 1px (the border line)
+const DECAY      = 0.38; // exponential decay per distance step
+const TRANSITION = 400;  // animation duration in ms
+
+// ── Boot ───────────────────────────────────────────────────────────────────────
 async function init() {
   try {
     const res = await fetch('data/comparisons.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     comparisons = await res.json();
   } catch (err) {
-    document.getElementById('feed').innerHTML =
+    document.getElementById('wheelStack').innerHTML =
       `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:var(--color-muted);">
-        Could not load comparisons.json — run the build script first.<br>
+        Could not load comparisons.json<br>
         <code style="font-size:11px">node scripts/build-data.js</code>
       </p>`;
     console.error('Urban Parallax: failed to load data', err);
     return;
   }
 
-  renderFeed();
-  BlurEngine.init();
+  renderWheel();
+  initWheel();
+  bindDetailClose();
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
-function renderFeed() {
-  const feed = document.getElementById('feed');
-  feed.innerHTML = '';
+// ── Render ─────────────────────────────────────────────────────────────────────
+function renderWheel() {
+  const stack = document.getElementById('wheelStack');
+  stack.innerHTML = '';
 
-  if (!comparisons.length) {
-    feed.innerHTML =
-      `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:var(--color-muted);">No published comparisons yet.</p>`;
+  comparisons.forEach((c, idx) => {
+    const entry        = document.createElement('div');
+    entry.className    = 'wheel-entry';
+    entry.dataset.idx  = idx;
+    entry.innerHTML    = buildEntryHTML(c);
+    stack.appendChild(entry);
+  });
+}
+
+function buildEntryHTML(c) {
+  const leftImg   = esc(c.left?.image  || 'images/site/placeholder.svg');
+  const rightImg  = esc(c.right?.image || 'images/site/placeholder.svg');
+
+  const leftCity  = c.left?.neighbourhood
+    ? `${c.left.city} · ${c.left.neighbourhood}`
+    : (c.left?.city || '');
+  const rightCity = c.right?.neighbourhood
+    ? `${c.right.city} · ${c.right.neighbourhood}`
+    : (c.right?.city || '');
+
+  return `
+    <div class="wheel-entry-inner">
+      <div class="pair-row">
+        <div class="pair-side">
+          <div class="pair-image">
+            <img src="${leftImg}" alt="${esc(leftCity)}" loading="lazy">
+          </div>
+          <div class="pair-text">
+            <div class="pair-city">${esc(leftCity)}</div>
+            <div class="pair-title">${esc(c.left?.title || '')}</div>
+            <div class="pair-desc">${esc(c.left?.description || '')}</div>
+          </div>
+        </div>
+        <div class="pair-side">
+          <div class="pair-image">
+            <img src="${rightImg}" alt="${esc(rightCity)}" loading="lazy">
+          </div>
+          <div class="pair-text">
+            <div class="pair-city">${esc(rightCity)}</div>
+            <div class="pair-title">${esc(c.right?.title || '')}</div>
+            <div class="pair-desc">${esc(c.right?.description || '')}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── Wheel engine ───────────────────────────────────────────────────────────────
+function entryHeight(distance) {
+  if (distance === 0) return FULL_H;
+  return Math.max(FULL_H * Math.pow(DECAY, distance), MIN_H);
+}
+
+function entryOpacity(distance) {
+  if (distance === 0) return 1;
+  return Math.max(Math.pow(0.62, distance), 0.18);
+}
+
+function getStackTop(activeIndex) {
+  // Sum heights of all entries above the active one (including their 1px borders)
+  let sumAbove = 0;
+  for (let i = 0; i < activeIndex; i++) {
+    sumAbove += entryHeight(Math.abs(i - activeIndex)) + 1; // +1 for border-bottom
+  }
+  const viewportH = document.getElementById('wheelViewport').offsetHeight;
+  const activeMid = sumAbove + entryHeight(0) / 2;
+  return (viewportH / 2) - activeMid;
+}
+
+function applyWheel(activeIndex, animate) {
+  const entries = document.querySelectorAll('.wheel-entry');
+  const stack   = document.getElementById('wheelStack');
+  const top     = getStackTop(activeIndex);
+  const dur     = animate ? TRANSITION : 0;
+
+  stack.style.transition = dur
+    ? `top ${dur}ms cubic-bezier(0.4,0,0.2,1)`
+    : 'none';
+  stack.style.top = top + 'px';
+
+  entries.forEach((el, i) => {
+    const dist = Math.abs(i - activeIndex);
+    el.style.transition = dur
+      ? `height ${dur}ms cubic-bezier(0.4,0,0.2,1), opacity ${dur}ms ease`
+      : 'none';
+    el.style.height  = entryHeight(dist) + 'px';
+    el.style.opacity = entryOpacity(dist);
+    el.classList.toggle('is-active', i === activeIndex);
+  });
+
+  currentIndex = activeIndex;
+}
+
+function goTo(index) {
+  const entries = document.querySelectorAll('.wheel-entry');
+  const clamped = Math.max(0, Math.min(entries.length - 1, index));
+
+  if (clamped === currentIndex) {
+    // Clicking the already-active entry opens the full detail
+    openDetail(clamped);
     return;
   }
 
-  // Group by YYYY-MM for date headers
-  let lastMonth = null;
+  applyWheel(clamped, true);
+}
 
-  comparisons.forEach((c, idx) => {
-    const monthKey = c.date ? c.date.slice(0, 7) : null;
+// ── Input bindings ─────────────────────────────────────────────────────────────
+let wheelAcc = 0;
 
-    if (monthKey && monthKey !== lastMonth) {
-      feed.appendChild(createDateHeader(c.date));
-      lastMonth = monthKey;
+function initWheelInput() {
+  const vp = document.getElementById('wheelViewport');
+
+  // Mouse wheel
+  vp.addEventListener('wheel', e => {
+    e.preventDefault();
+    wheelAcc += e.deltaY;
+    if (Math.abs(wheelAcc) > 40) {
+      goTo(currentIndex + (wheelAcc > 0 ? 1 : -1));
+      wheelAcc = 0;
     }
+  }, { passive: false });
 
-    feed.appendChild(createRow(c, idx));
+  // Touch swipe
+  let touchStartY = 0;
+  vp.addEventListener('touchstart', e => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  vp.addEventListener('touchend', e => {
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(dy) > 30) goTo(currentIndex + (dy > 0 ? 1 : -1));
+  }, { passive: true });
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); goTo(currentIndex + 1); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); goTo(currentIndex - 1); }
+    if (e.key === 'Escape')    { closeDetail(); }
   });
-
-  // Register all lensable elements
-  refreshLensElements();
 }
 
-function createDateHeader(dateStr) {
-  const el  = document.createElement('div');
-  el.className = 'up-date-header';
-  const d = new Date(dateStr + 'T12:00:00');
-  el.textContent = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }).toUpperCase();
-  return el;
-}
-
-function refreshLensElements() {
-  const feed = document.getElementById('feed');
-  const els  = feed.querySelectorAll('.up-row, .up-date-header');
-  BlurEngine.setElements(els);
-  BlurEngine.scheduleUpdate();
-}
-
-// ── Row ───────────────────────────────────────────────────────────────────────
-function createRow(c, idx) {
-  const row = document.createElement('article');
-  row.className   = 'up-row';
-  row.dataset.idx = idx;
-
-  // Preview grid
-  const grid = document.createElement('div');
-  grid.className = 'up-row-grid';
-  grid.setAttribute('role', 'button');
-  grid.setAttribute('tabindex', '0');
-  grid.setAttribute('aria-expanded', 'false');
-  grid.setAttribute('aria-label', `${c.title} — ${c.left.city} vs ${c.right.city}. Click to expand.`);
-
-  grid.appendChild(createCell(c.left,  'left'));
-  grid.appendChild(createDivider());
-  grid.appendChild(createCell(c.right, 'right'));
-  row.appendChild(grid);
-
-  // Expand panel
-  const expand = document.createElement('div');
-  expand.className   = 'up-expand';
-  expand.innerHTML   = buildExpandHTML(c);
-  row.appendChild(expand);
-
-  // Interactions
-  grid.addEventListener('click', () => toggleRow(idx, row, grid, expand));
-  grid.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      toggleRow(idx, row, grid, expand);
-    }
+function attachEntryClicks() {
+  document.querySelectorAll('.wheel-entry').forEach((el, i) => {
+    el.addEventListener('click', () => goTo(i));
   });
-
-  const closeBtn = expand.querySelector('.up-close-btn');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      collapseRow(idx, row, grid, expand);
-    });
-  }
-
-  return row;
 }
 
-function createCell(side, position) {
-  const cell = document.createElement('div');
-  cell.className = `up-cell up-cell--${position}`;
-
-  // Image
-  const imgWrap = document.createElement('div');
-  imgWrap.className = 'up-image-wrap';
-  const img = document.createElement('img');
-  img.src     = side.image || `images/site/placeholder.svg`;
-  img.alt     = `${side.city}${side.neighbourhood ? ', ' + side.neighbourhood : ''} — ${side.title || ''}`;
-  img.loading = 'lazy';
-  imgWrap.appendChild(img);
-  cell.appendChild(imgWrap);
-
-  // Text
-  const text = document.createElement('div');
-  text.className = 'up-cell-text';
-
-  const label = document.createElement('span');
-  label.className   = 'up-city-label';
-  label.textContent = side.neighbourhood
-    ? `${side.city} · ${side.neighbourhood}`
-    : side.city;
-
-  const title = document.createElement('h2');
-  title.className   = 'up-cell-title';
-  title.textContent = side.title || '';
-
-  const desc = document.createElement('p');
-  desc.className   = 'up-cell-desc';
-  desc.textContent = side.description || '';
-
-  text.append(label, title, desc);
-  cell.appendChild(text);
-  return cell;
+function initWheel() {
+  attachEntryClicks();
+  initWheelInput();
+  applyWheel(0, false);
 }
 
-function createDivider() {
-  const d = document.createElement('div');
-  d.className = 'up-divider-v';
-  return d;
+// ── Detail overlay ─────────────────────────────────────────────────────────────
+function openDetail(idx) {
+  const c = comparisons[idx];
+  if (!c) return;
+
+  const overlay = document.getElementById('wheelDetail');
+  const inner   = document.getElementById('wheelDetailInner');
+
+  inner.innerHTML = buildExpandHTML(c);
+  overlay.hidden  = false;
+
+  // Two rAF frames to ensure hidden→display transition fires
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    overlay.classList.add('open');
+  }));
+
+  // Bind the close button rendered inside the expand HTML
+  const closeBtn = inner.querySelector('.up-close-btn');
+  if (closeBtn) closeBtn.addEventListener('click', closeDetail);
 }
 
-// ── Expand HTML ───────────────────────────────────────────────────────────────
+function closeDetail() {
+  const overlay = document.getElementById('wheelDetail');
+  overlay.classList.remove('open');
+  setTimeout(() => { overlay.hidden = true; }, 380);
+}
+
+function bindDetailClose() {
+  document.getElementById('wheelDetailClose').addEventListener('click', closeDetail);
+}
+
+// ── Expand HTML ────────────────────────────────────────────────────────────────
 function buildExpandHTML(c) {
-  const leftBodyHTML  = c.left.body  ? marked.parse(c.left.body)  : '';
-  const rightBodyHTML = c.right.body ? marked.parse(c.right.body) : '';
+  const leftBodyHTML  = c.left?.body  ? marked.parse(c.left.body)  : '';
+  const rightBodyHTML = c.right?.body ? marked.parse(c.right.body) : '';
 
   // Metadata pills
   const meta = c.metadata || {};
@@ -197,8 +263,8 @@ function buildExpandHTML(c) {
   }
 
   // Extra images
-  const leftExtras  = (c.left.extraImages  || []).map(src => `<img src="${esc(src)}" alt="" loading="lazy" class="up-extra-img">`).join('');
-  const rightExtras = (c.right.extraImages || []).map(src => `<img src="${esc(src)}" alt="" loading="lazy" class="up-extra-img">`).join('');
+  const leftExtras  = (c.left?.extraImages  || []).map(src => `<img src="${esc(src)}" alt="" loading="lazy" class="up-extra-img">`).join('');
+  const rightExtras = (c.right?.extraImages || []).map(src => `<img src="${esc(src)}" alt="" loading="lazy" class="up-extra-img">`).join('');
 
   // Tags
   const tagsHTML = c.tags && c.tags.length
@@ -213,19 +279,19 @@ function buildExpandHTML(c) {
 
       <div class="up-expand-grid">
         <div class="up-expand-body">
-          ${c.left.subtitle  ? `<div class="up-expand-subtitle">${esc(c.left.subtitle)}</div>` : ''}
+          ${c.left?.subtitle  ? `<div class="up-expand-subtitle">${esc(c.left.subtitle)}</div>` : ''}
           <div class="up-body-text">${leftBodyHTML}</div>
           ${leftExtras ? `<div class="up-extra-images">${leftExtras}</div>` : ''}
-          <p class="up-credit">${esc(c.left.contributor || '')}${c.date ? ' · ' + c.date : ''}</p>
+          <p class="up-credit">${esc(c.left?.contributor || '')}${c.date ? ' · ' + c.date : ''}</p>
         </div>
 
         <div class="up-divider-v"></div>
 
         <div class="up-expand-body">
-          ${c.right.subtitle ? `<div class="up-expand-subtitle">${esc(c.right.subtitle)}</div>` : ''}
+          ${c.right?.subtitle ? `<div class="up-expand-subtitle">${esc(c.right.subtitle)}</div>` : ''}
           <div class="up-body-text">${rightBodyHTML}</div>
           ${rightExtras ? `<div class="up-extra-images">${rightExtras}</div>` : ''}
-          <p class="up-credit">${esc(c.right.contributor || '')}${c.date ? ' · ' + c.date : ''}</p>
+          <p class="up-credit">${esc(c.right?.contributor || '')}${c.date ? ' · ' + c.date : ''}</p>
         </div>
       </div>
 
@@ -234,53 +300,7 @@ function buildExpandHTML(c) {
     </div>`;
 }
 
-// ── Toggle / Expand / Collapse ────────────────────────────────────────────────
-function toggleRow(idx, row, grid, expand) {
-  if (expandedIdx === idx) {
-    collapseRow(idx, row, grid, expand);
-  } else {
-    // Collapse any currently open row
-    if (expandedIdx !== null) {
-      const prev = document.querySelector(`.up-row[data-idx="${expandedIdx}"]`);
-      if (prev) {
-        collapseRow(expandedIdx, prev,
-          prev.querySelector('.up-row-grid'),
-          prev.querySelector('.up-expand'),
-          true /* silent */);
-      }
-    }
-    expandRow(idx, row, grid, expand);
-  }
-}
-
-function expandRow(idx, row, grid, expand) {
-  expandedIdx = idx;
-  row.classList.add('expanded');
-  grid.setAttribute('aria-expanded', 'true');
-  expand.classList.add('open');
-
-  // Tell the lens engine this row is expanded
-  BlurEngine.setExpanded(row);
-
-  // Smooth scroll so the row sits near the top of the viewport
-  setTimeout(() => {
-    const rect      = row.getBoundingClientRect();
-    const headerH   = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 72;
-    const target    = window.pageYOffset + rect.top - headerH - 16;
-    window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
-  }, 60);
-}
-
-function collapseRow(idx, row, grid, expand, silent = false) {
-  expandedIdx = null;
-  row.classList.remove('expanded');
-  grid.setAttribute('aria-expanded', 'false');
-  expand.classList.remove('open');
-
-  if (!silent) BlurEngine.clearExpanded();
-}
-
-// ── Utilities ─────────────────────────────────────────────────────────────────
+// ── Utilities ──────────────────────────────────────────────────────────────────
 function esc(str) {
   if (str == null) return '';
   return String(str)
@@ -295,5 +315,5 @@ function formatKey(key) {
   return key.replace(/_/g, ' ');
 }
 
-// ── Start ─────────────────────────────────────────────────────────────────────
+// ── Start ──────────────────────────────────────────────────────────────────────
 init();
