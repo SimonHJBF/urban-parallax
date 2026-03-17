@@ -64,14 +64,15 @@
             <label>Date</label>
             <input type="date" id="f-date">
           </div>
-          <div class="admin-field">
+          <!-- Status + Slug are auto-managed — hidden from UI -->
+          <div class="admin-field editor-auto-field">
             <label>Status</label>
             <select id="f-status">
               <option value="draft">Draft</option>
               <option value="published" selected>Published</option>
             </select>
           </div>
-          <div class="admin-field">
+          <div class="admin-field editor-auto-field">
             <label>Slug (URL path)</label>
             <input type="text" id="f-slug" placeholder="morning-commute">
           </div>
@@ -82,11 +83,17 @@
           <input type="text" id="f-intro" placeholder="One sentence that frames both cities…">
         </div>
 
+        <!-- Mobile-only city tabs -->
+        <div class="city-tabs" id="city-tabs">
+          <button type="button" class="city-tab is-active" data-city="editor-city-left">Left City</button>
+          <button type="button" class="city-tab" data-city="editor-city-right">Right City</button>
+        </div>
+
         <!-- Two city columns -->
         <div class="editor-cities">
 
           <!-- LEFT CITY -->
-          <div class="editor-city">
+          <div class="editor-city is-active" id="editor-city-left">
             <div class="editor-city-head">Left City</div>
 
             <div class="admin-row">
@@ -150,7 +157,7 @@
           </div>
 
           <!-- RIGHT CITY -->
-          <div class="editor-city">
+          <div class="editor-city" id="editor-city-right">
             <div class="editor-city-head">Right City</div>
 
             <div class="admin-row">

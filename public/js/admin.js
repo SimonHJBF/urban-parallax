@@ -195,16 +195,31 @@ function initEditor(userName) {
   // Save / Cancel
   document.getElementById('btn-save').addEventListener('click', saveComparison);
   document.getElementById('btn-cancel').addEventListener('click', () => switchTab('browse'));
+
+  // Mobile city tabs — switch between Left / Right city panels
+  document.querySelectorAll('.city-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.city;
+      document.querySelectorAll('.city-tab').forEach(b => b.classList.toggle('is-active', b === btn));
+      document.getElementById('editor-city-left').classList.toggle('is-active',  target === 'editor-city-left');
+      document.getElementById('editor-city-right').classList.toggle('is-active', target === 'editor-city-right');
+    });
+  });
 }
 
 function startEdit(idx) {
   editingIdx = idx;
   document.getElementById('save-status').textContent = '';
 
+  // Always reset to left city tab when opening the editor
+  document.getElementById('editor-city-left').classList.add('is-active');
+  document.getElementById('editor-city-right').classList.remove('is-active');
+  document.querySelectorAll('.city-tab').forEach((tab, i) => tab.classList.toggle('is-active', i === 0));
+
   if (idx === null) {
     clearForm();
-    document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
-    document.getElementById('f-status').value = 'published';
+    document.getElementById('f-date').value     = new Date().toISOString().slice(0, 10);
+    document.getElementById('f-status').value   = 'published';
     if (currentUser === 'Simon')  document.getElementById('f-right-contrib').value = 'Simon';
     if (currentUser === 'Miriam') document.getElementById('f-left-contrib').value  = 'Miriam';
     document.getElementById('f-slug').dataset.manual = '';

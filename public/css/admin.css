@@ -909,3 +909,128 @@ body {
   padding: 2px 6px;
   border: 1px solid var(--border);
 }
+
+/* ── Auto-managed fields (always hidden — slug + status) ─────────────────── */
+.editor-auto-field { display: none !important; }
+
+/* ── City tabs (mobile only) ─────────────────────────────────────────────── */
+.city-tabs { display: none; }
+
+.city-tab {
+  flex: 1;
+  padding: 11px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.city-tab:first-child { border-radius: 6px 0 0 0; border-right: none; }
+.city-tab:last-child  { border-radius: 0 6px 0 0; }
+.city-tab.is-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* ── Mobile breakpoint ────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+
+  /* Tighter overall padding */
+  .admin-form-wrap {
+    padding: 16px 12px 80px;
+  }
+
+  /* Header / nav */
+  .header-inner { padding: 0 12px; }
+
+  /* Stack every row — one field per line */
+  .editor-topbar,
+  .admin-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Every field takes full width */
+  .admin-field,
+  .admin-field--wide,
+  .admin-field--xl {
+    flex: none;
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Inputs large enough to prevent iOS auto-zoom */
+  .admin-field input,
+  .admin-field select,
+  .admin-field textarea {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+
+  /* City tabs visible on mobile */
+  .city-tabs { display: flex; margin-bottom: 0; }
+
+  /* Cities: single column, tabbed */
+  .editor-cities {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .editor-city {
+    display: none;
+    border-top: 2px solid var(--accent);
+    padding-top: 16px;
+  }
+  .editor-city.is-active { display: flex; }
+
+  /* Stack body text + preview (preview below textarea) */
+  .editor-body-row {
+    flex-direction: column;
+  }
+  .editor-body-row .admin-field,
+  .editor-body-row > div {
+    width: 100%;
+  }
+
+  /* Stack image row */
+  .editor-image-row {
+    flex-direction: column;
+  }
+  .editor-image-preview {
+    width: 100%;
+    height: 100px;
+    margin-top: 0;
+  }
+
+  /* Quick facts rows */
+  .qf-row { flex-direction: column; gap: 4px; }
+  .qf-sep { display: none; }
+
+  /* Extra media slots — slightly bigger on mobile */
+  .em-slot { width: 70px; height: 70px; }
+
+  /* Buttons full-width */
+  .admin-actions {
+    flex-direction: column;
+  }
+  .admin-btn { width: 100%; text-align: center; }
+
+  /* Editor save bar */
+  .editor-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    padding: 12px;
+    margin: 0 -12px;
+    z-index: 10;
+    flex-direction: row;
+    gap: 8px;
+  }
+  .editor-actions .admin-btn { width: auto; flex: 1; }
+}
