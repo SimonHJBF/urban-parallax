@@ -131,14 +131,26 @@ function applyWheel(activeIndex, animate) {
     el.classList.toggle('is-active', i === activeIndex);
 
     // Width zoom: active = 115%, distance-1 = 107%, rest = 100%
-    const BASE_W = 760;
-    const pairMaxW = dist === 0 ? BASE_W * 1.15 : dist === 1 ? BASE_W * 1.07 : BASE_W;
-    const pairRow  = el.querySelector('.pair-row');
+    const pairRow = el.querySelector('.pair-row');
     if (pairRow) {
-      pairRow.style.transition = dur
-        ? `max-width ${dur}ms cubic-bezier(0.4,0,0.2,1)`
-        : 'none';
-      pairRow.style.maxWidth = pairMaxW + 'px';
+      const easing = `cubic-bezier(0.4,0,0.2,1)`;
+      if (window.innerWidth <= 600) {
+        // Mobile: zoom via padding (narrower padding = wider feel)
+        const pad = dist === 0 ? 4 : dist === 1 ? 8 : 12;
+        pairRow.style.transition = dur
+          ? `padding-left ${dur}ms ${easing}, padding-right ${dur}ms ${easing}`
+          : 'none';
+        pairRow.style.paddingLeft  = pad + 'px';
+        pairRow.style.paddingRight = pad + 'px';
+      } else {
+        // Desktop: zoom via max-width
+        const BASE_W   = 760;
+        const pairMaxW = dist === 0 ? BASE_W * 1.15 : dist === 1 ? BASE_W * 1.07 : BASE_W;
+        pairRow.style.transition = dur
+          ? `max-width ${dur}ms ${easing}`
+          : 'none';
+        pairRow.style.maxWidth = pairMaxW + 'px';
+      }
     }
   });
 
@@ -204,7 +216,15 @@ function initWheelInput() {
 
 function attachEntryClicks() {
   document.querySelectorAll('.wheel-entry').forEach((el, i) => {
-    el.addEventListener('click', () => goTo(i, true));
+    el.addEventListener('click', () => {
+      // If detail is open, clicking the expanded entry (anywhere except the
+      // detail body itself, which stops propagation) closes it.
+      if (isDetailOpen) {
+        if (i === currentIndex) closeDetail();
+        return;
+      }
+      goTo(i, true);
+    });
   });
 }
 
@@ -226,6 +246,9 @@ function openDetail(idx) {
   const detailEl = document.createElement('div');
   detailEl.className = 'wheel-entry-detail';
   detailEl.innerHTML = buildExpandHTML(c);
+  // Clicks inside the detail body must not bubble up to the entry
+  // (which would immediately close the detail).
+  detailEl.addEventListener('click', e => e.stopPropagation());
   inner.appendChild(detailEl);
 
   // Let the entry grow to its natural content height
