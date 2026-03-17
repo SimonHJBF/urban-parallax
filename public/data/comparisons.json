@@ -485,17 +485,9 @@
     "title": "Public Markets — III",
     "slug": "public-markets-3",
     "date": "2026-01-20",
+    "status": "published",
     "order": null,
     "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": {
-      "topic": "Food",
-      "scale": "M (Street/Block)",
-      "system": "The Soft City (Social / Cultural)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      }
-    },
     "tags": [
       "food",
       "public-space",
@@ -518,8 +510,8 @@
       "subtitle": "Architecture as Market",
       "description": "Europe's largest indoor market under a painted horseshoe arch",
       "contributor": "Miriam",
-      "image": "images/placeholder/3A.jpg",
-      "extraImages": [],
+      "image": "images/comparisons/public-markets-3/left.jpeg",
+      "extraMedia": [],
       "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
     },
     "right": {
@@ -529,9 +521,18 @@
       "subtitle": "Market as Architecture",
       "description": "A 1933 neoclassical municipal market",
       "contributor": "Simon",
-      "image": "images/placeholder/3B.jpg",
-      "extraImages": [],
+      "image": "images/comparisons/public-markets-3/right.jpeg",
+      "extraMedia": [],
       "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
+    },
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
     }
   },
   {
