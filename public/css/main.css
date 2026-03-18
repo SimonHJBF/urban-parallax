@@ -304,10 +304,13 @@ body {
   background: rgba(0,0,0,0.07);
 }
 
-/* Apply object-position to pair images based on body data attribute */
-body[data-img-pos="top"]    .pair-image img { object-position: center top    !important; }
-body[data-img-pos="center"] .pair-image img { object-position: center center !important; }
-body[data-img-pos="bottom"] .pair-image img { object-position: center bottom !important; }
+/* ▲●▼ alignment: slide the over-tall image within the clipping container.
+   The img is rendered at 150% of the container height, giving 100px of
+   vertical room (for a 200px entry). translateY shifts which slice is shown.
+   transition: transform animates the shift smoothly on button click.        */
+body[data-img-pos="top"]    .pair-image img { transform: translateY(0%);   }
+body[data-img-pos="center"] .pair-image img { transform: translateY(-17%); }
+body[data-img-pos="bottom"] .pair-image img { transform: translateY(-33%); }
 
 /* ─── Feed ───────────────────────────────────────────────────────────────── */
 .feed {
@@ -969,10 +972,11 @@ body[data-img-pos="bottom"] .pair-image img { object-position: center bottom !im
 
 .pair-image img {
   width: 100%;
-  height: 100%;
+  height: 150%;     /* overflows container → 100px vertical room in a 200px entry */
   object-fit: cover;
   display: block;
-  transition: transform 0.6s cubic-bezier(0.25, 0, 0.25, 1);
+  transform: translateY(-17%);   /* default: centred (matches body[data-img-pos="center"]) */
+  transition: transform 0.4s ease;
 }
 
 /* Text sits inside the image, centred vertically */
