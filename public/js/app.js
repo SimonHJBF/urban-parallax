@@ -393,5 +393,23 @@ function formatKey(key) {
   return key.replace(/_/g, ' ');
 }
 
+// ── Image alignment toggle (T / C / B) ─────────────────────────────────────────
+function setImgPos(pos, save) {
+  document.body.dataset.imgPos = pos;
+  document.querySelectorAll('.align-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.pos === pos);
+  });
+  if (save) localStorage.setItem('up-img-pos', pos);
+}
+
+function initAlignToggle() {
+  const saved = localStorage.getItem('up-img-pos') || 'top';
+  setImgPos(saved, false);
+  document.querySelectorAll('.align-opt').forEach(btn => {
+    btn.addEventListener('click', () => setImgPos(btn.dataset.pos, true));
+  });
+}
+
 // ── Start ──────────────────────────────────────────────────────────────────────
+initAlignToggle();
 init();

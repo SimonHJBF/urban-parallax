@@ -262,6 +262,53 @@ body {
 .header-nav a:hover,
 .header-nav a.active { color: var(--color-accent); }
 
+/* "+" admin link — slightly larger so it reads as an icon */
+.header-nav .nav-add {
+  font-size: 16px;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+/* ─── Image alignment toggle ─────────────────────────────────────────────── */
+.align-toggle {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.align-opt {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: var(--color-muted);
+  border: 0.5px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  background: none;
+  font-family: var(--font-mono);
+}
+.align-opt:hover { color: var(--color-text); }
+.align-opt.active {
+  color: var(--color-text);
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
+}
+[data-theme*="light"] .align-opt.active {
+  border-color: rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.07);
+}
+
+/* Apply object-position to pair images based on body data attribute */
+body[data-img-pos="top"]    .pair-image img { object-position: center top; }
+body[data-img-pos="center"] .pair-image img { object-position: center center; }
+body[data-img-pos="bottom"] .pair-image img { object-position: center bottom; }
+
 /* ─── Feed ───────────────────────────────────────────────────────────────── */
 .feed {
   display: flex;
@@ -1023,17 +1070,11 @@ body {
 @media (max-width: 600px) {
   .wheel-viewport { height: calc(100vh - 110px); }
 
-  /* Mobile: let image height set the pair-side size */
-  .wheel-entry-inner { padding: 0; height: auto; }
-  .pair-row  { height: auto; padding: 0 12px; }
-
-  .pair-side { height: auto; }
-
-  .pair-image {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-  }
+  /* Mobile: images fill the full JS-controlled entry height (no gap) */
+  .wheel-entry-inner { padding: 0; height: 100%; }
+  .pair-row  { height: 100%; padding: 0 12px; }
+  .pair-side { height: 100%; }
+  .pair-image { width: 100%; height: 100%; }
 
   /* Keep text overlay but tighten it on narrow screens */
   .pair-text { width: 60px; padding: 0 5px; }
@@ -1041,4 +1082,7 @@ body {
   .pair-title { font-size: 12px; }
 
   .wheel-detail-close { padding: 14px 16px; }
+
+  /* Hide alignment toggle on mobile */
+  .align-toggle { display: none; }
 }
