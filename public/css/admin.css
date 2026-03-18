@@ -515,6 +515,13 @@ body {
 }
 .admin-btn--primary:hover { background: #a8442e; border-color: #a8442e; }
 
+.admin-btn--publish {
+  background: #2a7a4a;
+  border-color: #2a7a4a;
+  color: #fff;
+}
+.admin-btn--publish:hover { background: #1f5c38; border-color: #1f5c38; }
+
 .admin-btn--sm { padding: 7px 16px; font-size: 9px; }
 
 .admin-btn:disabled {
@@ -912,6 +919,19 @@ body {
 
 /* ── Auto-managed fields (always hidden — slug + status) ─────────────────── */
 .editor-auto-field { display: none !important; }
+
+/* ── Tab-aware field visibility (mobile only, Advanced section + QF rows) ── */
+@media (max-width: 767px) {
+  /* Left tab active — hide right-only fields */
+  #tab-edit[data-active-side="left"] .tab-right-only { display: none !important; }
+  #tab-edit[data-active-side="left"] .qf-right-field,
+  #tab-edit[data-active-side="left"] .qf-tab-sep     { display: none !important; }
+
+  /* Right tab active — hide left-only fields */
+  #tab-edit[data-active-side="right"] .tab-left-only { display: none !important; }
+  #tab-edit[data-active-side="right"] .qf-left-field,
+  #tab-edit[data-active-side="right"] .qf-tab-sep    { display: none !important; }
+}
 
 /* ── City tabs (mobile only) ─────────────────────────────────────────────── */
 .city-tabs { display: none; }

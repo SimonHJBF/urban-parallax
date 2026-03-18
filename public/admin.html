@@ -258,13 +258,13 @@
               <div class="admin-field"><label>Season</label><input type="text" id="f-season" placeholder="Winter"></div>
             </div>
             <div class="admin-row">
-              <div class="admin-field"><label>Coordinates left</label><input type="text" id="f-coord-left" placeholder="51.92° N"></div>
-              <div class="admin-field"><label>Coordinates right</label><input type="text" id="f-coord-right" placeholder="23.55° S"></div>
+              <div class="admin-field tab-left-only"><label>Coordinates left</label><input type="text" id="f-coord-left" placeholder="51.92° N"></div>
+              <div class="admin-field tab-right-only"><label>Coordinates right</label><input type="text" id="f-coord-right" placeholder="23.55° S"></div>
               <div class="admin-field admin-field--wide"><label>Tags (comma-separated)</label><input type="text" id="f-tags" placeholder="transport, daily-life"></div>
             </div>
             <div class="admin-row">
-              <div class="admin-field admin-field--wide"><label>Left subtitle</label><input type="text" id="f-left-subtitle" placeholder="Controlled Friction"></div>
-              <div class="admin-field admin-field--wide"><label>Right subtitle</label><input type="text" id="f-right-subtitle" placeholder="Social Friction"></div>
+              <div class="admin-field admin-field--wide tab-left-only"><label>Left subtitle</label><input type="text" id="f-left-subtitle" placeholder="Controlled Friction"></div>
+              <div class="admin-field admin-field--wide tab-right-only"><label>Right subtitle</label><input type="text" id="f-right-subtitle" placeholder="Social Friction"></div>
             </div>
 
           </div>
@@ -272,8 +272,9 @@
 
         <!-- Save actions -->
         <div class="admin-actions editor-actions">
-          <button id="btn-save" class="admin-btn admin-btn--primary">Save Comparison</button>
-          <button id="btn-cancel" class="admin-btn admin-btn--ghost">← Back to list</button>
+          <button id="btn-save" class="admin-btn admin-btn--primary">Save Draft</button>
+          <button id="btn-publish-editor" class="admin-btn admin-btn--publish">🚀 Publish</button>
+          <button id="btn-cancel" class="admin-btn admin-btn--ghost">← Back</button>
           <span id="save-status" class="export-status"></span>
         </div>
 

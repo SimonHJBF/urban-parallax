@@ -192,17 +192,20 @@ function initEditor(userName) {
   // Quick facts
   document.getElementById('qf-add').addEventListener('click', () => addQFRow());
 
-  // Save / Cancel
-  document.getElementById('btn-save').addEventListener('click', saveComparison);
+  // Save / Cancel / Publish from editor
+  document.getElementById('btn-save').addEventListener('click', () => saveComparison());
   document.getElementById('btn-cancel').addEventListener('click', () => switchTab('browse'));
+  document.getElementById('btn-publish-editor').addEventListener('click', publishFromEditor);
 
   // Mobile city tabs — switch between Left / Right city panels
   document.querySelectorAll('.city-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.city;
+      const side   = target === 'editor-city-left' ? 'left' : 'right';
       document.querySelectorAll('.city-tab').forEach(b => b.classList.toggle('is-active', b === btn));
       document.getElementById('editor-city-left').classList.toggle('is-active',  target === 'editor-city-left');
       document.getElementById('editor-city-right').classList.toggle('is-active', target === 'editor-city-right');
+      document.getElementById('tab-edit').dataset.activeSide = side;
     });
   });
 }
@@ -215,6 +218,7 @@ function startEdit(idx) {
   document.getElementById('editor-city-left').classList.add('is-active');
   document.getElementById('editor-city-right').classList.remove('is-active');
   document.querySelectorAll('.city-tab').forEach((tab, i) => tab.classList.toggle('is-active', i === 0));
+  document.getElementById('tab-edit').dataset.activeSide = 'left';
 
   if (idx === null) {
     clearForm();
@@ -438,7 +442,7 @@ function getExtraMedia(side) {
   return extraMediaSlots[side].map(s => ({ type: s.type, path: s.path }));
 }
 
-function saveComparison() {
+function saveComparison(silent = false) {
   const val = id => {
     const el = document.getElementById('f-' + id);
     return el ? el.value.trim() : '';
@@ -495,10 +499,12 @@ function saveComparison() {
     editingIdx = 0;           // now pointing at the new entry
   }
 
-  const statusEl = document.getElementById('save-status');
-  statusEl.style.color   = '#2a7a4a';
-  statusEl.textContent   = '✓ Saved — go to Publish tab to download and deploy.';
-  setTimeout(() => { statusEl.textContent = ''; }, 5000);
+  if (!silent) {
+    const statusEl = document.getElementById('save-status');
+    statusEl.className   = 'export-status status--success';
+    statusEl.textContent = '✓ Draft saved.';
+    setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'export-status'; }, 4000);
+  }
 
   renderBrowse();
 }
@@ -509,9 +515,9 @@ function addQFRow(leftVal = '', rightVal = '') {
   const row       = document.createElement('div');
   row.className   = 'qf-row';
   row.innerHTML   = `
-    <input type="text" placeholder="Left city fact" value="${escAttr(leftVal)}">
-    <span class="qf-row-sep">—</span>
-    <input type="text" placeholder="Right city fact" value="${escAttr(rightVal)}">
+    <input type="text" class="qf-left-field" placeholder="Left city fact" value="${escAttr(leftVal)}">
+    <span class="qf-row-sep qf-tab-sep">—</span>
+    <input type="text" class="qf-right-field" placeholder="Right city fact" value="${escAttr(rightVal)}">
     <button class="qf-remove" title="Remove row">✕</button>`;
   row.querySelector('.qf-remove').addEventListener('click', () => row.remove());
   container.appendChild(row);
@@ -682,15 +688,14 @@ function initPublish() {
 
 // ── Main publish ──────────────────────────────────────────────────────────────
 
-async function publishAll() {
-  const btn = document.getElementById('btn-publish');
-  btn.disabled = true;
-
+// Shared publish logic — accepts a status-setter and the trigger button
+async function _doPublish(setStatus, btnEl) {
+  btnEl.disabled = true;
   try {
     const imgTotal = pendingImages.length;
 
     // ── 1. Commit to GitHub ──────────────────────────────────────────────────
-    setPublishStatus('Saving to GitHub…');
+    setStatus('Saving to GitHub…');
     const jsonBytes  = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
     const jsonBase64 = arrayBufferToBase64(jsonBytes);
     const jsonSHA    = await githubGetSHA('public/data/comparisons.json');
@@ -699,7 +704,7 @@ async function publishAll() {
 
     for (let i = 0; i < pendingImages.length; i++) {
       const img = pendingImages[i];
-      setPublishStatus(`Saving image ${i + 1}/${imgTotal} to GitHub…`);
+      setStatus(`Saving image ${i + 1}/${imgTotal} to GitHub…`);
       const imgBase64 = arrayBufferToBase64(img.data);
       const imgSHA    = await githubGetSHA('public/' + img.path);
       await githubPutFile('public/' + img.path, imgBase64,
@@ -707,22 +712,38 @@ async function publishAll() {
     }
 
     // ── 2. Deploy to Netlify (live update) ───────────────────────────────────
-    await netlifyFilesDeploy();
+    await netlifyFilesDeploy(setStatus);
 
     // ── 3. Save local backup ─────────────────────────────────────────────────
     await saveLocalBackup();
 
     pendingImages = [];
-    setPublishStatus('✓ Published! Site is live.', 'success');
+    setStatus('✓ Published! Site is live.', 'success');
     await refreshBackupUI();
   } catch (err) {
-    setPublishStatus('✗ ' + err.message, 'error');
+    setStatus('✗ ' + err.message, 'error');
   } finally {
-    btn.disabled = false;
+    btnEl.disabled = false;
   }
 }
 
-async function netlifyFilesDeploy() {
+// Publish tab button
+async function publishAll() {
+  await _doPublish(setPublishStatus, document.getElementById('btn-publish'));
+}
+
+// Editor bottom Publish button — auto-saves first, then deploys
+async function publishFromEditor() {
+  saveComparison(/* silent= */ true);
+  const setStatus = (msg, type) => {
+    const el = document.getElementById('save-status');
+    el.textContent = msg;
+    el.className = 'export-status' + (type ? ' status--' + type : '');
+  };
+  await _doPublish(setStatus, document.getElementById('btn-publish-editor'));
+}
+
+async function netlifyFilesDeploy(setStatus = setPublishStatus) {
   const jsonBytes = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
 
   // Gather every image path referenced in the data + pending uploads
@@ -738,7 +759,7 @@ async function netlifyFilesDeploy() {
   const allPaths = [...new Set([...STATIC_PATHS, ...imagePaths])];
 
   // Fetch every static file from the live site so Netlify gets a complete manifest
-  setPublishStatus('Fetching site files…');
+  setStatus('Fetching site files…');
   const fileBytes  = {};
   fileBytes['/data/comparisons.json'] = jsonBytes;
   for (const img of pendingImages) fileBytes['/' + img.path] = new Uint8Array(img.data);
@@ -752,7 +773,7 @@ async function netlifyFilesDeploy() {
   }));
 
   // Hash everything; build sha1→path reverse map (Netlify's required[] is hashes, not paths)
-  setPublishStatus('Preparing deploy…');
+  setStatus('Preparing deploy…');
   const fileHashes = {};
   const hashToPath = {};
   for (const [path, data] of Object.entries(fileBytes)) {
@@ -779,7 +800,7 @@ async function netlifyFilesDeploy() {
     const hash = required[i];
     const path = hashToPath[hash];
     if (!path || !fileBytes[path]) { console.warn('No data for hash:', hash); continue; }
-    setPublishStatus(`Uploading ${i + 1}/${required.length}: ${path}`);
+    setStatus(`Uploading ${i + 1}/${required.length}: ${path}`);
     const up = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}/files${path}`, {
       method: 'PUT',
       headers: { 'Authorization': `Bearer ${NL_TOKEN}`, 'Content-Type': 'application/octet-stream' },
@@ -789,7 +810,7 @@ async function netlifyFilesDeploy() {
   }
 
   // Poll until Netlify confirms the deploy is live
-  setPublishStatus('Going live…');
+  setStatus('Going live…');
   for (let i = 0; i < 40; i++) {
     await new Promise(r => setTimeout(r, 3000));
     const res = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}`,
