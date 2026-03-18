@@ -131,6 +131,79 @@
     }
   },
   {
+    "id": "003",
+    "title": "Public Markets",
+    "slug": "public-markets",
+    "date": "2026-03-03",
+    "status": "published",
+    "order": null,
+    "introduction": "Every city has a room where the abundance of the earth is put on display. The question is whether that room is built for the vendors or for the spectators.",
+    "tags": [
+      "food",
+      "public-space",
+      "architecture"
+    ],
+    "quickFacts": [
+      {
+        "left": "Since 2014",
+        "right": "Since 1933"
+      },
+      {
+        "left": "Designed spectacle",
+        "right": "Organic growth"
+      },
+      {
+        "left": "Kibbeling",
+        "right": "Mortadella sandwich"
+      },
+      {
+        "left": "11,000 m² painted arch",
+        "right": "Stained glass ceiling"
+      }
+    ],
+    "left": {
+      "city": "Rotterdam",
+      "neighbourhood": "Blaak",
+      "title": "The Markthal",
+      "subtitle": "Architecture as Market",
+      "description": "A MVRDV-designed horseshoe arch of apartments enclosing Europe's largest indoor market",
+      "contributor": "Miriam",
+      "image": "images/comparisons/public-markets/left.gif",
+      "extraMedia": [
+        {
+          "type": "image",
+          "path": "images/comparisons/public-markets/left-extra-1.jpg"
+        }
+      ],
+      "body": "# The Markthal\n\nThe Markthal is Rotterdam's most photographed building. Completed by MVRDV in 2014, it is shaped like a horseshoe with 228 residential apartments stacked along the rising flanks and an 11,000 m² mural overhead.\n"
+    },
+    "right": {
+      "city": "São Paulo",
+      "neighbourhood": "Santa Ifigênia",
+      "title": "The Mercadão",
+      "subtitle": "Market as Architecture",
+      "description": "A 1933 neoclassical municipal market where the mortadella sandwich is a civic institution",
+      "contributor": "Simon",
+      "image": "images/comparisons/public-markets/right.gif",
+      "extraMedia": [
+        {
+          "type": "image",
+          "path": "images/comparisons/public-markets/right-extra-1.jpg"
+        }
+      ],
+      "body": "# The Mercadão\n\nThe Mercado Municipal de São Paulo has been in operation since 1933. It occupies a neoclassical building on the edge of the Centro Histórico, and it smells of dried cod and ripe mango and years.\n"
+    },
+    "metadata": {
+      "topic": "Food",
+      "scale": "M (Street/Block)",
+      "system": "The Soft City (Social / Cultural)",
+      "coordinates": {
+        "left": "51.92° N",
+        "right": "23.55° S"
+      }
+    }
+  },
+  {
     "id": "004",
     "title": "The Morning Commute — II",
     "slug": "morning-commute-2",
@@ -405,61 +478,6 @@
       "image": "images/placeholder/2B.jpg",
       "extraImages": [],
       "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
-    }
-  },
-  {
-    "id": "009",
-    "title": "Public Markets — III",
-    "slug": "public-markets-3",
-    "date": "2026-01-20",
-    "status": "published",
-    "order": null,
-    "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "tags": [
-      "food",
-      "public-space",
-      "architecture"
-    ],
-    "quickFacts": [
-      {
-        "left": "Since 2014",
-        "right": "Since 1933"
-      },
-      {
-        "left": "Designed spectacle",
-        "right": "Organic growth"
-      }
-    ],
-    "left": {
-      "city": "Rotterdam",
-      "neighbourhood": "Blaak",
-      "title": "The Markthal",
-      "subtitle": "Architecture as Market",
-      "description": "Europe's largest indoor market under a painted horseshoe arch",
-      "contributor": "Miriam",
-      "image": "images/comparisons/public-markets-3/left.jpeg",
-      "extraMedia": [],
-      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
-    },
-    "right": {
-      "city": "São Paulo",
-      "neighbourhood": "Brás",
-      "title": "The Mercadão",
-      "subtitle": "Market as Architecture",
-      "description": "A 1933 neoclassical municipal market",
-      "contributor": "Simon",
-      "image": "images/comparisons/public-markets-3/right.jpeg",
-      "extraMedia": [],
-      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
-    },
-    "metadata": {
-      "topic": "Food",
-      "scale": "M (Street/Block)",
-      "system": "The Soft City (Social / Cultural)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      }
     }
   },
   {
