@@ -34,6 +34,8 @@ async function init() {
   }
 
   renderWheel();
+  // Apply saved alignment to freshly-rendered images
+  setImgPos(localStorage.getItem('up-img-pos') || 'top', false);
   initWheel();
 }
 
@@ -394,11 +396,24 @@ function formatKey(key) {
 }
 
 // ── Image alignment toggle (T / C / B) ─────────────────────────────────────────
+const IMG_POS_MAP = { top: 'center top', center: 'center center', bottom: 'center bottom' };
+
 function setImgPos(pos, save) {
+  const objectPosition = IMG_POS_MAP[pos] || 'center center';
+
+  // 1. Body dataset — drives CSS selector rules for future renders
   document.body.dataset.imgPos = pos;
+
+  // 2. Directly update all currently-rendered pair images
+  document.querySelectorAll('.pair-image img').forEach(img => {
+    img.style.objectPosition = objectPosition;
+  });
+
+  // 3. Update button active state
   document.querySelectorAll('.align-opt').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.pos === pos);
   });
+
   if (save) localStorage.setItem('up-img-pos', pos);
 }
 

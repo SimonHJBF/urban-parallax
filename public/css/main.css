@@ -95,14 +95,16 @@ body {
 .site-header.scrolled .site-title  { font-size: clamp(16px, 2vw, 22px); }
 
 .header-inner {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 0 var(--pad-h);
+  /* Full-width 3-column grid: logo | toggle (centered) | nav */
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 32px;
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 16px;
-  justify-content: space-between;
+  gap: 0;
 }
 
 .site-brand {
@@ -246,8 +248,7 @@ body {
 .header-nav {
   display: flex;
   gap: 28px;
-  flex-shrink: 0;
-  margin-left: auto;
+  justify-self: end; /* grid right column */
 }
 
 .header-nav a {
@@ -274,8 +275,7 @@ body {
   display: flex;
   gap: 2px;
   align-items: center;
-  flex-shrink: 0;
-  margin-left: auto;
+  justify-self: center; /* grid centre column */
 }
 
 .align-opt {
@@ -305,9 +305,9 @@ body {
 }
 
 /* Apply object-position to pair images based on body data attribute */
-body[data-img-pos="top"]    .pair-image img { object-position: center top; }
-body[data-img-pos="center"] .pair-image img { object-position: center center; }
-body[data-img-pos="bottom"] .pair-image img { object-position: center bottom; }
+body[data-img-pos="top"]    .pair-image img { object-position: center top    !important; }
+body[data-img-pos="center"] .pair-image img { object-position: center center !important; }
+body[data-img-pos="bottom"] .pair-image img { object-position: center bottom !important; }
 
 /* ─── Feed ───────────────────────────────────────────────────────────────── */
 .feed {
@@ -807,6 +807,7 @@ body[data-img-pos="bottom"] .pair-image img { object-position: center bottom; }
   .site-header.scrolled .site-title { font-size: clamp(20px, 5vw, 28px); }
 
   .header-inner {
+    display: flex;   /* override grid → flex for 2-row mobile layout */
     flex-wrap: wrap;
     align-items: center;
     padding: 0 12px;
