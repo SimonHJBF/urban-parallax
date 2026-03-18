@@ -34,8 +34,8 @@ async function init() {
   }
 
   renderWheel();
-  // Apply saved alignment to freshly-rendered images
-  setImgPos(localStorage.getItem('up-img-pos') || 'top', false);
+  // Apply saved alignment to freshly-rendered images (no animation on boot)
+  setImgPos(localStorage.getItem('up-img-pos') || 'top', false, false);
   initWheel();
 }
 
@@ -108,8 +108,18 @@ function getStackTop(activeIndex) {
     sumAbove += entryHeight(Math.abs(i - activeIndex)) + 1;
   }
   const viewportH = document.getElementById('wheelViewport').offsetHeight;
-  const activeMid = sumAbove + entryHeight(0) / 2;
-  return (viewportH / 2) - activeMid;
+  const pos = document.body.dataset.imgPos || 'top';
+
+  if (pos === 'top') {
+    // Active entry's top edge at the viewport's top edge
+    return -sumAbove;
+  } else if (pos === 'bottom') {
+    // Active entry's bottom edge at the viewport's bottom edge
+    return viewportH - sumAbove - FULL_H;
+  } else {
+    // center — active entry's midpoint at the viewport's midpoint
+    return (viewportH / 2) - sumAbove - (FULL_H / 2);
+  }
 }
 
 function applyWheel(activeIndex, animate) {
@@ -398,10 +408,10 @@ function formatKey(key) {
 // ── Image alignment toggle (T / C / B) ─────────────────────────────────────────
 const IMG_POS_MAP = { top: 'center top', center: 'center center', bottom: 'center bottom' };
 
-function setImgPos(pos, save) {
+function setImgPos(pos, save, animate = true) {
   const objectPosition = IMG_POS_MAP[pos] || 'center center';
 
-  // 1. Body dataset — drives CSS selector rules for future renders
+  // 1. Body dataset — drives CSS selector rules + getStackTop() branching
   document.body.dataset.imgPos = pos;
 
   // 2. Directly update all currently-rendered pair images
@@ -409,7 +419,12 @@ function setImgPos(pos, save) {
     img.style.objectPosition = objectPosition;
   });
 
-  // 3. Update button active state
+  // 3. Reposition the wheel stack to reflect the new vertical anchor
+  if (document.querySelector('.wheel-entry')) {
+    applyWheel(currentIndex, animate);
+  }
+
+  // 4. Update button active state
   document.querySelectorAll('.align-opt').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.pos === pos);
   });
@@ -421,7 +436,7 @@ function initAlignToggle() {
   const saved = localStorage.getItem('up-img-pos') || 'top';
   setImgPos(saved, false);
   document.querySelectorAll('.align-opt').forEach(btn => {
-    btn.addEventListener('click', () => setImgPos(btn.dataset.pos, true));
+    btn.addEventListener('click', () => setImgPos(btn.dataset.pos, true, true));
   });
 }
 
