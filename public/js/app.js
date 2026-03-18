@@ -13,10 +13,11 @@ let currentIndex   = 0;
 let isDetailOpen   = false;
 
 // ── Wheel constants ────────────────────────────────────────────────────────────
-const FULL_H     = 200;  // active entry height
-const MIN_H      = 1;    // floor — always visible as a hairline + border
-const DECAY      = 0.38;
-const TRANSITION = 320;  // ms — slightly faster for crisper feel
+const FULL_H       = 200;  // active entry height
+const MIN_H        = 1;    // floor — always visible as a hairline + border
+const DECAY        = 0.38;
+const TRANSITION   = 320;  // ms — slightly faster for crisper feel
+const IMG_WINDOW   = 6;    // load images for entries within this distance of active
 
 // ── Boot ───────────────────────────────────────────────────────────────────────
 async function init() {
@@ -48,14 +49,21 @@ function renderWheel() {
     const entry       = document.createElement('div');
     entry.className   = 'wheel-entry';
     entry.dataset.idx = idx;
-    entry.innerHTML   = buildEntryHTML(c);
+    entry.innerHTML   = buildEntryHTML(c, idx);
     stack.appendChild(entry);
   });
 }
 
-function buildEntryHTML(c) {
-  const leftImg   = esc(c.left?.image  || 'images/site/placeholder.svg');
-  const rightImg  = esc(c.right?.image || 'images/site/placeholder.svg');
+function buildEntryHTML(c, idx) {
+  // For the initial window, load eagerly. All others use data-src so the
+  // browser doesn't fetch them until loadNearbyImages() promotes them.
+  const eager    = idx < IMG_WINDOW;
+  const leftSrc  = esc(c.left?.image  || 'images/site/placeholder.svg');
+  const rightSrc = esc(c.right?.image || 'images/site/placeholder.svg');
+
+  const imgAttr = (src) => eager
+    ? `src="${src}" loading="eager"`
+    : `data-src="${src}" src=""`;
 
   const leftCity  = c.left?.neighbourhood
     ? `${c.left.city} · ${c.left.neighbourhood}`
@@ -69,7 +77,7 @@ function buildEntryHTML(c) {
       <div class="pair-row">
         <div class="pair-side">
           <div class="pair-image">
-            <img src="${leftImg}" alt="${esc(leftCity)}" loading="lazy">
+            <img ${imgAttr(leftSrc)} alt="${esc(leftCity)}">
           </div>
           <div class="pair-text">
             <div class="pair-city">${esc(leftCity)}</div>
@@ -79,7 +87,7 @@ function buildEntryHTML(c) {
         </div>
         <div class="pair-side">
           <div class="pair-image">
-            <img src="${rightImg}" alt="${esc(rightCity)}" loading="lazy">
+            <img ${imgAttr(rightSrc)} alt="${esc(rightCity)}">
           </div>
           <div class="pair-text">
             <div class="pair-city">${esc(rightCity)}</div>
@@ -89,6 +97,21 @@ function buildEntryHTML(c) {
         </div>
       </div>
     </div>`;
+}
+
+// Swap data-src → src for entries within IMG_WINDOW of the active index.
+// Already-loaded images (no data-src) are skipped.
+function loadNearbyImages(activeIndex) {
+  document.querySelectorAll('.wheel-entry').forEach((el, i) => {
+    if (Math.abs(i - activeIndex) > IMG_WINDOW) return;
+    el.querySelectorAll('img[data-src]').forEach(img => {
+      if (img.dataset.src) {
+        img.src = img.dataset.src;
+        delete img.dataset.src;
+        img.removeAttribute('data-src');
+      }
+    });
+  });
 }
 
 // ── Wheel engine ───────────────────────────────────────────────────────────────
@@ -167,6 +190,9 @@ function applyWheel(activeIndex, animate) {
   });
 
   currentIndex = activeIndex;
+
+  // Promote images within the load window (deferred from initial render)
+  loadNearbyImages(activeIndex);
 }
 
 // fromClick = true means the call came from a user click, not navigation.
