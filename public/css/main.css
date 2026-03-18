@@ -312,6 +312,11 @@ body[data-img-pos="top"]    .pair-image img { transform: translateY(0%);   }
 body[data-img-pos="center"] .pair-image img { transform: translateY(-17%); }
 body[data-img-pos="bottom"] .pair-image img { transform: translateY(-33%); }
 
+/* pair-text tracks the image crop: shifts to top / centre / bottom of the entry */
+body[data-img-pos="top"]    .pair-text { top: 12%;  transform: translateY(0); }
+body[data-img-pos="center"] .pair-text { top: 50%;  transform: translateY(-50%); }
+body[data-img-pos="bottom"] .pair-text { top: 88%;  transform: translateY(-100%); }
+
 /* ─── Feed ───────────────────────────────────────────────────────────────── */
 .feed {
   display: flex;
@@ -979,7 +984,7 @@ body[data-img-pos="bottom"] .pair-image img { transform: translateY(-33%); }
   transition: transform 0.4s ease;
 }
 
-/* Text sits inside the image, centred vertically */
+/* Text sits inside the image, vertically tracked to the alignment toggle */
 .pair-text {
   position: absolute;
   top: 50%;
@@ -987,6 +992,7 @@ body[data-img-pos="bottom"] .pair-image img { transform: translateY(-33%); }
   z-index: 1;
   width: 72px;
   padding: 0 8px;
+  transition: top 0.4s ease, transform 0.4s ease;
   text-shadow:
     0 1px 4px rgba(0,0,0,1),
     0 2px 12px rgba(0,0,0,0.9),
