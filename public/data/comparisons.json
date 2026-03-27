@@ -124,65 +124,6 @@
     }
   },
   {
-    "id": "004",
-    "title": "The Morning Commute — II",
-    "slug": "morning-commute-2",
-    "date": "2026-02-24",
-    "order": null,
-    "introduction": "The silent hum of electric trams against the roar of the marginal highway. How we move through a city defines who we are within it.",
-    "metadata": {
-      "topic": "Transport",
-      "scale": "XXL (City-wide)",
-      "system": "The Hard City (Concrete / Built)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      },
-      "season": "Winter / Summer"
-    },
-    "tags": [
-      "transport",
-      "infrastructure",
-      "daily-life"
-    ],
-    "quickFacts": [
-      {
-        "left": "The Bicycle",
-        "right": "The Car & Moto"
-      },
-      {
-        "left": "20 Minutes",
-        "right": "90 Minutes"
-      },
-      {
-        "left": "Silence",
-        "right": "Noise Symphony"
-      }
-    ],
-    "left": {
-      "city": "Rotterdam",
-      "neighbourhood": "Kralingen",
-      "title": "The Dutch Flow",
-      "subtitle": "Controlled Friction",
-      "description": "20-minute silent bike rides through engineered calm",
-      "contributor": "Miriam",
-      "image": "images/placeholder/1A.jpg",
-      "extraImages": [],
-      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
-    },
-    "right": {
-      "city": "São Paulo",
-      "neighbourhood": "Vila Madalena",
-      "title": "The Paulista Chaos",
-      "subtitle": "Social Friction",
-      "description": "90-minute sensory overload through the marginal",
-      "contributor": "Simon",
-      "image": "images/placeholder/1B.jpg",
-      "extraImages": [],
-      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
-    }
-  },
-  {
     "id": "005",
     "title": "Elevated Highways — II",
     "slug": "elevated-highways-2",
