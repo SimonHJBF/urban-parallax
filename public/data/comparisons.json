@@ -331,61 +331,6 @@
     }
   },
   {
-    "id": "006",
-    "title": "Public Markets — II",
-    "slug": "public-markets-2",
-    "date": "2026-02-10",
-    "order": null,
-    "introduction": "Every city has a room where the abundance of the earth is put on display.",
-    "metadata": {
-      "topic": "Food",
-      "scale": "M (Street/Block)",
-      "system": "The Soft City (Social / Cultural)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      }
-    },
-    "tags": [
-      "food",
-      "public-space",
-      "architecture"
-    ],
-    "quickFacts": [
-      {
-        "left": "Since 2014",
-        "right": "Since 1933"
-      },
-      {
-        "left": "Designed spectacle",
-        "right": "Organic growth"
-      }
-    ],
-    "left": {
-      "city": "Rotterdam",
-      "neighbourhood": "Blaak",
-      "title": "The Markthal",
-      "subtitle": "Architecture as Market",
-      "description": "Europe's largest indoor market under a painted horseshoe arch",
-      "contributor": "Miriam",
-      "image": "images/placeholder/3A.jpg",
-      "extraImages": [],
-      "body": "# The Markthal\n\nCompleted by MVRDV in 2014.\n"
-    },
-    "right": {
-      "city": "São Paulo",
-      "neighbourhood": "Centro Histórico",
-      "title": "The Mercadão",
-      "subtitle": "Market as Architecture",
-      "description": "A 1933 neoclassical municipal market",
-      "contributor": "Simon",
-      "image": "images/placeholder/3B.jpg",
-      "extraImages": [],
-      "body": "# The Mercadão\n\nIn operation since 1933. Exactly what a market should be.\n"
-    },
-    "status": "draft"
-  },
-  {
     "id": "008",
     "title": "Elevated Highways — III",
     "slug": "elevated-highways-3",
