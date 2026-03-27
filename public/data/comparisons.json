@@ -124,60 +124,6 @@
     }
   },
   {
-    "id": "014",
-    "title": "Elevated Highways — V",
-    "slug": "elevated-highways-5",
-    "date": "2025-12-16",
-    "order": null,
-    "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down?",
-    "metadata": {
-      "topic": "Infrastructure",
-      "scale": "XL (District)",
-      "system": "The Hard City (Concrete / Built)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      }
-    },
-    "tags": [
-      "infrastructure",
-      "adaptive-reuse",
-      "public-space"
-    ],
-    "quickFacts": [
-      {
-        "left": "1.9 km viaduct",
-        "right": "3.5 km elevated"
-      },
-      {
-        "left": "Built 1908",
-        "right": "Built 1971"
-      }
-    ],
-    "left": {
-      "city": "Rotterdam",
-      "neighbourhood": "Schiebroek",
-      "title": "The Viaduct Reborn",
-      "subtitle": "Infrastructure as Amenity",
-      "description": "A 1908 railway viaduct converted into market halls and studios",
-      "contributor": "Miriam",
-      "image": "images/placeholder/2A.jpg",
-      "extraImages": [],
-      "body": "# The Viaduct Reborn\n\nThe Hofbogen runs for 1.9 kilometres through Agniesebuurt and Bergpolder.\n"
-    },
-    "right": {
-      "city": "São Paulo",
-      "neighbourhood": "Perdizes",
-      "title": "The Minhocão",
-      "subtitle": "Infrastructure as Battleground",
-      "description": "A 3.5 km elevated expressway turned weekend park",
-      "contributor": "Simon",
-      "image": "images/placeholder/2B.jpg",
-      "extraImages": [],
-      "body": "# The Minhocão\n\nThe Minhocão was built in 1971. It is still an argument about what a city is for.\n"
-    }
-  },
-  {
     "id": "015",
     "title": "Public Markets — V",
     "slug": "public-markets-5",
