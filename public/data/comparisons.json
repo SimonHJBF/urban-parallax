@@ -38,69 +38,6 @@
     }
   },
   {
-    "id": "002",
-    "title": "Elevated Highways",
-    "slug": "elevated-highways",
-    "date": "2026-03-10",
-    "status": "published",
-    "order": null,
-    "introduction": "What do you do with a highway that bisects the city but nobody wants to tear down? Two cities found different answers — one still arguing, one already eating brunch on the roof.",
-    "tags": [
-      "infrastructure",
-      "adaptive-reuse",
-      "public-space"
-    ],
-    "quickFacts": [
-      {
-        "left": "1.9 km viaduct",
-        "right": "3.5 km elevated"
-      },
-      {
-        "left": "Built 1908",
-        "right": "Built 1971"
-      },
-      {
-        "left": "Permanent conversion",
-        "right": "Weekend park (temporary)"
-      },
-      {
-        "left": "Restaurants & studios",
-        "right": "Demolition debate"
-      }
-    ],
-    "left": {
-      "city": "Rotterdam",
-      "neighbourhood": "Hofbogen / Noord",
-      "title": "The Viaduct Reborn",
-      "subtitle": "Infrastructure as Amenity",
-      "description": "A 1908 railway viaduct permanently converted into market halls, studios, and a rooftop farm",
-      "contributor": "Miriam",
-      "image": "images/comparisons/elevated-highways/left.jpeg",
-      "extraImages": [],
-      "body": "# The Viaduct Reborn\n\nThe Hofbogen is easy to miss if you're not looking for it. It doesn't announce itself. It runs for 1.9 kilometres through the Agniesebuurt and Bergpolder neighbourhoods of northern Rotterdam.\n"
-    },
-    "right": {
-      "city": "São Paulo",
-      "neighbourhood": "Santa Cecília / Barra Funda",
-      "title": "The Minhocão",
-      "subtitle": "Infrastructure as Battleground",
-      "description": "A 3.5 km elevated expressway turned weekend park, permanent closure still under debate",
-      "contributor": "Simon",
-      "image": "images/comparisons/elevated-highways/right.jpeg",
-      "extraImages": [],
-      "body": "# The Minhocão\n\nThe Elevado Presidente João Goulart — universally known as the Minhocão, the Big Worm — was built in 1971 as a solution to São Paulo's traffic problem. It is still a highway on weekdays. It is still a park on weekends.\n"
-    },
-    "metadata": {
-      "topic": "Infrastructure",
-      "scale": "XL (District)",
-      "system": "The Hard City (Concrete / Built)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      }
-    }
-  },
-  {
     "id": "003",
     "title": "Public Markets",
     "slug": "public-markets",
