@@ -141,15 +141,15 @@
     "tags": [
       "food",
       "public-space",
-      "architecture"
+      "informal architecture"
     ],
     "quickFacts": [
       {
-        "left": "Since 2014",
+        "left": "Main city",
         "right": "Since 1933"
       },
       {
-        "left": "Designed spectacle",
+        "left": "",
         "right": "Organic growth"
       },
       {
@@ -162,20 +162,20 @@
       }
     ],
     "left": {
-      "city": "Rotterdam",
-      "neighbourhood": "Blaak",
-      "title": "The Markthal",
-      "subtitle": "Architecture as Market",
-      "description": "A MVRDV-designed horseshoe arch of apartments enclosing Europe's largest indoor market",
+      "city": "Schiedam",
+      "neighbourhood": "Center",
+      "title": "Weekmarkt",
+      "subtitle": "",
+      "description": "Weekly market",
       "contributor": "Miriam",
-      "image": "images/comparisons/public-markets/left.gif",
+      "image": "images/comparisons/public-markets/left.jpg",
       "extraMedia": [
         {
           "type": "image",
           "path": "images/comparisons/public-markets/left-extra-1.jpg"
         }
       ],
-      "body": "# The Markthal\n\nThe Markthal is Rotterdam's most photographed building. Completed by MVRDV in 2014, it is shaped like a horseshoe with 228 residential apartments stacked along the rising flanks and an 11,000 m² mural overhead.\n"
+      "body": "# Weekmarkt\n"
     },
     "right": {
       "city": "São Paulo",
@@ -197,8 +197,9 @@
       "topic": "Food",
       "scale": "M (Street/Block)",
       "system": "The Soft City (Social / Cultural)",
+      "season": "Spring",
       "coordinates": {
-        "left": "51.92° N",
+        "left": "",
         "right": "23.55° S"
       }
     }
