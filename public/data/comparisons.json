@@ -1,5 +1,38 @@
 [
   {
+    "id": "005",
+    "title": "Dug up modern relics",
+    "slug": "dug-up-modern-relics",
+    "date": "2026-03-27",
+    "status": "published",
+    "order": null,
+    "introduction": "",
+    "tags": [],
+    "quickFacts": [],
+    "left": {
+      "city": "Schiedam",
+      "neighbourhood": "",
+      "title": "",
+      "subtitle": "",
+      "description": "",
+      "contributor": "Miriam",
+      "image": "images/comparisons/untitled/left.jpg",
+      "extraMedia": [],
+      "body": ""
+    },
+    "right": {
+      "city": "",
+      "neighbourhood": "",
+      "title": "",
+      "subtitle": "",
+      "description": "",
+      "contributor": "",
+      "image": "images/site/placeholder.svg",
+      "extraMedia": [],
+      "body": ""
+    }
+  },
+  {
     "id": "004",
     "title": "The coast",
     "slug": "the-coast",
