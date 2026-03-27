@@ -92,6 +92,10 @@
         {
           "type": "image",
           "path": "images/comparisons/evening-commute/left-extra-1.jpg"
+        },
+        {
+          "type": "image",
+          "path": "images/comparisons/evening-commute/left-extra-2.jpg"
         }
       ],
       "body": ""
