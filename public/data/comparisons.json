@@ -173,6 +173,18 @@
         {
           "type": "image",
           "path": "images/comparisons/public-markets/left-extra-1.jpg"
+        },
+        {
+          "type": "image",
+          "path": "images/comparisons/public-markets/left-extra-2.jpg"
+        },
+        {
+          "type": "image",
+          "path": "images/comparisons/public-markets/left-extra-3.jpg"
+        },
+        {
+          "type": "image",
+          "path": "images/comparisons/public-markets/left-extra-4.jpg"
         }
       ],
       "body": "# Weekmarkt\n"
