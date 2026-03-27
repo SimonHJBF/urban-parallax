@@ -1,5 +1,43 @@
 [
   {
+    "id": "020",
+    "title": "Evening commute",
+    "slug": "evening-commute",
+    "date": "2026-03-27",
+    "status": "published",
+    "order": null,
+    "introduction": "A bikeride along the water at night",
+    "tags": [],
+    "quickFacts": [],
+    "left": {
+      "city": "Randstad",
+      "neighbourhood": "",
+      "title": "Evening along the Schie",
+      "subtitle": "",
+      "description": "78 minute bikeride between Schiedam and the Hague",
+      "contributor": "Miriam",
+      "image": "images/comparisons/untitled/left.jpg",
+      "extraMedia": [
+        {
+          "type": "image",
+          "path": "images/comparisons/evening-commute/left-extra-1.jpg"
+        }
+      ],
+      "body": ""
+    },
+    "right": {
+      "city": "",
+      "neighbourhood": "",
+      "title": "",
+      "subtitle": "",
+      "description": "",
+      "contributor": "",
+      "image": "images/site/placeholder.svg",
+      "extraMedia": [],
+      "body": ""
+    }
+  },
+  {
     "id": "001",
     "title": "The Morning Commute",
     "slug": "morning-commute",
