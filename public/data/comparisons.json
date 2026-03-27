@@ -124,60 +124,6 @@
     }
   },
   {
-    "id": "013",
-    "title": "The Morning Commute — V",
-    "slug": "morning-commute-5",
-    "date": "2025-12-23",
-    "order": null,
-    "introduction": "The silent hum of electric trams against the roar of the marginal highway.",
-    "metadata": {
-      "topic": "Transport",
-      "scale": "XXL (City-wide)",
-      "system": "The Hard City (Concrete / Built)",
-      "coordinates": {
-        "left": "51.92° N",
-        "right": "23.55° S"
-      }
-    },
-    "tags": [
-      "transport",
-      "infrastructure",
-      "daily-life"
-    ],
-    "quickFacts": [
-      {
-        "left": "The Bicycle",
-        "right": "The Car & Moto"
-      },
-      {
-        "left": "20 Minutes",
-        "right": "90 Minutes"
-      }
-    ],
-    "left": {
-      "city": "Rotterdam",
-      "neighbourhood": "Hillegersberg",
-      "title": "The Dutch Flow",
-      "subtitle": "Controlled Friction",
-      "description": "20-minute silent bike rides through engineered calm",
-      "contributor": "Miriam",
-      "image": "images/placeholder/1A.jpg",
-      "extraImages": [],
-      "body": "# The Dutch Flow\n\nIn Rotterdam, the morning commute is an act of solitary athleticism.\n"
-    },
-    "right": {
-      "city": "São Paulo",
-      "neighbourhood": "Pinheiros",
-      "title": "The Paulista Chaos",
-      "subtitle": "Social Friction",
-      "description": "90-minute sensory overload through the marginal",
-      "contributor": "Simon",
-      "image": "images/placeholder/1B.jpg",
-      "extraImages": [],
-      "body": "# The Paulista Chaos\n\nIn São Paulo, the morning commute is a collective negotiation with entropy.\n"
-    }
-  },
-  {
     "id": "014",
     "title": "Elevated Highways — V",
     "slug": "elevated-highways-5",
