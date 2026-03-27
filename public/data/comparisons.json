@@ -178,14 +178,27 @@
       "body": ""
     },
     "right": {
-      "city": "",
+      "city": "São Paulo",
       "neighbourhood": "",
       "title": "",
       "subtitle": "",
       "description": "",
       "contributor": "",
-      "image": "images/site/placeholder.svg",
-      "extraMedia": [],
+      "image": "images/comparisons/portruding-green/right.jpg",
+      "extraMedia": [
+        {
+          "type": "image",
+          "path": "images/comparisons/portruding-green/right-extra-1.jpg"
+        },
+        {
+          "type": "image",
+          "path": "images/comparisons/portruding-green/right-extra-2.jpg"
+        },
+        {
+          "type": "image",
+          "path": "images/comparisons/portruding-green/right-extra-3.jpg"
+        }
+      ],
       "body": ""
     }
   },
