@@ -135,24 +135,25 @@
             <option value="published" selected>Published</option>
           </select>
           <input type="text" id="f-slug" class="wiz-hidden-field">
-          <!-- Per-side heading (mirrors f-left-title / f-right-title) -->
+          <!-- Per-side front-page fields (image title + location) -->
           <div class="wiz-field-group wiz-caption-group" id="wiz-caption-left">
             <div class="admin-field">
-              <label>Heading <span class="admin-hint-inline">— title for this photo</span></label>
+              <label>Image title</label>
               <input type="text" id="wiz-s1-left-heading" placeholder="Weekmarkt">
+            </div>
+            <div class="admin-row">
+              <div class="admin-field"><label>City</label><input type="text" id="wiz-s1-left-city" placeholder="Rotterdam"></div>
+              <div class="admin-field"><label>Neighbourhood</label><input type="text" id="wiz-s1-left-nbhd" placeholder="Centrum"></div>
             </div>
           </div>
           <div class="wiz-field-group wiz-caption-group" id="wiz-caption-right" hidden>
             <div class="admin-field">
-              <label>Heading <span class="admin-hint-inline">— title for this photo</span></label>
+              <label>Image title</label>
               <input type="text" id="wiz-s1-right-heading" placeholder="The Mercadão">
             </div>
-          </div>
-          <!-- Comparison title -->
-          <div class="wiz-field-group">
-            <div class="admin-field">
-              <label>Comparison title</label>
-              <input type="text" id="f-title" placeholder="The Morning Commute">
+            <div class="admin-row">
+              <div class="admin-field"><label>City</label><input type="text" id="wiz-s1-right-city" placeholder="São Paulo"></div>
+              <div class="admin-field"><label>Neighbourhood</label><input type="text" id="wiz-s1-right-nbhd" placeholder="Paulista"></div>
             </div>
           </div>
         </div>
@@ -164,6 +165,12 @@
             <div class="wiz-thumb-half wiz-thumb-l"></div>
             <div class="wiz-thumb-divider"></div>
             <div class="wiz-thumb-half wiz-thumb-r"></div>
+          </div>
+          <div class="wiz-field-group">
+            <div class="admin-field">
+              <label>Comparison title</label>
+              <input type="text" id="f-title" placeholder="The Morning Commute">
+            </div>
           </div>
           <div class="wiz-field-group">
             <div class="admin-field">

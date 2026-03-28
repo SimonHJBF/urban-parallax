@@ -392,10 +392,29 @@ function initWizard(userName) {
     });
   });
 
-  // Step-1 heading fields mirror f-left-title / f-right-title
+  // Step-1 fields mirror Step-3 hidden fields
   ['left', 'right'].forEach(side => {
     document.getElementById(`wiz-s1-${side}-heading`).addEventListener('input', e => {
       document.getElementById(`f-${side}-title`).value = e.target.value;
+    });
+    document.getElementById(`wiz-s1-${side}-city`).addEventListener('input', e => {
+      document.getElementById(`f-${side}-city`).value = e.target.value;
+    });
+    document.getElementById(`wiz-s1-${side}-nbhd`).addEventListener('input', e => {
+      document.getElementById(`f-${side}-nbhd`).value = e.target.value;
+    });
+  });
+
+  // Step-3 fields also sync back to Step-1 (in case user edits on Step 3)
+  ['left', 'right'].forEach(side => {
+    document.getElementById(`f-${side}-city`).addEventListener('input', e => {
+      document.getElementById(`wiz-s1-${side}-city`).value = e.target.value;
+    });
+    document.getElementById(`f-${side}-nbhd`).addEventListener('input', e => {
+      document.getElementById(`wiz-s1-${side}-nbhd`).value = e.target.value;
+    });
+    document.getElementById(`f-${side}-title`).addEventListener('input', e => {
+      document.getElementById(`wiz-s1-${side}-heading`).value = e.target.value;
     });
   });
 }
@@ -507,10 +526,15 @@ function clearForm() {
     if (el) el.value = '';
   });
   document.getElementById('qf-rows').innerHTML = '';
-  const s1l = document.getElementById('wiz-s1-left-heading');
-  const s1r = document.getElementById('wiz-s1-right-heading');
-  if (s1l) s1l.value = '';
-  if (s1r) s1r.value = '';
+  // Clear Step-1 shadow fields
+  ['left', 'right'].forEach(side => {
+    const h = document.getElementById(`wiz-s1-${side}-heading`);
+    const c = document.getElementById(`wiz-s1-${side}-city`);
+    const n = document.getElementById(`wiz-s1-${side}-nbhd`);
+    if (h) h.value = '';
+    if (c) c.value = '';
+    if (n) n.value = '';
+  });
   updateImagePreview('left',  '');
   updateImagePreview('right', '');
   updateBodyPreview('left',   '');
@@ -571,11 +595,16 @@ function populateForm(c) {
   updateBodyPreview('left',   c.left?.body   || '');
   updateBodyPreview('right',  c.right?.body  || '');
 
-  // Sync step-1 heading shadow fields
-  const s1l = document.getElementById('wiz-s1-left-heading');
-  const s1r = document.getElementById('wiz-s1-right-heading');
-  if (s1l) s1l.value = c.left?.title  || '';
-  if (s1r) s1r.value = c.right?.title || '';
+  // Sync step-1 shadow fields (heading, city, neighbourhood)
+  ['left', 'right'].forEach(side => {
+    const data = side === 'left' ? c.left : c.right;
+    const h = document.getElementById(`wiz-s1-${side}-heading`);
+    const ci = document.getElementById(`wiz-s1-${side}-city`);
+    const nb = document.getElementById(`wiz-s1-${side}-nbhd`);
+    if (h)  h.value  = data?.title         || '';
+    if (ci) ci.value = data?.city           || '';
+    if (nb) nb.value = data?.neighbourhood  || '';
+  });
 
   document.getElementById('f-slug').dataset.manual = '1';
 }
