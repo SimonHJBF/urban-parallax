@@ -34,8 +34,9 @@
   status = 200
   force = true
 
-# Serve newly-uploaded images from R2 (falls back to this only if file not in deploy)
+# Always serve comparison images from R2 via Cloudflare Worker
 [[redirects]]
   from = "/images/comparisons/*"
   to = "https://urbanparallax-worker.flatin94.workers.dev/images/comparisons/:splat"
   status = 200
+  force = true

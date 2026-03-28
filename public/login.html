@@ -74,6 +74,21 @@
           </p>
         </div>
 
+        <!-- ── Set new password view (after clicking reset link) ── -->
+        <div id="view-set-pw" hidden>
+          <h1 class="login-title">Set new password</h1>
+          <p class="login-sub">Choose a password for your account.</p>
+          <form id="set-pw-form" class="login-form">
+            <input type="password" id="new-password" placeholder="New password"
+                   autocomplete="new-password" required minlength="5">
+            <input type="password" id="confirm-password" placeholder="Confirm password"
+                   autocomplete="new-password" required minlength="5">
+            <button type="submit">Save password</button>
+          </form>
+          <p id="set-pw-error" class="login-error" hidden></p>
+          <p id="set-pw-ok" class="login-sent" hidden>Password saved! Redirecting…</p>
+        </div>
+
       </div>
     </div>
 
@@ -93,10 +108,44 @@
 
     // ── Helpers ──────────────────────────────────────────────────────────────
     function showView(id) {
-      ['view-form', 'view-reset', 'view-reset-sent'].forEach(v => {
+      ['view-form', 'view-reset', 'view-reset-sent', 'view-set-pw'].forEach(v => {
         document.getElementById(v).hidden = v !== id;
       });
     }
+
+    // ── Detect recovery (password reset) token in URL ────────────────────────
+    // Supabase redirects with #access_token=...&type=recovery
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        showView('view-set-pw');
+      }
+    });
+
+    // ── Set new password form ────────────────────────────────────────────────
+    document.getElementById('set-pw-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const pw      = document.getElementById('new-password').value;
+      const confirm = document.getElementById('confirm-password').value;
+      const errEl   = document.getElementById('set-pw-error');
+      errEl.hidden  = true;
+
+      if (pw !== confirm) {
+        errEl.textContent = 'Passwords do not match.';
+        errEl.hidden = false;
+        return;
+      }
+
+      const { error } = await sb.auth.updateUser({ password: pw });
+      if (error) {
+        errEl.textContent = error.message;
+        errEl.hidden = false;
+        return;
+      }
+
+      document.getElementById('set-pw-ok').hidden = false;
+      document.getElementById('set-pw-form').hidden = true;
+      setTimeout(() => location.replace('/admin.html'), 1500);
+    });
 
     // ── Sign-in ──────────────────────────────────────────────────────────────
     document.getElementById('login-form').addEventListener('submit', async e => {

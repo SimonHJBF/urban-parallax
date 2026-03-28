@@ -7,6 +7,13 @@ const SUPABASE_URL      = 'https://qqoxqkpilcebvrscgvmn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxb3hxa3BpbGNlYnZyc2Nndm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NDUzNTYsImV4cCI6MjA5MDIyMTM1Nn0.intBH-jneA_gsNWEviMemYWPZMfvL9pZ0TpvXTO19mw';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const WORKER_ORIGIN = 'https://urbanparallax-worker.flatin94.workers.dev';
+function resolveImageUrl(p) {
+  if (!p || p.includes('placeholder')) return p;
+  if (p.startsWith('http')) return p;
+  return WORKER_ORIGIN + '/' + p;
+}
+
 // ── State ─────────────────────────────────────────────────────────────────────
 let adminData   = [];   // full comparisons array
 let editingIdx  = null; // null = new, number = index being edited
@@ -985,6 +992,10 @@ function setPublishStatus(msg, type) {
 // ── Supabase DB helpers ────────────────────────────────────────────────────────
 
 function dbRowToEntry(row) {
+  const left  = row.left_city  || {};
+  const right = row.right_city || {};
+  if (left.image)  left.image  = resolveImageUrl(left.image);
+  if (right.image) right.image = resolveImageUrl(right.image);
   return {
     id:           row.id,
     title:        row.title,
@@ -995,8 +1006,7 @@ function dbRowToEntry(row) {
     introduction: row.introduction,
     tags:         row.tags || [],
     quickFacts:   row.quick_facts || [],
-    left:         row.left_city  || {},
-    right:        row.right_city || {},
+    left, right,
     metadata:     row.metadata   || {},
   };
 }

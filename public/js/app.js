@@ -12,6 +12,14 @@ const SUPABASE_URL      = 'https://qqoxqkpilcebvrscgvmn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxb3hxa3BpbGNlYnZyc2Nndm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NDUzNTYsImV4cCI6MjA5MDIyMTM1Nn0.intBH-jneA_gsNWEviMemYWPZMfvL9pZ0TpvXTO19mw';
 const sbPublic = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const WORKER_ORIGIN = 'https://urbanparallax-worker.flatin94.workers.dev';
+function resolveImageUrl(p) {
+  if (!p || p.includes('placeholder')) return p;
+  if (p.startsWith('http')) return p;
+  return WORKER_ORIGIN + '/' + p;
+}
+
 // ── State ──────────────────────────────────────────────────────────────────────
 let comparisons    = [];
 let currentIndex   = 0;
@@ -45,6 +53,11 @@ async function init() {
       right:        row.right_city || {},
       metadata:     row.metadata   || {},
     }));
+    // Resolve relative image paths → absolute worker URLs
+    comparisons.forEach(c => {
+      if (c.left?.image)  c.left.image  = resolveImageUrl(c.left.image);
+      if (c.right?.image) c.right.image = resolveImageUrl(c.right.image);
+    });
   } catch (err) {
     document.getElementById('wheelStack').innerHTML =
       `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:var(--color-muted);">
