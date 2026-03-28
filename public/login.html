@@ -6,90 +6,273 @@
   <title>Sign in — Urban Parallax</title>
   <link rel="icon" href="images/site/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/fonts.css">
-  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font-heading: 'Oswald', 'Impact', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+      --accent: #C4553A;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(155deg, #0D0D0D 0%, #1C0C08 35%, #2A1205 55%, #1a0e08 75%, #0D0D0D 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Atmospheric blobs */
+    .login-blob {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .login-blob--1 {
+      width: 500px; height: 500px;
+      top: -120px; left: -100px;
+      background: radial-gradient(circle, rgba(196,85,58,0.18) 0%, transparent 70%);
+      filter: blur(60px);
+    }
+    .login-blob--2 {
+      width: 400px; height: 400px;
+      bottom: -100px; right: -60px;
+      background: radial-gradient(circle, rgba(196,85,58,0.12) 0%, transparent 70%);
+      filter: blur(50px);
+    }
+    .login-blob--3 {
+      width: 250px; height: 250px;
+      top: 40%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(160,70,40,0.08) 0%, transparent 70%);
+      filter: blur(40px);
+    }
+
+    /* Main container */
+    .login-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 360px;
+      padding: 0 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* Logo mark */
+    .login-mark {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .login-rect {
+      display: block;
+      width: 14px;
+    }
+    .login-rect--a {
+      height: 36px;
+      background: #FFFFFF;
+    }
+    .login-rect--b {
+      height: 36px;
+      background: var(--accent);
+      margin-top: 12px;
+    }
+
+    /* Wordmark */
+    .login-wordmark {
+      font-family: var(--font-heading);
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #FFFFFF;
+      line-height: 1.1;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    /* Subtitle */
+    .login-subtitle {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      margin-bottom: 44px;
+    }
+
+    /* Form */
+    .login-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .login-form input::placeholder {
+      color: rgba(255,255,255,0.3);
+    }
+    .login-form input:focus {
+      border-color: rgba(196,85,58,0.6);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .login-form button {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 4px;
+    }
+    .login-form button:hover {
+      background: #d4634a;
+    }
+    .login-form button:active {
+      transform: scale(0.98);
+    }
+
+    /* Error / status messages */
+    .login-error {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #e8735e;
+      letter-spacing: 0.08em;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .login-sent {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+    .login-sent strong {
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* Forgot password link */
+    .login-forgot {
+      margin-top: 16px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+    .login-forgot a {
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .login-forgot a:hover {
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Password ok message */
+    .login-ok {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #6dba6d;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+  </style>
 </head>
-<body class="login-page">
+<body>
 
-  <div class="login-wrap">
+  <!-- Atmospheric background blobs -->
+  <div class="login-blob login-blob--1"></div>
+  <div class="login-blob login-blob--2"></div>
+  <div class="login-blob login-blob--3"></div>
 
-    <!-- Left panel: dark atmospheric -->
-    <div class="login-left">
-      <div class="login-blob login-blob--1"></div>
-      <div class="login-blob login-blob--2"></div>
-      <div class="login-divider"></div>
-      <div class="login-left-content">
-        <div class="login-mark" aria-hidden="true">
-          <span class="login-rect login-rect--a"></span>
-          <span class="login-rect login-rect--b"></span>
-        </div>
-        <div class="login-wordmark">
-          <div class="login-wordmark-name">Urban Parallax</div>
-          <div class="login-wordmark-rule"></div>
-          <div class="login-wordmark-tagline">Rotterdam · São Paulo</div>
-        </div>
-      </div>
+  <div class="login-card">
+
+    <!-- Logo -->
+    <div class="login-mark" aria-hidden="true">
+      <span class="login-rect login-rect--a"></span>
+      <span class="login-rect login-rect--b"></span>
+    </div>
+    <div class="login-wordmark">URBAN<br>PARALLAX</div>
+    <div class="login-subtitle">Admin &middot; Urban Parallax</div>
+
+    <!-- ── Sign-in view ── -->
+    <div id="view-form" style="width:100%">
+      <form id="login-form" class="login-form">
+        <input type="email" id="login-email" placeholder="Email address"
+               autocomplete="email" spellcheck="false" required>
+        <input type="password" id="login-password" placeholder="Password"
+               autocomplete="current-password" required>
+        <button type="submit">Sign in</button>
+      </form>
+      <p id="login-error" class="login-error" hidden>Incorrect email or password.</p>
+      <p class="login-forgot">
+        <a href="#" id="forgot-link">Forgot password?</a>
+      </p>
     </div>
 
-    <!-- Right panel: form -->
-    <div class="login-right">
-      <div class="login-form-wrap">
+    <!-- ── Forgot-password view ── -->
+    <div id="view-reset" hidden style="width:100%">
+      <form id="reset-form" class="login-form">
+        <input type="email" id="reset-email" placeholder="Email address"
+               autocomplete="email" spellcheck="false" required>
+        <button type="submit">Send reset link</button>
+      </form>
+      <p id="reset-error" class="login-error" hidden>Something went wrong.</p>
+      <p class="login-forgot">
+        <a href="#" id="back-link">Back to sign in</a>
+      </p>
+    </div>
 
-        <!-- ── Sign-in view ── -->
-        <div id="view-form">
-          <h1 class="login-title">Sign in</h1>
-          <p class="login-sub">Enter your email and password.</p>
-          <form id="login-form" class="login-form">
-            <input type="email" id="login-email" placeholder="your@email.com"
-                   autocomplete="email" spellcheck="false" required>
-            <input type="password" id="login-password" placeholder="Password"
-                   autocomplete="current-password" required>
-            <button type="submit">Sign in</button>
-          </form>
-          <p id="login-error" class="login-error" hidden>Incorrect email or password. Please try again.</p>
-          <p class="login-forgot">
-            <a href="#" id="forgot-link">Forgot password?</a>
-          </p>
-        </div>
+    <!-- ── Reset link sent view ── -->
+    <div id="view-reset-sent" hidden style="width:100%">
+      <p class="login-sent">Check your inbox — we sent a reset link to <strong id="reset-sent-email"></strong>.</p>
+      <p class="login-forgot" style="margin-top:16px">
+        <a href="#" id="back-link-2">Back to sign in</a>
+      </p>
+    </div>
 
-        <!-- ── Forgot-password view ── -->
-        <div id="view-reset" hidden>
-          <h1 class="login-title">Reset password</h1>
-          <p class="login-sub">We'll email you a link to set a new password.</p>
-          <form id="reset-form" class="login-form">
-            <input type="email" id="reset-email" placeholder="your@email.com"
-                   autocomplete="email" spellcheck="false" required>
-            <button type="submit">Send reset link</button>
-          </form>
-          <p id="reset-error" class="login-error" hidden>Something went wrong. Please try again.</p>
-          <p class="login-forgot">
-            <a href="#" id="back-link">Back to sign in</a>
-          </p>
-        </div>
-
-        <!-- ── Reset link sent view ── -->
-        <div id="view-reset-sent" hidden>
-          <p class="login-sent">Check your inbox — we sent a password reset link to <strong id="reset-sent-email"></strong>.</p>
-          <p class="login-forgot" style="margin-top:1rem">
-            <a href="#" id="back-link-2">Back to sign in</a>
-          </p>
-        </div>
-
-        <!-- ── Set new password view (after clicking reset link) ── -->
-        <div id="view-set-pw" hidden>
-          <h1 class="login-title">Set new password</h1>
-          <p class="login-sub">Choose a password for your account.</p>
-          <form id="set-pw-form" class="login-form">
-            <input type="password" id="new-password" placeholder="New password"
-                   autocomplete="new-password" required minlength="5">
-            <input type="password" id="confirm-password" placeholder="Confirm password"
-                   autocomplete="new-password" required minlength="5">
-            <button type="submit">Save password</button>
-          </form>
-          <p id="set-pw-error" class="login-error" hidden></p>
-          <p id="set-pw-ok" class="login-sent" hidden>Password saved! Redirecting…</p>
-        </div>
-
-      </div>
+    <!-- ── Set new password view ── -->
+    <div id="view-set-pw" hidden style="width:100%">
+      <p class="login-subtitle" style="margin-bottom:24px">Choose a new password</p>
+      <form id="set-pw-form" class="login-form">
+        <input type="password" id="new-password" placeholder="New password"
+               autocomplete="new-password" required minlength="6">
+        <input type="password" id="confirm-password" placeholder="Confirm password"
+               autocomplete="new-password" required minlength="6">
+        <button type="submit">Save password</button>
+      </form>
+      <p id="set-pw-error" class="login-error" hidden></p>
+      <p id="set-pw-ok" class="login-ok" hidden>Password saved! Redirecting&hellip;</p>
     </div>
 
   </div>
@@ -113,8 +296,7 @@
       });
     }
 
-    // ── Detect recovery (password reset) token in URL ────────────────────────
-    // Supabase redirects with #access_token=...&type=recovery
+    // ── Detect recovery (password reset) token ──────────────────────────────
     sb.auth.onAuthStateChange((event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
         showView('view-set-pw');
@@ -166,7 +348,6 @@
     // ── Forgot-password toggle ───────────────────────────────────────────────
     document.getElementById('forgot-link').addEventListener('click', e => {
       e.preventDefault();
-      // Pre-fill email if already typed
       const email = document.getElementById('login-email').value.trim();
       if (email) document.getElementById('reset-email').value = email;
       showView('view-reset');
@@ -190,7 +371,7 @@
       errEl.hidden = true;
 
       const { error } = await sb.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/admin.html',
+        redirectTo: window.location.origin + '/login.html',
       });
 
       if (error) {
