@@ -1,13 +1,11 @@
 /**
  * Urban Parallax — Admin Panel
- * Passwords: Simon = 12345 / Miriam = 12345
  */
 
-// ── Accounts ──────────────────────────────────────────────────────────────────
-const ACCOUNTS = [
-  { name: 'Simon',  hash: '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5' },
-  { name: 'Miriam', hash: '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5' },
-];
+// ── Supabase ───────────────────────────────────────────────────────────────────
+const SUPABASE_URL      = 'https://qqoxqkpilcebvrscgvmn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxb3hxa3BpbGNlYnZyc2Nndm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NDUzNTYsImV4cCI6MjA5MDIyMTM1Nn0.intBH-jneA_gsNWEviMemYWPZMfvL9pZ0TpvXTO19mw';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let adminData   = [];   // full comparisons array
@@ -18,51 +16,104 @@ let pendingImages = []; // { path, data: ArrayBuffer, type, objectUrl }
 // Extra media per side: array of { type, path, data, objectUrl, name, saved }
 const extraMediaSlots = { left: [], right: [] };
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
-async function hashPassword(pw) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+// ── Image conversion ───────────────────────────────────────────────────────────
+// Converts any image (incl. HEIC from iPhone) to JPEG and optionally resizes it.
+// maxPx: longest side cap in pixels. quality: JPEG quality 0–1.
+async function convertToJpeg(file, maxPx = 2400, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { width, height } = img;
+      if (width > maxPx || height > maxPx) {
+        if (width >= height) { height = Math.round(height * maxPx / width); width = maxPx; }
+        else                 { width = Math.round(width  * maxPx / height); height = maxPx; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        blob => blob ? resolve(blob) : reject(new Error('Canvas toBlob failed')),
+        'image/jpeg', quality
+      );
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image load failed')); };
+    img.src = url;
+  });
 }
 
-async function sha1Hex(data) {
-  const ab = data instanceof ArrayBuffer ? data : data.buffer || data;
-  const buf = await crypto.subtle.digest('SHA-1', ab);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+// Derive display name from email
+function nameFromEmail(email) {
+  if (!email) return 'Unknown';
+  if (email.includes('flatin')) return 'Simon';
+  if (email.includes('miriam')) return 'Miriam';
+  return email.split('@')[0];
 }
 
 async function checkAuth() {
-  const savedUser = sessionStorage.getItem('up-admin-user');
-  if (savedUser) return showAdmin(savedUser);
-
-  document.getElementById('auth-form').addEventListener('submit', async e => {
-    e.preventDefault();
-    const name = document.getElementById('auth-name').value.trim();
-    const pw   = document.getElementById('auth-input').value;
-    const hash = await hashPassword(pw);
-    const account = ACCOUNTS.find(a => a.name.toLowerCase() === name.toLowerCase() && a.hash === hash);
-    if (account) {
-      sessionStorage.setItem('up-admin-user', account.name);
-      showAdmin(account.name);
-    } else {
-      document.getElementById('auth-error').hidden = false;
-    }
-  });
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    location.replace('/login.html');
+    return;
+  }
+  showAdmin(nameFromEmail(session.user.email));
 }
 
 function showAdmin(userName) {
   currentUser = userName;
-  const gate  = document.getElementById('auth-gate');
-  gate.classList.add('fade-out');
-  setTimeout(() => { gate.hidden = true; }, 400);
   document.getElementById('admin-ui').hidden = false;
   window.scrollTo(0, 0);
   document.querySelector('.admin-title').textContent = `Admin — ${userName}`;
+  initSidebar(userName);
   initAdmin(userName);
 }
 
-document.getElementById('admin-logout').addEventListener('click', () => {
-  sessionStorage.removeItem('up-admin-user');
-  location.reload();
+function initSidebar(userName) {
+  // Populate user info
+  const initial = userName ? userName[0].toUpperCase() : '?';
+  document.getElementById('sidebar-avatar').textContent = initial;
+  document.getElementById('sidebar-uname').textContent  = userName;
+
+  // Sidebar nav
+  document.querySelectorAll('.sidebar-ni[data-sidebar-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.sidebarView;
+      document.querySelectorAll('.sidebar-ni').forEach(b => b.classList.remove('sidebar-ni--active'));
+      btn.classList.add('sidebar-ni--active');
+      if (view === 'new') {
+        startEdit(null);
+        switchTab('edit');
+      } else {
+        switchTab('browse');
+      }
+    });
+  });
+
+  // Sync sidebar active state whenever switchTab is called
+  const origSwitchTab = switchTab;
+  window._switchTabOrig = origSwitchTab;
+  switchTab = function(name) {
+    origSwitchTab(name);
+    document.querySelectorAll('.sidebar-ni[data-sidebar-view]').forEach(btn => {
+      btn.classList.toggle('sidebar-ni--active',
+        (name === 'browse' && btn.dataset.sidebarView === 'browse') ||
+        (name === 'edit'   && btn.dataset.sidebarView === 'new')
+      );
+    });
+  };
+
+  // Sidebar logout
+  document.getElementById('sidebar-logout').addEventListener('click', async () => {
+    await sb.auth.signOut();
+    location.replace('/login.html');
+  });
+}
+
+document.getElementById('admin-logout').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  location.replace('/login.html');
 });
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
@@ -79,68 +130,266 @@ document.querySelectorAll('.admin-tab').forEach(tab => {
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function initAdmin(userName) {
   initEditor(userName);
+  initWizard(userName);
   initPublish();
 
-  // Auto-load the live comparisons.json
+  // Load from Supabase (auto-migrate from R2 JSON if first run)
+  await migrateFromR2IfNeeded();
   try {
-    const res = await fetch('data/comparisons.json?t=' + Date.now());
-    if (res.ok) adminData = await res.json();
-  } catch { /* file not found or offline — start with empty array */ }
+    const { data: rows, error } = await sb.from('comparisons').select('*').order('date', { ascending: false });
+    if (!error && rows) adminData = rows.map(dbRowToEntry);
+  } catch { /* offline — start with empty array */ }
 
   renderBrowse();
 
-  document.getElementById('btn-new').addEventListener('click', () => {
-    startEdit(null);
-    switchTab('edit');
+  const startNew = () => { startEdit(null); switchTab('edit'); };
+  document.getElementById('btn-new').addEventListener('click', startNew);
+  document.getElementById('browse-fab').addEventListener('click', startNew);
+
+  // Browse-tab Save & Go Live button
+  document.getElementById('btn-browse-save').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-browse-save');
+    btn.disabled = true;
+    await quickPublish('Saved changes');
+    btn.disabled = false;
+    markClean();
   });
 }
 
+let _browseHasChanges = false;
+
+function markDirty() {
+  _browseHasChanges = true;
+  const bar = document.getElementById('browse-save-bar');
+  if (bar) bar.classList.remove('browse-save-bar--hidden');
+}
+
+function markClean() {
+  _browseHasChanges = false;
+  const bar = document.getElementById('browse-save-bar');
+  if (bar) bar.classList.add('browse-save-bar--hidden');
+}
+
+// ── Quick publish (used by browse-save bar — no pending images) ────────────────
+async function quickPublish(actionLabel) {
+  const statusEl = document.getElementById('browse-status');
+  const setStatus = (msg, type) => {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.className = 'export-status' + (type ? ' status--' + type : '');
+  };
+
+  setStatus(`Saving (${actionLabel})…`);
+  try {
+    if (pendingImages.length) await r2Deploy(setStatus);
+    await saveLocalBackup();
+    markClean();
+    setStatus(`✓ ${actionLabel} — live now.`, 'success');
+    setTimeout(() => { if (!_browseHasChanges) setStatus(''); }, 6000);
+  } catch (err) {
+    console.error('quickPublish error:', err);
+    setStatus('✗ ' + (err.message || String(err)), 'error');
+  }
+}
+
 // ── Browse tab ────────────────────────────────────────────────────────────────
+function isAwaiting(c) {
+  const hasLeft  = !!(c.left?.image  || c.left?.city);
+  const hasRight = !!(c.right?.image || c.right?.city);
+  return (hasLeft || hasRight) && !(hasLeft && hasRight);
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+}
+
 function renderBrowse() {
   const list = document.getElementById('browse-list');
 
   if (!adminData.length) {
-    list.innerHTML = '<p class="admin-hint">No comparisons yet. Click "+ New Comparison" to add one.</p>';
+    list.innerHTML = '<p class="admin-hint">No comparisons yet.</p>';
     return;
   }
 
-  list.innerHTML = '';
+  const awaitingCount = adminData.filter(isAwaiting).length;
+  list.innerHTML = awaitingCount > 0
+    ? `<div class="browse-awaiting-banner">${awaitingCount} comparison${awaitingCount > 1 ? 's' : ''} awaiting their pair</div>`
+    : '';
+
+  // Keep sidebar badge in sync
+  const badge = document.getElementById('sidebar-awaiting-badge');
+  if (badge) {
+    badge.hidden = awaitingCount === 0;
+    badge.textContent = awaitingCount;
+  }
 
   adminData.forEach((c, idx) => {
-    const card      = document.createElement('div');
-    card.className  = 'browse-card';
+    const card = document.createElement('div');
+    card.className = 'browse-card';
 
-    const statusClass = `browse-status--${c.status || 'published'}`;
+    const awaiting    = isAwaiting(c);
+    const isDraft     = c.status === 'draft';
+    const statusClass = awaiting ? 'browse-status--awaiting' : (isDraft ? 'browse-status--draft' : 'browse-status--published');
+    const statusLabel = awaiting ? '◑ Awaiting' : (isDraft ? 'Draft' : '● Live');
+    const divClass    = awaiting ? 'browse-thumb-div--awaiting' : '';
+
     card.innerHTML = `
-      <div class="browse-card-img">
-        <img src="${esc(c.left?.image || 'images/site/placeholder.svg')}" alt="" loading="lazy">
+      <div class="browse-thumb">
+        <div class="browse-thumb-half" style="${c.left?.image  ? `background-image:url(${esc(c.left.image)})`  : ''}"></div>
+        <div class="browse-thumb-div ${divClass}"></div>
+        <div class="browse-thumb-half" style="${c.right?.image ? `background-image:url(${esc(c.right.image)})` : ''}"></div>
       </div>
       <div class="browse-card-body">
         <div class="browse-card-title">${esc(c.title || '(untitled)')}</div>
         <div class="browse-card-meta">
-          <span>${esc(c.left?.city || '—')} ↔ ${esc(c.right?.city || '—')}</span>
-          <span>${c.date || ''}</span>
-          <span class="browse-status ${statusClass}">${c.status || 'published'}</span>
+          <span class="browse-status ${statusClass}">${statusLabel}</span>
+          <span class="browse-card-date">${fmtDate(c.date)}</span>
         </div>
       </div>
-      <div class="browse-card-actions">
-        <button class="admin-btn admin-btn--sm" data-action="edit" data-idx="${idx}">Edit</button>
-        <button class="admin-btn admin-btn--sm admin-btn--ghost" data-action="delete" data-idx="${idx}">Delete</button>
-      </div>`;
+      <button class="browse-card-delete" aria-label="Delete" title="Delete">×</button>`;
 
-    card.querySelector('[data-action="edit"]').addEventListener('click', () => {
+    card.addEventListener('click', e => {
+      if (e.target.classList.contains('browse-card-delete')) return;
       startEdit(idx);
       switchTab('edit');
     });
 
-    card.querySelector('[data-action="delete"]').addEventListener('click', () => {
+    card.querySelector('.browse-card-delete').addEventListener('click', async e => {
+      e.stopPropagation();
       if (confirm(`Delete "${c.title || 'this comparison'}"? This cannot be undone.`)) {
+        try {
+          await deleteFromSupabase(c.id);
+        } catch (err) {
+          alert('Delete failed: ' + err.message);
+          return;
+        }
         adminData.splice(idx, 1);
         renderBrowse();
+        await saveLocalBackup();
+        const statusEl = document.getElementById('browse-status');
+        if (statusEl) {
+          statusEl.textContent = '✓ Deleted.';
+          statusEl.className = 'export-status status--success';
+          setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'export-status'; }, 4000);
+        }
       }
     });
 
     list.appendChild(card);
+  });
+}
+
+
+// ── Wizard ─────────────────────────────────────────────────────────────────────
+let wizardStep = 1;
+let activeSide = 'left'; // which side the current contributor is working on
+
+function syncCityTabsToActiveSide() {
+  document.querySelectorAll('.city-tab').forEach(btn => {
+    btn.classList.toggle('is-active', btn.dataset.city === `editor-city-${activeSide}`);
+  });
+  document.getElementById('editor-city-left').classList.toggle('is-active',  activeSide === 'left');
+  document.getElementById('editor-city-right').classList.toggle('is-active', activeSide === 'right');
+}
+
+function syncPlaceTabsToActiveSide() {
+  document.querySelectorAll('.wiz-side-tab').forEach(btn => {
+    btn.classList.toggle('is-active', btn.dataset.side === activeSide);
+  });
+  document.getElementById('wiz-place-left').hidden  = activeSide !== 'left';
+  document.getElementById('wiz-place-right').hidden = activeSide !== 'right';
+}
+
+function setActiveSide(side) {
+  activeSide = side;
+  document.getElementById('wiz-caption-left').hidden  = side !== 'left';
+  document.getElementById('wiz-caption-right').hidden = side !== 'right';
+  if (wizardStep === 2) syncCityTabsToActiveSide();
+  if (wizardStep === 3) syncPlaceTabsToActiveSide();
+}
+
+function setWizardStep(n) {
+  wizardStep = n;
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById(`wiz-pane-${i}`).classList.toggle('active', i === n);
+  }
+  document.querySelectorAll('.wiz-ind-step').forEach(el => {
+    const s = Number(el.dataset.step);
+    el.classList.toggle('wiz-ind-done',   s < n);
+    el.classList.toggle('wiz-ind-active', s === n);
+  });
+  document.querySelectorAll('.wiz-ind-line').forEach((el, i) => {
+    el.classList.toggle('wiz-ind-line--done', i < n - 1);
+  });
+  const isLast = n === 4;
+  document.getElementById('wiz-next').style.display = isLast ? 'none' : '';
+  document.getElementById('wiz-post').textContent   = isLast ? 'Publish ↗' : 'Post ↗';
+  updateWizThumbStrips();
+  if (n === 2) syncCityTabsToActiveSide();
+  if (n === 3) syncPlaceTabsToActiveSide();
+}
+
+function initWizard(userName) {
+  document.getElementById('wiz-back').addEventListener('click', () => {
+    if (wizardStep === 1) switchTab('browse');
+    else setWizardStep(wizardStep - 1);
+  });
+
+  document.getElementById('wiz-next').addEventListener('click', () => {
+    if (wizardStep < 4) setWizardStep(wizardStep + 1);
+  });
+
+  document.getElementById('wiz-post').addEventListener('click', async () => {
+    saveComparison(true);
+    const btn      = document.getElementById('wiz-post');
+    const statusEl = document.getElementById('save-status');
+    const origText = btn.textContent;
+    btn.disabled   = true;
+    btn.textContent = wizardStep === 4 ? 'Publishing…' : 'Posting…';
+    try {
+      await _doPublish(
+        (msg, type) => {
+          statusEl.textContent = msg;
+          statusEl.className   = 'export-status' + (type ? ' status--' + type : '');
+        },
+        btn
+      );
+      if (wizardStep < 4) setWizardStep(wizardStep + 1);
+    } catch (err) {
+      statusEl.className   = 'export-status status--error';
+      statusEl.textContent = err.message;
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = origText;
+    }
+  });
+
+  // Step-3 side tabs (Place)
+  document.querySelectorAll('.wiz-side-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const side = btn.dataset.side;
+      document.querySelectorAll('.wiz-side-tab').forEach(b => b.classList.toggle('is-active', b === btn));
+      document.getElementById('wiz-place-left').hidden  = side !== 'left';
+      document.getElementById('wiz-place-right').hidden = side !== 'right';
+    });
+  });
+
+  // Step-1 photo areas — click to trigger file input, sets activeSide
+  ['left', 'right'].forEach(side => {
+    document.getElementById(`wiz-${side}-photo`).addEventListener('click', () => {
+      setActiveSide(side);
+      document.getElementById(`upload-${side}-img`).click();
+    });
+  });
+
+  // Step-1 heading fields mirror f-left-title / f-right-title
+  ['left', 'right'].forEach(side => {
+    document.getElementById(`wiz-s1-${side}-heading`).addEventListener('input', e => {
+      document.getElementById(`f-${side}-title`).value = e.target.value;
+    });
   });
 }
 
@@ -163,20 +412,28 @@ function initEditor(userName) {
     updateImagePreview('right', e.target.value.trim());
   });
 
-  // Image file upload — stores file locally, includes in Netlify deploy
+  // Image file upload — staged locally, uploaded to R2 on publish
   ['left', 'right'].forEach(side => {
     document.getElementById(`upload-${side}-img`).addEventListener('change', async e => {
       const file = e.target.files[0];
       if (!file) return;
       const slug = document.getElementById('f-slug').value.trim() || 'untitled';
-      const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
-      const path = `images/comparisons/${slug}/${side}.${ext}`;
-      const data = await file.arrayBuffer();
-      const objectUrl = URL.createObjectURL(file);
-      pendingImages = pendingImages.filter(p => p.path !== `images/comparisons/${slug}/${side}.${ext}`);
-      pendingImages.push({ path, data, type: file.type, objectUrl });
-      document.getElementById(`f-${side}-img`).value = path;
+
+      let uploadBlob = file, mimeType = file.type, ext = file.name.split('.').pop().toLowerCase() || 'jpg';
+      if (file.type.startsWith('image/') && file.type !== 'image/gif') {
+        try { uploadBlob = await convertToJpeg(file); ext = 'jpg'; mimeType = 'image/jpeg'; } catch { /* keep original */ }
+      }
+
+      const r2Key     = `images/comparisons/${slug}/${side}.${ext}`;
+      const imgUrl    = `https://urbanparallax-worker.flatin94.workers.dev/${r2Key}`;
+      const data      = await uploadBlob.arrayBuffer();
+      const objectUrl = URL.createObjectURL(uploadBlob);
+      // Remove any previous pending upload for this slot (may have had a different extension)
+      pendingImages = pendingImages.filter(p => !/^images\/comparisons\/[^/]+\//.test(p.path) || !p.path.includes(`/${side}.`));
+      pendingImages.push({ path: r2Key, data, type: mimeType, objectUrl });
+      document.getElementById(`f-${side}-img`).value = imgUrl;
       updateImagePreview(side, objectUrl);
+      setActiveSide(side); // track which side was actually uploaded
       e.target.value = '';
     });
   });
@@ -192,20 +449,13 @@ function initEditor(userName) {
   // Quick facts
   document.getElementById('qf-add').addEventListener('click', () => addQFRow());
 
-  // Save / Cancel / Publish from editor
-  document.getElementById('btn-save').addEventListener('click', () => saveComparison());
-  document.getElementById('btn-cancel').addEventListener('click', () => switchTab('browse'));
-  document.getElementById('btn-publish-editor').addEventListener('click', publishFromEditor);
-
-  // Mobile city tabs — switch between Left / Right city panels
+  // Step-2 city tabs (body text left/right)
   document.querySelectorAll('.city-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.city;
-      const side   = target === 'editor-city-left' ? 'left' : 'right';
       document.querySelectorAll('.city-tab').forEach(b => b.classList.toggle('is-active', b === btn));
       document.getElementById('editor-city-left').classList.toggle('is-active',  target === 'editor-city-left');
       document.getElementById('editor-city-right').classList.toggle('is-active', target === 'editor-city-right');
-      document.getElementById('tab-edit').dataset.activeSide = side;
     });
   });
 }
@@ -214,13 +464,11 @@ function startEdit(idx) {
   editingIdx = idx;
   document.getElementById('save-status').textContent = '';
 
-  // Always reset to left city tab when opening the editor
-  document.getElementById('editor-city-left').classList.add('is-active');
-  document.getElementById('editor-city-right').classList.remove('is-active');
-  document.querySelectorAll('.city-tab').forEach((tab, i) => tab.classList.toggle('is-active', i === 0));
-  document.getElementById('tab-edit').dataset.activeSide = 'left';
-
   if (idx === null) {
+    // New entry — default to this user's usual side
+    const defaultSide = currentUser === 'Simon' ? 'right' : 'left';
+    setActiveSide(defaultSide);
+    setWizardStep(1);
     clearForm();
     document.getElementById('f-date').value     = new Date().toISOString().slice(0, 10);
     document.getElementById('f-status').value   = 'published';
@@ -230,6 +478,13 @@ function startEdit(idx) {
     // Seed quick facts rows
     for (let i = 0; i < 4; i++) addQFRow();
   } else {
+    // Existing entry — detect active side from which side has an image
+    const entry = adminData[idx];
+    const hasLeft  = !!(entry.left?.image  && !entry.left.image.includes('placeholder'));
+    const hasRight = !!(entry.right?.image && !entry.right.image.includes('placeholder'));
+    const detectedSide = (!hasLeft && hasRight) ? 'right' : 'left';
+    setActiveSide(detectedSide);
+    setWizardStep(1);
     populateForm(adminData[idx]);
   }
 }
@@ -245,6 +500,10 @@ function clearForm() {
     if (el) el.value = '';
   });
   document.getElementById('qf-rows').innerHTML = '';
+  const s1l = document.getElementById('wiz-s1-left-heading');
+  const s1r = document.getElementById('wiz-s1-right-heading');
+  if (s1l) s1l.value = '';
+  if (s1r) s1r.value = '';
   updateImagePreview('left',  '');
   updateImagePreview('right', '');
   updateBodyPreview('left',   '');
@@ -305,25 +564,48 @@ function populateForm(c) {
   updateBodyPreview('left',   c.left?.body   || '');
   updateBodyPreview('right',  c.right?.body  || '');
 
+  // Sync step-1 heading shadow fields
+  const s1l = document.getElementById('wiz-s1-left-heading');
+  const s1r = document.getElementById('wiz-s1-right-heading');
+  if (s1l) s1l.value = c.left?.title  || '';
+  if (s1r) s1r.value = c.right?.title || '';
+
   document.getElementById('f-slug').dataset.manual = '1';
 }
 
 function updateImagePreview(side, src) {
-  const wrap = document.getElementById(`preview-${side}-img`);
-  if (!src) {
-    wrap.innerHTML = '<span class="preview-placeholder">No image</span>';
-    return;
+  // Wizard step-1 photo area
+  const img  = document.getElementById(`wiz-${side}-preview`);
+  const ph   = document.getElementById(`wiz-${side}-placeholder`);
+  if (img && ph) {
+    if (src) {
+      img.src = src;
+      img.style.display = '';
+      ph.style.display  = 'none';
+    } else {
+      img.style.display = 'none';
+      ph.style.display  = '';
+    }
   }
-  wrap.innerHTML = `<img src="${esc(src)}" alt=""
-    onerror="this.parentElement.innerHTML='<span class=\\'preview-placeholder\\'>Image not found</span>'">`;
+  // Thumbnail strips (steps 2 & 3)
+  updateWizThumbStrips();
+}
+
+function updateWizThumbStrips() {
+  const l = document.getElementById('f-left-img')?.value  || '';
+  const r = document.getElementById('f-right-img')?.value || '';
+  document.querySelectorAll('.wiz-thumb-l').forEach(el => {
+    el.style.backgroundImage = l ? `url(${esc(l)})` : '';
+  });
+  document.querySelectorAll('.wiz-thumb-r').forEach(el => {
+    el.style.backgroundImage = r ? `url(${esc(r)})` : '';
+  });
 }
 
 function updateBodyPreview(side, md) {
   const el = document.getElementById(`preview-${side}-body`);
-  if (!md || !md.trim()) {
-    el.innerHTML = '<span class="preview-empty">No text yet</span>';
-    return;
-  }
+  if (!el) return;
+  if (!md || !md.trim()) { el.innerHTML = '<span class="preview-empty">No text yet</span>'; return; }
   el.innerHTML = typeof marked !== 'undefined' ? marked.parse(md) : md.replace(/\n/g, '<br>');
 }
 
@@ -407,24 +689,27 @@ function buildEmptySlot(side) {
 async function handleExtraMediaFile(side, file) {
   const slug = document.getElementById('f-slug').value.trim() || 'untitled';
   const idx  = extraMediaSlots[side].length + 1; // 1-based for filename
-  const ext  = file.name.split('.').pop().toLowerCase();
+  let ext    = file.name.split('.').pop().toLowerCase();
 
   // Determine type from MIME
-  let type;
-  if (file.type.startsWith('video/'))              type = 'video';
-  else if (file.type === 'image/gif' || ext === 'gif') type = 'gif';
-  else                                              type = 'image';
+  let type, uploadBlob = file, mimeType = file.type;
+  if (file.type.startsWith('video/'))                  { type = 'video'; }
+  else if (file.type === 'image/gif' || ext === 'gif') { type = 'gif'; }
+  else {
+    type = 'image';
+    try { uploadBlob = await convertToJpeg(file); ext = 'jpg'; mimeType = 'image/jpeg'; } catch { /* keep original */ }
+  }
 
   const path      = `images/comparisons/${slug}/${side}-extra-${idx}.${ext}`;
-  const data      = await file.arrayBuffer();
-  const objectUrl = URL.createObjectURL(file);
+  const data      = await uploadBlob.arrayBuffer();
+  const objectUrl = URL.createObjectURL(uploadBlob);
 
   // Add to slot list
   extraMediaSlots[side].push({ type, path, data, objectUrl, name: file.name, saved: false });
 
   // Register as a pending upload so publish picks it up
   pendingImages = pendingImages.filter(p => p.path !== path);
-  pendingImages.push({ path, data, type: file.type, objectUrl });
+  pendingImages.push({ path, data, type: mimeType, objectUrl });
 
   renderExtraMediaSlots(side);
 }
@@ -533,25 +818,7 @@ function getQuickFacts() {
 }
 
 // ── Publish tab ───────────────────────────────────────────────────────────────
-// Fully automatic: tokens are baked in. User just clicks Publish.
-// Flow: 1) commit to GitHub (version history)  2) deploy to Netlify (live now)
-//       3) auto-save comparisons.json to a local folder on their drive
-
-const GH_TOKEN     = [103,105,116,104,117,98,95,112,97,116,95,49,49,66,84,73,90,50,54,81,48,113,81,79,107,101,86,76,77,72,116,49,83,95,67,55,102,52,97,80,111,105,122,111,120,81,120,84,115,55,67,74,114,116,75,78,102,78,54,50,73,67,56,80,109,67,56,76,107,55,65,79,73,84,111,118,102,53,83,67,50,83,77,68,81,98,66,86,57,122,72,116,98].map(c=>String.fromCharCode(c)).join('');
-const NL_TOKEN     = 'nfc_L5vJXde3VJyFEbEv6V4viWWgqfMQYvBs79b5';
-const GITHUB_REPO  = 'SimonHJBF/urban-parallax';
-const NETLIFY_SITE = 'aa0631e3-22bd-49ed-96c2-01fef494b233';
-
-// Every static file Netlify must include in its complete-site manifest.
-const STATIC_PATHS = [
-  '/index.html', '/about.html', '/admin.html',
-  '/css/main.css', '/css/admin.css', '/css/fonts.css',
-  '/js/app.js', '/js/admin.js', '/js/blur-engine.js', '/js/theme.js',
-  '/images/site/favicon.svg',
-  '/images/placeholder/1A.jpg', '/images/placeholder/1B.jpg',
-  '/images/placeholder/2A.jpg', '/images/placeholder/2B.jpg',
-  '/images/placeholder/3A.jpg', '/images/placeholder/3B.jpg',
-];
+// ── Publish — R2 via Cloudflare Worker ────────────────────────────────────────
 
 // ── Local-folder backup (File System Access API) ──────────────────────────────
 // The chosen folder handle is persisted in IndexedDB across sessions.
@@ -637,41 +904,6 @@ async function saveLocalBackup() {
   }
 }
 
-// ── Publish helpers ───────────────────────────────────────────────────────────
-
-function arrayBufferToBase64(buf) {
-  const bytes = new Uint8Array(buf instanceof ArrayBuffer ? buf : (buf.buffer || buf));
-  let b = '';
-  for (let i = 0; i < bytes.byteLength; i++) b += String.fromCharCode(bytes[i]);
-  return btoa(b);
-}
-
-async function githubGetSHA(path) {
-  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
-    headers: { 'Authorization': `Bearer ${GH_TOKEN}`, 'Accept': 'application/vnd.github+json' },
-  });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub read failed for ${path} (HTTP ${res.status})`);
-  return (await res.json()).sha;
-}
-
-async function githubPutFile(path, base64, message, sha) {
-  const body = { message, content: base64 };
-  if (sha) body.sha = sha;
-  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${GH_TOKEN}`,
-      'Accept':        'application/vnd.github+json',
-      'Content-Type':  'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const e = await res.json().catch(() => ({}));
-    throw new Error(e.message || `GitHub write failed for ${path} (HTTP ${res.status})`);
-  }
-}
 
 // ── initPublish ───────────────────────────────────────────────────────────────
 
@@ -692,31 +924,13 @@ function initPublish() {
 async function _doPublish(setStatus, btnEl) {
   btnEl.disabled = true;
   try {
-    const imgTotal = pendingImages.length;
-
-    // ── 1. Commit to GitHub ──────────────────────────────────────────────────
-    setStatus('Saving to GitHub…');
-    const jsonBytes  = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
-    const jsonBase64 = arrayBufferToBase64(jsonBytes);
-    const jsonSHA    = await githubGetSHA('public/data/comparisons.json');
-    await githubPutFile('public/data/comparisons.json', jsonBase64,
-                        'Update comparisons via admin panel', jsonSHA);
-
-    for (let i = 0; i < pendingImages.length; i++) {
-      const img = pendingImages[i];
-      setStatus(`Saving image ${i + 1}/${imgTotal} to GitHub…`);
-      const imgBase64 = arrayBufferToBase64(img.data);
-      const imgSHA    = await githubGetSHA('public/' + img.path);
-      await githubPutFile('public/' + img.path, imgBase64,
-                          `Upload ${img.path} via admin panel`, imgSHA);
+    await r2Deploy(setStatus);
+    // Persist current entry to Supabase
+    if (editingIdx !== null && adminData[editingIdx]) {
+      setStatus('Saving to database…');
+      await saveToSupabase(adminData[editingIdx]);
     }
-
-    // ── 2. Deploy to Netlify (live update) ───────────────────────────────────
-    await netlifyFilesDeploy(setStatus);
-
-    // ── 3. Save local backup ─────────────────────────────────────────────────
     await saveLocalBackup();
-
     pendingImages = [];
     setStatus('✓ Published! Site is live.', 'success');
     await refreshBackupUI();
@@ -743,89 +957,91 @@ async function publishFromEditor() {
   await _doPublish(setStatus, document.getElementById('btn-publish-editor'));
 }
 
-async function netlifyFilesDeploy(setStatus = setPublishStatus) {
-  const jsonBytes = new TextEncoder().encode(JSON.stringify(adminData, null, 2));
+async function r2Deploy(setStatus = setPublishStatus) {
+  if (!pendingImages.length) return;
 
-  // Gather every image path referenced in the data + pending uploads
-  const imagePaths = new Set();
-  for (const c of adminData) {
-    for (const side of ['left', 'right']) {
-      if (c[side]?.image) imagePaths.add('/' + c[side].image);
-      for (const ex of (c[side]?.extraImages || [])) { if (ex) imagePaths.add('/' + ex); }
-    }
-  }
-  for (const img of pendingImages) imagePaths.add('/' + img.path);
+  const { data: { session } } = await sb.auth.getSession();
+  const token = session?.access_token;
+  if (!token) throw new Error('Not authenticated');
 
-  const allPaths = [...new Set([...STATIC_PATHS, ...imagePaths])];
-
-  // Fetch every static file from the live site so Netlify gets a complete manifest
-  setStatus('Fetching site files…');
-  const fileBytes  = {};
-  fileBytes['/data/comparisons.json'] = jsonBytes;
-  for (const img of pendingImages) fileBytes['/' + img.path] = new Uint8Array(img.data);
-
-  await Promise.all(allPaths.map(async path => {
-    if (fileBytes[path]) return;
-    try {
-      const res = await fetch(path);
-      if (res.ok) fileBytes[path] = new Uint8Array(await res.arrayBuffer());
-    } catch (_) { /* not yet live — skip */ }
-  }));
-
-  // Hash everything; build sha1→path reverse map (Netlify's required[] is hashes, not paths)
-  setStatus('Preparing deploy…');
-  const fileHashes = {};
-  const hashToPath = {};
-  for (const [path, data] of Object.entries(fileBytes)) {
-    const h = await sha1Hex(data);
-    fileHashes[path] = h;
-    hashToPath[h]    = path;
-  }
-
-  // Create the deploy
-  const deployRes = await fetch(`https://api.netlify.com/api/v1/sites/${NETLIFY_SITE}/deploys`, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${NL_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ files: fileHashes }),
-  });
-  if (!deployRes.ok) {
-    const e = await deployRes.json().catch(() => ({}));
-    throw new Error(e.message || `Netlify deploy creation failed (HTTP ${deployRes.status})`);
-  }
-  const deploy   = await deployRes.json();
-  const required = deploy.required || [];
-
-  // Upload only the files Netlify doesn't already have (keyed by sha1 hash)
-  for (let i = 0; i < required.length; i++) {
-    const hash = required[i];
-    const path = hashToPath[hash];
-    if (!path || !fileBytes[path]) { console.warn('No data for hash:', hash); continue; }
-    setStatus(`Uploading ${i + 1}/${required.length}: ${path}`);
-    const up = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}/files${path}`, {
+  for (let i = 0; i < pendingImages.length; i++) {
+    const img = pendingImages[i];
+    setStatus(`Uploading image ${i + 1}/${pendingImages.length}…`);
+    const resp = await fetch('https://urbanparallax-worker.flatin94.workers.dev/r2-upload/' + img.path, {
       method: 'PUT',
-      headers: { 'Authorization': `Bearer ${NL_TOKEN}`, 'Content-Type': 'application/octet-stream' },
-      body: fileBytes[path],
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': img.type },
+      body: img.data,
     });
-    if (!up.ok) throw new Error(`Upload failed for ${path} (HTTP ${up.status})`);
+    if (!resp.ok) throw new Error(`Failed to upload ${img.path}`);
   }
-
-  // Poll until Netlify confirms the deploy is live
-  setStatus('Going live…');
-  for (let i = 0; i < 40; i++) {
-    await new Promise(r => setTimeout(r, 3000));
-    const res = await fetch(`https://api.netlify.com/api/v1/deploys/${deploy.id}`,
-                            { headers: { 'Authorization': `Bearer ${NL_TOKEN}` } });
-    const d = await res.json();
-    if (d.state === 'ready' || d.state === 'processing' || d.state === 'uploaded') return;
-    if (d.state === 'error') throw new Error('Netlify reported a deploy error');
-  }
-  throw new Error('Netlify deploy timed out — check the Netlify dashboard');
 }
 
 function setPublishStatus(msg, type) {
   const el = document.getElementById('publish-status');
   el.textContent = msg;
   el.className = 'export-status' + (type ? ' status--' + type : '');
+}
+
+// ── Supabase DB helpers ────────────────────────────────────────────────────────
+
+function dbRowToEntry(row) {
+  return {
+    id:           row.id,
+    title:        row.title,
+    slug:         row.slug,
+    date:         row.date,
+    status:       row.status,
+    order:        row.order,
+    introduction: row.introduction,
+    tags:         row.tags || [],
+    quickFacts:   row.quick_facts || [],
+    left:         row.left_city  || {},
+    right:        row.right_city || {},
+    metadata:     row.metadata   || {},
+  };
+}
+
+function entryToDbRow(entry) {
+  return {
+    id:           entry.id,
+    title:        entry.title        || null,
+    slug:         entry.slug         || null,
+    date:         entry.date         || null,
+    status:       entry.status       || 'published',
+    order:        entry.order        ?? null,
+    introduction: entry.introduction || null,
+    tags:         entry.tags         || [],
+    quick_facts:  entry.quickFacts   || [],
+    left_city:    entry.left         || {},
+    right_city:   entry.right        || {},
+    metadata:     entry.metadata     || {},
+  };
+}
+
+async function saveToSupabase(entry) {
+  const { error } = await sb.from('comparisons').upsert(entryToDbRow(entry), { onConflict: 'id' });
+  if (error) throw new Error('Supabase save failed: ' + error.message);
+}
+
+async function deleteFromSupabase(id) {
+  const { error } = await sb.from('comparisons').delete().eq('id', id);
+  if (error) throw new Error('Supabase delete failed: ' + error.message);
+}
+
+async function migrateFromR2IfNeeded() {
+  try {
+    const { count } = await sb.from('comparisons').select('id', { count: 'exact', head: true });
+    if (count > 0) return; // already has data
+    const res = await fetch('data/comparisons.json?t=' + Date.now());
+    if (!res.ok) return;
+    const entries = await res.json();
+    for (const entry of entries) {
+      await sb.from('comparisons').upsert(entryToDbRow(entry), { onConflict: 'id' });
+    }
+    console.log(`Urban Parallax: migrated ${entries.length} entries from R2 → Supabase`);
+  } catch (e) {
+    console.warn('Urban Parallax: R2 migration skipped:', e);
+  }
 }
 
 // ── Utilities ─────────────────────────────────────────────────────────────────

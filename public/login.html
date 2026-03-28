@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in — Urban Parallax</title>
+  <link rel="icon" href="images/site/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="login-page">
+
+  <div class="login-wrap">
+
+    <!-- Left panel: dark atmospheric -->
+    <div class="login-left">
+      <div class="login-blob login-blob--1"></div>
+      <div class="login-blob login-blob--2"></div>
+      <div class="login-divider"></div>
+      <div class="login-left-content">
+        <div class="login-mark" aria-hidden="true">
+          <span class="login-rect login-rect--a"></span>
+          <span class="login-rect login-rect--b"></span>
+        </div>
+        <div class="login-wordmark">
+          <div class="login-wordmark-name">Urban Parallax</div>
+          <div class="login-wordmark-rule"></div>
+          <div class="login-wordmark-tagline">Rotterdam · São Paulo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel: form -->
+    <div class="login-right">
+      <div class="login-form-wrap">
+
+        <!-- ── Sign-in view ── -->
+        <div id="view-form">
+          <h1 class="login-title">Sign in</h1>
+          <p class="login-sub">Enter your email and password.</p>
+          <form id="login-form" class="login-form">
+            <input type="email" id="login-email" placeholder="your@email.com"
+                   autocomplete="email" spellcheck="false" required>
+            <input type="password" id="login-password" placeholder="Password"
+                   autocomplete="current-password" required>
+            <button type="submit">Sign in</button>
+          </form>
+          <p id="login-error" class="login-error" hidden>Incorrect email or password. Please try again.</p>
+          <p class="login-forgot">
+            <a href="#" id="forgot-link">Forgot password?</a>
+          </p>
+        </div>
+
+        <!-- ── Forgot-password view ── -->
+        <div id="view-reset" hidden>
+          <h1 class="login-title">Reset password</h1>
+          <p class="login-sub">We'll email you a link to set a new password.</p>
+          <form id="reset-form" class="login-form">
+            <input type="email" id="reset-email" placeholder="your@email.com"
+                   autocomplete="email" spellcheck="false" required>
+            <button type="submit">Send reset link</button>
+          </form>
+          <p id="reset-error" class="login-error" hidden>Something went wrong. Please try again.</p>
+          <p class="login-forgot">
+            <a href="#" id="back-link">Back to sign in</a>
+          </p>
+        </div>
+
+        <!-- ── Reset link sent view ── -->
+        <div id="view-reset-sent" hidden>
+          <p class="login-sent">Check your inbox — we sent a password reset link to <strong id="reset-sent-email"></strong>.</p>
+          <p class="login-forgot" style="margin-top:1rem">
+            <a href="#" id="back-link-2">Back to sign in</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script>
+    const SUPABASE_URL      = 'https://qqoxqkpilcebvrscgvmn.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxb3hxa3BpbGNlYnZyc2Nndm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NDUzNTYsImV4cCI6MjA5MDIyMTM1Nn0.intBH-jneA_gsNWEviMemYWPZMfvL9pZ0TpvXTO19mw';
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // If already logged in, skip to admin
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) location.replace('/admin.html');
+    });
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function showView(id) {
+      ['view-form', 'view-reset', 'view-reset-sent'].forEach(v => {
+        document.getElementById(v).hidden = v !== id;
+      });
+    }
+
+    // ── Sign-in ──────────────────────────────────────────────────────────────
+    document.getElementById('login-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email    = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errEl    = document.getElementById('login-error');
+      errEl.hidden   = true;
+
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) {
+        errEl.hidden = false;
+        return;
+      }
+      location.replace('/admin.html');
+    });
+
+    // ── Forgot-password toggle ───────────────────────────────────────────────
+    document.getElementById('forgot-link').addEventListener('click', e => {
+      e.preventDefault();
+      // Pre-fill email if already typed
+      const email = document.getElementById('login-email').value.trim();
+      if (email) document.getElementById('reset-email').value = email;
+      showView('view-reset');
+    });
+
+    document.getElementById('back-link').addEventListener('click', e => {
+      e.preventDefault();
+      showView('view-form');
+    });
+
+    document.getElementById('back-link-2').addEventListener('click', e => {
+      e.preventDefault();
+      showView('view-form');
+    });
+
+    // ── Password reset ───────────────────────────────────────────────────────
+    document.getElementById('reset-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email  = document.getElementById('reset-email').value.trim();
+      const errEl  = document.getElementById('reset-error');
+      errEl.hidden = true;
+
+      const { error } = await sb.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/admin.html',
+      });
+
+      if (error) {
+        errEl.hidden = false;
+        return;
+      }
+
+      document.getElementById('reset-sent-email').textContent = email;
+      showView('view-reset-sent');
+    });
+  </script>
+</body>
+</html>
