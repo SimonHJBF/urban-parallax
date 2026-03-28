@@ -143,7 +143,7 @@ async function initAdmin(userName) {
   // Load from Supabase (auto-migrate from R2 JSON if first run)
   await migrateFromR2IfNeeded();
   try {
-    const { data: rows, error } = await sb.from('comparisons').select('*').order('date', { ascending: false });
+    const { data: rows, error } = await sb.from('comparisons').select('*').order('order', { ascending: true, nullsFirst: false }).order('date', { ascending: false });
     if (!error && rows) adminData = rows.map(dbRowToEntry);
   } catch { /* offline — start with empty array */ }
 
@@ -243,7 +243,10 @@ function renderBrowse() {
     const statusLabel = awaiting ? '◑ Awaiting' : (isDraft ? 'Draft' : '● Live');
     const divClass    = awaiting ? 'browse-thumb-div--awaiting' : '';
 
+    card.dataset.idx = idx;
+    card.draggable = true;
     card.innerHTML = `
+      <div class="browse-drag-handle" aria-label="Drag to reorder" title="Drag to reorder">⠿</div>
       <div class="browse-thumb">
         <div class="browse-thumb-half" style="${c.left?.image  ? `background-image:url(${esc(c.left.image)})`  : ''}"></div>
         <div class="browse-thumb-div ${divClass}"></div>
@@ -287,6 +290,157 @@ function renderBrowse() {
 
     list.appendChild(card);
   });
+
+  // ── Drag-and-drop reordering ──────────────────────────────────────────────
+  initBrowseDragDrop(list);
+}
+
+// Touch + mouse drag-and-drop for browse cards
+function initBrowseDragDrop(list) {
+  let dragIdx = null;
+  let dragEl  = null;
+  let placeholder = null;
+
+  // ── HTML5 drag (desktop) ──────────────────────────────────────
+  list.addEventListener('dragstart', e => {
+    const card = e.target.closest('.browse-card');
+    if (!card) return;
+    dragIdx = Number(card.dataset.idx);
+    dragEl  = card;
+    card.classList.add('browse-card--dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragIdx);
+  });
+
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const target = e.target.closest('.browse-card');
+    if (!target || target === dragEl) return;
+    const rect = target.getBoundingClientRect();
+    const mid  = rect.top + rect.height / 2;
+    if (e.clientY < mid) {
+      list.insertBefore(dragEl, target);
+    } else {
+      list.insertBefore(dragEl, target.nextSibling);
+    }
+  });
+
+  list.addEventListener('dragend', async e => {
+    if (!dragEl) return;
+    dragEl.classList.remove('browse-card--dragging');
+    await commitNewOrder(list);
+    dragEl = null;
+    dragIdx = null;
+  });
+
+  // ── Touch drag (mobile) ───────────────────────────────────────
+  let touchStartY = 0;
+  let touchCard   = null;
+  let touchClone  = null;
+  let touchActive = false;
+
+  list.addEventListener('touchstart', e => {
+    const handle = e.target.closest('.browse-drag-handle');
+    if (!handle) return;
+    const card = handle.closest('.browse-card');
+    if (!card) return;
+
+    touchCard   = card;
+    touchStartY = e.touches[0].clientY;
+    touchActive = false;
+
+    // Create floating clone after small movement
+    const onMove = ev => {
+      const dy = Math.abs(ev.touches[0].clientY - touchStartY);
+      if (!touchActive && dy > 5) {
+        touchActive = true;
+        ev.preventDefault();
+
+        // Create placeholder
+        placeholder = document.createElement('div');
+        placeholder.className = 'browse-card browse-card--placeholder';
+        placeholder.style.height = card.offsetHeight + 'px';
+        card.parentNode.insertBefore(placeholder, card);
+
+        // Float the card
+        touchClone = card;
+        card.classList.add('browse-card--floating');
+        card.style.width = card.offsetWidth + 'px';
+        card.style.top   = card.getBoundingClientRect().top + 'px';
+        card.style.left  = card.getBoundingClientRect().left + 'px';
+        document.body.appendChild(card);
+      }
+      if (!touchActive) return;
+      ev.preventDefault();
+
+      const y = ev.touches[0].clientY;
+      touchClone.style.top = y - touchClone.offsetHeight / 2 + 'px';
+
+      // Find which card we're over
+      const cards = [...list.querySelectorAll('.browse-card:not(.browse-card--placeholder)')];
+      for (const c of cards) {
+        if (c === touchClone) continue;
+        const rect = c.getBoundingClientRect();
+        const mid  = rect.top + rect.height / 2;
+        if (y < mid) {
+          list.insertBefore(placeholder, c);
+          return;
+        }
+      }
+      // Past the last card
+      list.appendChild(placeholder);
+    };
+
+    const onEnd = async () => {
+      document.removeEventListener('touchmove', onMove, { passive: false });
+      document.removeEventListener('touchend', onEnd);
+      if (!touchActive) return;
+
+      // Put card back in the right place
+      touchClone.classList.remove('browse-card--floating');
+      touchClone.style.width = '';
+      touchClone.style.top   = '';
+      touchClone.style.left  = '';
+      if (placeholder && placeholder.parentNode) {
+        placeholder.parentNode.insertBefore(touchClone, placeholder);
+        placeholder.remove();
+      }
+      placeholder = null;
+      touchClone  = null;
+      touchActive = false;
+      await commitNewOrder(list);
+    };
+
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+  }, { passive: true });
+}
+
+// Commit the visual order to adminData + Supabase
+async function commitNewOrder(list) {
+  const cards = [...list.querySelectorAll('.browse-card')];
+  const newOrder = cards.map(c => Number(c.dataset.idx));
+
+  // Rebuild adminData in the new order
+  const reordered = newOrder.map(i => adminData[i]);
+  adminData = reordered;
+
+  // Assign `order` field and save each to Supabase
+  for (let i = 0; i < adminData.length; i++) {
+    adminData[i].order = i;
+  }
+  renderBrowse(); // re-render with correct indices
+
+  // Persist order to Supabase in background
+  try {
+    for (const entry of adminData) {
+      await sb.from('comparisons').update({ order: entry.order }).eq('id', entry.id);
+    }
+  } catch (err) {
+    console.warn('Failed to save order:', err);
+  }
+  await saveLocalBackup();
 }
 
 

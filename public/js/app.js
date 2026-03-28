@@ -39,6 +39,7 @@ async function init() {
     const { data: rows, error } = await sbPublic
       .from('comparisons')
       .select('*')
+      .order('order', { ascending: true, nullsFirst: false })
       .order('date', { ascending: false });
     if (error) throw error;
     comparisons = (rows || []).map(row => ({

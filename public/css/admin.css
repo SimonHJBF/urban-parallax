@@ -1054,6 +1054,40 @@ body.login-page {
 .browse-list .browse-card:first-of-type { border-top: 1px solid var(--border); }
 .browse-card:hover { background: #faf9f6; }
 
+/* Drag handle */
+.browse-drag-handle {
+  flex-shrink: 0;
+  width: 22px;
+  font-size: 16px;
+  color: #bbb;
+  cursor: grab;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  line-height: 1;
+}
+.browse-drag-handle:active { cursor: grabbing; color: var(--accent); }
+
+/* Drag states */
+.browse-card--dragging {
+  opacity: 0.4;
+}
+.browse-card--placeholder {
+  background: rgba(196,85,58,0.08);
+  border: 1px dashed rgba(196,85,58,0.3);
+  border-radius: 2px;
+}
+.browse-card--floating {
+  position: fixed;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  pointer-events: none;
+  opacity: 0.92;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+}
+
 /* Split thumbnail */
 .browse-thumb {
   display: grid;
