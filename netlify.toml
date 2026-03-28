@@ -26,3 +26,16 @@
   from = "/about"
   to = "/about.html"
   status = 200
+
+# Proxy R2 image uploads through the Cloudflare Worker (PUT)
+[[redirects]]
+  from = "/r2-upload/*"
+  to = "https://urbanparallax-worker.flatin94.workers.dev/r2-upload/:splat"
+  status = 200
+  force = true
+
+# Serve newly-uploaded images from R2 (falls back to this only if file not in deploy)
+[[redirects]]
+  from = "/images/comparisons/*"
+  to = "https://urbanparallax-worker.flatin94.workers.dev/images/comparisons/:splat"
+  status = 200

@@ -3,9 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    var h = location.hash;
+    if (h.includes('access_token=')) location.replace('/admin.html' + h);
+    else if (h.includes('error=')) location.replace('/login.html' + h);
+  </script>
   <title>Urban Parallax — Two cities. One lens.</title>
   <meta name="description" content="A visual research blog comparing urban spaces across cities. Two columns. Two cities. One lens.">
   <link rel="icon" href="images/site/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Urban Parallax">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/main.css">
   <script src="js/theme.js"></script>
@@ -15,15 +27,25 @@
   <header class="site-header">
     <div class="header-inner">
       <a href="/" class="site-brand">
-        <h1 class="site-title">URBAN PARALLAX</h1>
-        <span class="site-tagline">Rotterdam / São Paulo</span>
+        <span class="site-logo-mark" aria-hidden="true">
+          <span class="logo-rect logo-rect--a"></span>
+          <span class="logo-rect logo-rect--b"></span>
+        </span>
+        <span class="site-logo-words">
+          <h1 class="site-title">
+            <span class="title-urban">Urban</span>
+            <span class="title-parallax">Parallax</span>
+          </h1>
+          <span class="site-tagline">Rotterdam / São Paulo</span>
+        </span>
       </a>
 
       <!-- Image alignment toggle (desktop) -->
       <div class="align-toggle" aria-label="Image crop position">
-        <button class="align-opt" data-pos="top"    title="Crop top">▲</button>
-        <button class="align-opt" data-pos="center" title="Crop centre">●</button>
-        <button class="align-opt" data-pos="bottom" title="Crop bottom">▼</button>
+        <button class="align-opt" data-pos="top"     title="Crop top">▲</button>
+        <button class="align-opt" data-pos="center"  title="Crop centre">●</button>
+        <button class="align-opt" data-pos="outside" title="Text outside image">○</button>
+        <button class="align-opt" data-pos="bottom"  title="Crop bottom" style="margin-left:6px">▼</button>
       </div>
 
       <nav class="header-nav">
@@ -40,6 +62,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
   <script src="js/blur-engine.js"></script>
   <script src="js/app.js"></script>

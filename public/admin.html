@@ -9,33 +9,51 @@
 </head>
 <body>
 
-  <!-- Password Gate -->
-  <div id="auth-gate" class="auth-gate">
-    <div class="auth-box">
-      <h1 class="auth-title">URBAN PARALLAX</h1>
-      <p class="auth-sub">Admin Panel</p>
-      <form id="auth-form" class="auth-form">
-        <input type="text" id="auth-name" placeholder="Name" autocomplete="username" spellcheck="false">
-        <input type="password" id="auth-input" placeholder="Password" autocomplete="current-password">
-        <button type="submit">Enter</button>
-      </form>
-      <p id="auth-error" class="auth-error" hidden>Incorrect name or password.</p>
-    </div>
-  </div>
-
   <!-- Admin UI (shown after auth) -->
   <div id="admin-ui" class="admin-ui" hidden>
-    <header class="admin-header">
-      <a href="/" class="admin-logo">← Urban Parallax</a>
-      <h1 class="admin-title">Admin Panel</h1>
-      <button id="admin-logout" class="admin-btn admin-btn--ghost">Log out</button>
-    </header>
 
-    <div class="admin-tabs">
-      <button class="admin-tab active" data-tab="browse">Comparisons</button>
-      <button class="admin-tab" data-tab="edit">Editor</button>
-      <button class="admin-tab" data-tab="publish">Publish</button>
-    </div>
+    <!-- ── Desktop sidebar (≥1024px) ── -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-mark" aria-hidden="true">
+          <span class="sidebar-rect sidebar-rect--a"></span>
+          <span class="sidebar-rect sidebar-rect--b"></span>
+        </div>
+        <div class="sidebar-wordmark">
+          <div class="sidebar-name">Urban Parallax</div>
+          <div class="sidebar-tagline">Rotterdam · São Paulo</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-ni sidebar-ni--active" data-sidebar-view="browse">All entries</button>
+        <button class="sidebar-ni" data-sidebar-view="awaiting">
+          Awaiting pair
+          <span class="sidebar-ni-badge" id="sidebar-awaiting-badge" hidden>0</span>
+        </button>
+        <button class="sidebar-ni sidebar-ni--new" data-sidebar-view="new">+ New entry</button>
+      </nav>
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebar-avatar">S</div>
+        <div>
+          <div class="sidebar-uname" id="sidebar-uname">—</div>
+          <button class="sidebar-logout" id="sidebar-logout">Log out</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main content ── -->
+    <div class="admin-main">
+      <header class="admin-header">
+        <a href="/" class="admin-logo">← Urban Parallax</a>
+        <h1 class="admin-title">Admin Panel</h1>
+        <button id="admin-logout" class="admin-btn admin-btn--ghost">Log out</button>
+      </header>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="browse">Comparisons</button>
+        <button class="admin-tab" data-tab="edit">Editor</button>
+        <button class="admin-tab" data-tab="publish">Publish</button>
+      </div>
 
     <!-- ── Tab: Browse ── -->
     <div id="tab-browse" class="admin-panel active">
@@ -44,193 +62,186 @@
           <h2 class="admin-section-title">All Comparisons</h2>
           <button id="btn-new" class="admin-btn admin-btn--primary">+ New Comparison</button>
         </div>
+        <div id="browse-save-bar" class="browse-save-bar browse-save-bar--hidden">
+          <span id="browse-save-label">Unsaved changes</span>
+          <button id="btn-browse-save" class="admin-btn admin-btn--publish">🚀 Save &amp; Go Live</button>
+        </div>
+        <div id="browse-status" class="export-status"></div>
         <div id="browse-list" class="browse-list">
           <p class="admin-hint">Loading comparisons…</p>
         </div>
+        <button id="browse-fab" class="browse-fab" aria-label="New comparison">+</button>
       </div>
     </div>
 
-    <!-- ── Tab: Editor ── -->
+    <!-- ── Tab: Editor (wizard) ── -->
     <div id="tab-edit" class="admin-panel">
-      <div class="admin-form-wrap admin-form-wide">
+      <div class="wiz-wrap">
 
-        <!-- Top bar: shared meta -->
-        <div class="editor-topbar">
-          <div class="admin-field admin-field--xl">
-            <label>Comparison Title</label>
-            <input type="text" id="f-title" placeholder="The Morning Commute">
+        <!-- Step indicator -->
+        <div class="wiz-indicator">
+          <div class="wiz-ind-step wiz-ind-active" data-step="1">
+            <span class="wiz-ind-dot"></span>
+            <span class="wiz-ind-label">Capture</span>
           </div>
-          <div class="admin-field">
-            <label>Date</label>
-            <input type="date" id="f-date">
+          <span class="wiz-ind-line"></span>
+          <div class="wiz-ind-step" data-step="2">
+            <span class="wiz-ind-dot"></span>
+            <span class="wiz-ind-label">Reflect</span>
           </div>
-          <!-- Status + Slug are auto-managed — hidden from UI -->
-          <div class="admin-field editor-auto-field">
-            <label>Status</label>
-            <select id="f-status">
-              <option value="draft">Draft</option>
-              <option value="published" selected>Published</option>
-            </select>
+          <span class="wiz-ind-line"></span>
+          <div class="wiz-ind-step" data-step="3">
+            <span class="wiz-ind-dot"></span>
+            <span class="wiz-ind-label">Place</span>
           </div>
-          <div class="admin-field editor-auto-field">
-            <label>Slug (URL path)</label>
-            <input type="text" id="f-slug" placeholder="morning-commute">
+          <span class="wiz-ind-line"></span>
+          <div class="wiz-ind-step" data-step="4">
+            <span class="wiz-ind-dot"></span>
+            <span class="wiz-ind-label">Context</span>
           </div>
         </div>
 
-        <div class="admin-field editor-intro-field">
-          <label>Introduction <span class="admin-hint-inline">— shared, displayed italic above both cities</span></label>
-          <input type="text" id="f-intro" placeholder="One sentence that frames both cities…">
-        </div>
-
-        <!-- Mobile-only city tabs -->
-        <div class="city-tabs" id="city-tabs">
-          <button type="button" class="city-tab is-active" data-city="editor-city-left">Left City</button>
-          <button type="button" class="city-tab" data-city="editor-city-right">Right City</button>
-        </div>
-
-        <!-- Two city columns -->
-        <div class="editor-cities">
-
-          <!-- LEFT CITY -->
-          <div class="editor-city is-active" id="editor-city-left">
-            <div class="editor-city-head">Left City</div>
-
-            <div class="admin-row">
-              <div class="admin-field">
-                <label>City</label>
-                <input type="text" id="f-left-city" placeholder="Rotterdam">
+        <!-- ── Step 1: Capture ── -->
+        <div class="wiz-pane active" id="wiz-pane-1">
+          <div class="wiz-step-label">Step 1 — Capture</div>
+          <div class="wiz-photo-split">
+            <div class="wiz-photo-side" id="wiz-left-photo">
+              <div class="wiz-photo-placeholder" id="wiz-left-placeholder">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.5"/></svg>
+                <span>Left city</span>
               </div>
-              <div class="admin-field">
-                <label>Neighbourhood</label>
-                <input type="text" id="f-left-nbhd" placeholder="Centrum">
-              </div>
-              <div class="admin-field">
-                <label>Contributor</label>
-                <input type="text" id="f-left-contrib" placeholder="Miriam">
-              </div>
+              <img id="wiz-left-preview" class="wiz-photo-img" style="display:none" alt="">
+              <div class="wiz-photo-overlay">Change</div>
             </div>
-
-            <div class="admin-row">
-              <div class="admin-field admin-field--wide">
-                <label>Title</label>
-                <input type="text" id="f-left-title" placeholder="The Dutch Flow">
+            <div class="wiz-photo-divider"></div>
+            <div class="wiz-photo-side" id="wiz-right-photo">
+              <div class="wiz-photo-placeholder" id="wiz-right-placeholder">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.5"/></svg>
+                <span>Right city</span>
               </div>
-              <div class="admin-field admin-field--wide">
-                <label>One-line description</label>
-                <input type="text" id="f-left-desc" placeholder="20-minute silent bike rides through engineered calm">
-              </div>
-            </div>
-
-            <div class="editor-image-row">
-              <div class="admin-field">
-                <label>Image</label>
-                <div class="image-input-group">
-                  <input type="text" id="f-left-img" placeholder="images/comparisons/slug/left.jpg">
-                  <label class="upload-btn" for="upload-left-img">↑ Upload</label>
-                  <input type="file" id="upload-left-img" accept="image/*" class="upload-file-input">
-                </div>
-              </div>
-              <div class="editor-image-preview" id="preview-left-img">
-                <span class="preview-placeholder">No image</span>
-              </div>
-            </div>
-
-            <div class="editor-body-row">
-              <div class="admin-field">
-                <label>Body text — Markdown</label>
-                <textarea id="f-left-body" rows="18" placeholder="Write the deep-dive essay for the left city…"></textarea>
-              </div>
-              <div class="editor-body-preview">
-                <div class="editor-preview-label">Preview</div>
-                <div id="preview-left-body" class="body-preview-content"></div>
-              </div>
-            </div>
-
-            <div class="extra-media-section">
-              <div class="extra-media-label">
-                <strong>Extra media</strong>
-                <span class="admin-hint"> — images, GIFs or short videos shown below the text · max 10</span>
-              </div>
-              <div id="left-extra-media" class="extra-media-slots"></div>
+              <img id="wiz-right-preview" class="wiz-photo-img" style="display:none" alt="">
+              <div class="wiz-photo-overlay">Change</div>
             </div>
           </div>
-
-          <!-- RIGHT CITY -->
-          <div class="editor-city" id="editor-city-right">
-            <div class="editor-city-head">Right City</div>
-
-            <div class="admin-row">
-              <div class="admin-field">
-                <label>City</label>
-                <input type="text" id="f-right-city" placeholder="São Paulo">
-              </div>
-              <div class="admin-field">
-                <label>Neighbourhood</label>
-                <input type="text" id="f-right-nbhd" placeholder="Paulista">
-              </div>
-              <div class="admin-field">
-                <label>Contributor</label>
-                <input type="text" id="f-right-contrib" placeholder="Simon">
-              </div>
-            </div>
-
-            <div class="admin-row">
-              <div class="admin-field admin-field--wide">
-                <label>Title</label>
-                <input type="text" id="f-right-title" placeholder="The Paulista Chaos">
-              </div>
-              <div class="admin-field admin-field--wide">
-                <label>One-line description</label>
-                <input type="text" id="f-right-desc" placeholder="90-minute sensory overload through the marginal">
-              </div>
-            </div>
-
-            <div class="editor-image-row">
-              <div class="admin-field">
-                <label>Image</label>
-                <div class="image-input-group">
-                  <input type="text" id="f-right-img" placeholder="images/comparisons/slug/right.jpg">
-                  <label class="upload-btn" for="upload-right-img">↑ Upload</label>
-                  <input type="file" id="upload-right-img" accept="image/*" class="upload-file-input">
-                </div>
-              </div>
-              <div class="editor-image-preview" id="preview-right-img">
-                <span class="preview-placeholder">No image</span>
-              </div>
-            </div>
-
-            <div class="editor-body-row">
-              <div class="admin-field">
-                <label>Body text — Markdown</label>
-                <textarea id="f-right-body" rows="18" placeholder="Write the deep-dive essay for the right city…"></textarea>
-              </div>
-              <div class="editor-body-preview">
-                <div class="editor-preview-label">Preview</div>
-                <div id="preview-right-body" class="body-preview-content"></div>
-              </div>
-            </div>
-
-            <div class="extra-media-section">
-              <div class="extra-media-label">
-                <strong>Extra media</strong>
-                <span class="admin-hint"> — images, GIFs or short videos shown below the text · max 10</span>
-              </div>
-              <div id="right-extra-media" class="extra-media-slots"></div>
+          <!-- Hidden upload inputs and path fields -->
+          <input type="file" id="upload-left-img" accept="image/*" class="upload-file-input">
+          <input type="file" id="upload-right-img" accept="image/*" class="upload-file-input">
+          <input type="text" id="f-left-img" class="wiz-hidden-field">
+          <input type="text" id="f-right-img" class="wiz-hidden-field">
+          <!-- Auto-managed fields -->
+          <input type="date" id="f-date" class="wiz-hidden-field">
+          <select id="f-status" class="wiz-hidden-field">
+            <option value="draft">Draft</option>
+            <option value="published" selected>Published</option>
+          </select>
+          <input type="text" id="f-slug" class="wiz-hidden-field">
+          <!-- Per-side heading (mirrors f-left-title / f-right-title) -->
+          <div class="wiz-field-group wiz-caption-group" id="wiz-caption-left">
+            <div class="admin-field">
+              <label>Heading <span class="admin-hint-inline">— title for this photo</span></label>
+              <input type="text" id="wiz-s1-left-heading" placeholder="Weekmarkt">
             </div>
           </div>
+          <div class="wiz-field-group wiz-caption-group" id="wiz-caption-right" hidden>
+            <div class="admin-field">
+              <label>Heading <span class="admin-hint-inline">— title for this photo</span></label>
+              <input type="text" id="wiz-s1-right-heading" placeholder="The Mercadão">
+            </div>
+          </div>
+          <!-- Comparison title -->
+          <div class="wiz-field-group">
+            <div class="admin-field">
+              <label>Comparison title</label>
+              <input type="text" id="f-title" placeholder="The Morning Commute">
+            </div>
+          </div>
+        </div>
 
-        </div><!-- /editor-cities -->
+        <!-- ── Step 2: Reflect ── -->
+        <div class="wiz-pane" id="wiz-pane-2">
+          <div class="wiz-step-label">Step 2 — Reflect</div>
+          <div class="wiz-thumb-strip">
+            <div class="wiz-thumb-half wiz-thumb-l"></div>
+            <div class="wiz-thumb-divider"></div>
+            <div class="wiz-thumb-half wiz-thumb-r"></div>
+          </div>
+          <div class="wiz-field-group">
+            <div class="admin-field">
+              <label>Introduction <span class="admin-hint-inline">— shown italic above both cities</span></label>
+              <textarea id="f-intro" rows="3" placeholder="One sentence that frames both cities…"></textarea>
+            </div>
+          </div>
+          <div class="city-tabs" id="city-tabs">
+            <button type="button" class="city-tab is-active" data-city="editor-city-left">Left City</button>
+            <button type="button" class="city-tab" data-city="editor-city-right">Right City</button>
+          </div>
+          <div class="editor-cities">
+            <div class="editor-city is-active" id="editor-city-left">
+              <div class="editor-city-head">Left City — Body text</div>
+              <div class="admin-field">
+                <label>Deep-dive essay — Markdown</label>
+                <textarea id="f-left-body" rows="14" placeholder="Write the deep-dive essay for the left city…"></textarea>
+              </div>
+            </div>
+            <div class="editor-city" id="editor-city-right">
+              <div class="editor-city-head">Right City — Body text</div>
+              <div class="admin-field">
+                <label>Deep-dive essay — Markdown</label>
+                <textarea id="f-right-body" rows="14" placeholder="Write the deep-dive essay for the right city…"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <!-- Advanced (collapsible) -->
-        <details class="editor-advanced">
-          <summary class="editor-advanced-toggle">Advanced — Quick Facts, Metadata, Tags</summary>
-          <div class="editor-advanced-inner">
+        <!-- ── Step 3: Place ── -->
+        <div class="wiz-pane" id="wiz-pane-3">
+          <div class="wiz-step-label">Step 3 — Place</div>
+          <div class="wiz-thumb-strip">
+            <div class="wiz-thumb-half wiz-thumb-l"></div>
+            <div class="wiz-thumb-divider"></div>
+            <div class="wiz-thumb-half wiz-thumb-r"></div>
+          </div>
+          <div class="wiz-side-tabs">
+            <button type="button" class="wiz-side-tab is-active" data-side="left">Left City</button>
+            <button type="button" class="wiz-side-tab" data-side="right">Right City</button>
+          </div>
+          <div id="wiz-place-left">
+            <div class="admin-row">
+              <div class="admin-field"><label>City</label><input type="text" id="f-left-city" placeholder="Rotterdam"></div>
+              <div class="admin-field"><label>Neighbourhood</label><input type="text" id="f-left-nbhd" placeholder="Centrum"></div>
+              <div class="admin-field"><label>Contributor</label><input type="text" id="f-left-contrib" placeholder="Miriam"></div>
+            </div>
+            <div class="admin-row">
+              <div class="admin-field admin-field--wide"><label>City title</label><input type="text" id="f-left-title" placeholder="The Dutch Flow"></div>
+              <div class="admin-field admin-field--wide"><label>One-line description</label><input type="text" id="f-left-desc" placeholder="20-minute silent bike rides…"></div>
+            </div>
+            <input type="text" id="f-left-subtitle" class="wiz-hidden-field">
+          </div>
+          <div id="wiz-place-right" hidden>
+            <div class="admin-row">
+              <div class="admin-field"><label>City</label><input type="text" id="f-right-city" placeholder="São Paulo"></div>
+              <div class="admin-field"><label>Neighbourhood</label><input type="text" id="f-right-nbhd" placeholder="Paulista"></div>
+              <div class="admin-field"><label>Contributor</label><input type="text" id="f-right-contrib" placeholder="Simon"></div>
+            </div>
+            <div class="admin-row">
+              <div class="admin-field admin-field--wide"><label>City title</label><input type="text" id="f-right-title" placeholder="The Paulista Chaos"></div>
+              <div class="admin-field admin-field--wide"><label>One-line description</label><input type="text" id="f-right-desc" placeholder="90-minute sensory overload…"></div>
+            </div>
+            <input type="text" id="f-right-subtitle" class="wiz-hidden-field">
+          </div>
+        </div>
 
+        <!-- ── Step 4: Context ── -->
+        <div class="wiz-pane" id="wiz-pane-4">
+          <div class="wiz-step-label">Step 4 — Context <span class="admin-hint-inline">optional</span></div>
+
+          <div class="wiz-field-group">
             <h3 class="admin-subsection">Quick Facts <span class="admin-hint" style="font-weight:400">(evocative contrasts)</span></h3>
             <div id="qf-rows" class="qf-editor"></div>
             <button type="button" id="qf-add" class="admin-btn admin-btn--ghost admin-btn--sm">+ Add row</button>
+          </div>
 
+          <div class="wiz-field-group">
             <h3 class="admin-subsection">Metadata</h3>
             <div class="admin-row">
               <div class="admin-field"><label>Topic</label><input type="text" id="f-topic" placeholder="Transport"></div>
@@ -258,24 +269,35 @@
               <div class="admin-field"><label>Season</label><input type="text" id="f-season" placeholder="Winter"></div>
             </div>
             <div class="admin-row">
-              <div class="admin-field tab-left-only"><label>Coordinates left</label><input type="text" id="f-coord-left" placeholder="51.92° N"></div>
-              <div class="admin-field tab-right-only"><label>Coordinates right</label><input type="text" id="f-coord-right" placeholder="23.55° S"></div>
-              <div class="admin-field admin-field--wide"><label>Tags (comma-separated)</label><input type="text" id="f-tags" placeholder="transport, daily-life"></div>
+              <div class="admin-field"><label>Coordinates left</label><input type="text" id="f-coord-left" placeholder="51.92° N"></div>
+              <div class="admin-field"><label>Coordinates right</label><input type="text" id="f-coord-right" placeholder="23.55° S"></div>
+              <div class="admin-field admin-field--wide"><label>Tags</label><input type="text" id="f-tags" placeholder="transport, daily-life"></div>
             </div>
-            <div class="admin-row">
-              <div class="admin-field admin-field--wide tab-left-only"><label>Left subtitle</label><input type="text" id="f-left-subtitle" placeholder="Controlled Friction"></div>
-              <div class="admin-field admin-field--wide tab-right-only"><label>Right subtitle</label><input type="text" id="f-right-subtitle" placeholder="Social Friction"></div>
-            </div>
-
           </div>
-        </details>
 
-        <!-- Save actions -->
-        <div class="admin-actions editor-actions">
-          <button id="btn-save" class="admin-btn admin-btn--primary">Save Draft</button>
-          <button id="btn-publish-editor" class="admin-btn admin-btn--publish">🚀 Publish</button>
-          <button id="btn-cancel" class="admin-btn admin-btn--ghost">← Back</button>
+          <div class="wiz-field-group">
+            <h3 class="admin-subsection">Extra media</h3>
+            <div class="wiz-extra-cols">
+              <div class="wiz-extra-side">
+                <div class="wiz-extra-label">Left city</div>
+                <div id="left-extra-media" class="extra-media-slots"></div>
+              </div>
+              <div class="wiz-extra-side">
+                <div class="wiz-extra-label">Right city</div>
+                <div id="right-extra-media" class="extra-media-slots"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step action bar -->
+        <div class="wiz-actions">
+          <button id="wiz-back" class="admin-btn admin-btn--ghost">← Back</button>
           <span id="save-status" class="export-status"></span>
+          <div class="wiz-actions-right">
+            <button id="wiz-post" class="admin-btn admin-btn--publish">Post ↗</button>
+            <button id="wiz-next" class="admin-btn admin-btn--primary">Next →</button>
+          </div>
         </div>
 
       </div>
@@ -304,8 +326,11 @@
       </div>
     </div>
 
+    </div><!-- /admin-main -->
+
   </div><!-- /admin-ui -->
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
   <script src="js/admin.js"></script>
 </body>

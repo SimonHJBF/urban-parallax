@@ -7,6 +7,11 @@
  * Click the active entry to expand the full detail inline, below the images.
  */
 
+// ── Supabase ───────────────────────────────────────────────────────────────────
+const SUPABASE_URL      = 'https://qqoxqkpilcebvrscgvmn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxb3hxa3BpbGNlYnZyc2Nndm1uIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NDUzNTYsImV4cCI6MjA5MDIyMTM1Nn0.intBH-jneA_gsNWEviMemYWPZMfvL9pZ0TpvXTO19mw';
+const sbPublic = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // ── State ──────────────────────────────────────────────────────────────────────
 let comparisons    = [];
 let currentIndex   = 0;
@@ -22,13 +27,28 @@ const IMG_WINDOW   = 6;    // load images for entries within this distance of ac
 // ── Boot ───────────────────────────────────────────────────────────────────────
 async function init() {
   try {
-    const res = await fetch('data/comparisons.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    comparisons = await res.json();
+    const { data: rows, error } = await sbPublic
+      .from('comparisons')
+      .select('*')
+      .order('date', { ascending: false });
+    if (error) throw error;
+    comparisons = (rows || []).map(row => ({
+      id:           row.id,
+      title:        row.title,
+      slug:         row.slug,
+      date:         row.date,
+      status:       row.status,
+      introduction: row.introduction,
+      tags:         row.tags || [],
+      quickFacts:   row.quick_facts || [],
+      left:         row.left_city  || {},
+      right:        row.right_city || {},
+      metadata:     row.metadata   || {},
+    }));
   } catch (err) {
     document.getElementById('wheelStack').innerHTML =
       `<p style="padding:80px 0;text-align:center;font-family:monospace;font-size:12px;color:var(--color-muted);">
-        Could not load comparisons.json
+        Could not load comparisons
       </p>`;
     console.error('Urban Parallax: failed to load data', err);
     return;
@@ -244,15 +264,24 @@ function initWheelInput() {
 
 function attachEntryClicks() {
   document.querySelectorAll('.wheel-entry').forEach((el, i) => {
-    el.addEventListener('click', () => {
-      // If detail is open, clicking the expanded entry (anywhere except the
-      // detail body itself, which stops propagation) closes it.
+    el.addEventListener('click', (e) => {
+      // Stop the click from bubbling to the viewport background listener,
+      // otherwise opening a detail immediately closes it again.
+      e.stopPropagation();
+
+      // If detail is open, any click outside the detail body (which stops
+      // propagation) closes it — including clicks on other entries.
       if (isDetailOpen) {
-        if (i === currentIndex) closeDetail();
+        closeDetail();
         return;
       }
       goTo(i, true);
     });
+  });
+
+  // Also close when clicking the viewport background (between / around entries)
+  document.getElementById('wheelViewport').addEventListener('click', () => {
+    if (isDetailOpen) closeDetail();
   });
 }
 
@@ -445,3 +474,10 @@ function initAlignToggle() {
 // ── Start ──────────────────────────────────────────────────────────────────────
 initAlignToggle();
 init();
+
+// ── PWA service worker ────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}

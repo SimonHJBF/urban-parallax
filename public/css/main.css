@@ -90,9 +90,12 @@ body {
   transition: height 0.25s ease;
 }
 
-.site-header.scrolled              { height: var(--header-h-scrolled); }
-.site-header.scrolled .site-tagline { opacity: 0; pointer-events: none; }
-.site-header.scrolled .site-title  { font-size: clamp(16px, 2vw, 22px); }
+.site-header.scrolled                    { height: var(--header-h-scrolled); }
+.site-header.scrolled .site-tagline      { opacity: 0; pointer-events: none; }
+.site-header.scrolled .title-urban,
+.site-header.scrolled .title-parallax   { font-size: clamp(12px, 1.3vw, 15px); }
+.site-header.scrolled .logo-rect--a     { height: 14px; }
+.site-header.scrolled .logo-rect--b     { height: 14px; margin-top: 5px; }
 
 .header-inner {
   /* Full-width 3-column grid: logo | toggle (centered) | nav */
@@ -109,25 +112,78 @@ body {
 
 .site-brand {
   display: flex;
-  align-items: baseline;
-  gap: 16px;
+  align-items: center;
+  gap: 12px;
   flex-shrink: 0;
 }
 
+/* Logo mark — two offset rectangles (the parallax) */
+.site-logo-mark {
+  display: flex;
+  align-items: flex-start;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.logo-rect {
+  width: 8px;
+  transition: height 0.25s ease, margin-top 0.25s ease;
+}
+
+.logo-rect--a {
+  height: 20px;
+  background: var(--color-text);
+}
+
+.logo-rect--b {
+  height: 20px;
+  background: var(--color-accent);
+  margin-top: 7px;
+}
+
+/* Logo wordmark column */
+.site-logo-words {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Stacked title: URBAN (bold, text) over PARALLAX (light, accent) */
 .site-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.title-urban {
   font-family: var(--font-heading);
-  font-size: clamp(20px, 3vw, 32px);
+  font-size: clamp(14px, 1.7vw, 20px);
   font-weight: 700;
-  letter-spacing: 0.18em;
-  line-height: 1;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.1;
   color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+}
+
+.title-parallax {
+  font-family: var(--font-heading);
+  font-size: clamp(14px, 1.7vw, 20px);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: var(--color-accent);
+  padding-left: 5px; /* the parallax offset */
 }
 
 .site-tagline {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 9px;
   color: var(--color-muted);
   letter-spacing: 0.12em;
+  text-transform: uppercase;
   transition: opacity 0.2s ease;
 }
 
@@ -316,6 +372,55 @@ body[data-img-pos="bottom"] .pair-image img { transform: translateY(-33%); }
 body[data-img-pos="top"]    .pair-text { opacity: 0; pointer-events: none; }
 body[data-img-pos="center"] .pair-text { opacity: 1; }
 body[data-img-pos="bottom"] .pair-text { opacity: 0; pointer-events: none; }
+
+/* ○ "outside" mode: text sits BESIDE the images — left of left, right of right.
+   The pair-row gets extra horizontal padding so there is room for the text
+   labels outside the image bounds.                                           */
+body[data-img-pos="outside"] .pair-row {
+  padding: 0 84px;               /* 84px padding leaves room for 72px text + gap */
+}
+
+/* Image fills the full pair-side (inset: 0 is already the default) */
+body[data-img-pos="outside"] .pair-image {
+  inset: 0;
+}
+body[data-img-pos="outside"] .pair-image img {
+  transform: translateY(-17%);   /* keep centre crop */
+}
+
+/* Text: absolute, spans full height of pair-side, centred vertically */
+body[data-img-pos="outside"] .pair-text {
+  opacity: 1;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 68px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  text-shadow: none;             /* sits on page background — no shadow needed */
+}
+
+/* Left side: text to the LEFT of the image */
+body[data-img-pos="outside"] .pair-side:first-child .pair-text {
+  right: calc(100% + 8px);
+  left: auto;
+  text-align: right;
+  align-items: flex-end;
+}
+
+/* Right side: text to the RIGHT of the image */
+body[data-img-pos="outside"] .pair-side:last-child .pair-text {
+  left: calc(100% + 8px);
+  right: auto;
+  text-align: left;
+  align-items: flex-start;
+}
+
+/* Colour adjustments — text is on the page bg, not over a photo */
+body[data-img-pos="outside"] .pair-city  { color: var(--color-muted); }
+body[data-img-pos="outside"] .pair-title { color: var(--color-text); }
 
 /* ─── Feed ───────────────────────────────────────────────────────────────── */
 .feed {
@@ -573,6 +678,20 @@ body[data-img-pos="bottom"] .pair-text { opacity: 0; pointer-events: none; }
   padding: 0 var(--pad-h);
 }
 
+/* When the grid lives inside the wheel detail (full-viewport-width container),
+   constrain and centre it so the text aligns with the quickfacts lines above.
+   Match the quickfacts max-width so everything lines up on the same grid.    */
+.wheel-entry-detail .up-expand-grid {
+  max-width: min(88%, 840px);
+  margin-left: auto;
+  margin-right: auto;
+}
+/* Widen each column by reducing the inset padding that was designed for the
+   narrow feed layout — gives each text block more horizontal space.          */
+.wheel-entry-detail .up-expand-body        { padding: 0 20px; }
+.wheel-entry-detail .up-expand-body:first-child { padding-left: 0; }
+.wheel-entry-detail .up-expand-body:last-child  { padding-right: 0; }
+
 .up-expand-body        { padding: 0 32px; }
 .up-expand-body:first-child { padding-left: 0; }
 .up-expand-body:last-child  { padding-right: 0; }
@@ -812,7 +931,8 @@ body[data-img-pos="bottom"] .pair-text { opacity: 0; pointer-events: none; }
 
   .site-header { height: auto; }
   .site-header.scrolled { height: auto; }
-  .site-header.scrolled .site-title { font-size: clamp(20px, 5vw, 28px); }
+  .site-header.scrolled .title-urban,
+  .site-header.scrolled .title-parallax { font-size: clamp(14px, 4vw, 18px); }
 
   .header-inner {
     display: flex;   /* override grid → flex for 2-row mobile layout */
@@ -938,6 +1058,18 @@ body[data-img-pos="bottom"] .pair-text { opacity: 0; pointer-events: none; }
 
 .wheel-entry.is-expanded {
   overflow: visible;
+}
+
+/* ── Expanded detail: give pair-row a tall, portrait-feeling height ── */
+.wheel-entry.is-expanded .pair-row {
+  height: clamp(380px, 50vh, 560px);
+}
+
+/* In expanded state: override the 150%/translateY crop trick so images
+   fill their tall container naturally via object-fit: cover.           */
+.wheel-entry.is-expanded .pair-image img {
+  height: 100% !important;
+  transform: none !important;
 }
 
 .wheel-viewport.is-expanded {
