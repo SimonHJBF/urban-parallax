@@ -27,16 +27,6 @@
   to = "/about.html"
   status = 200
 
-# Proxy R2 image uploads through the Cloudflare Worker (PUT)
-[[redirects]]
-  from = "/r2-upload/*"
-  to = "https://urbanparallax-worker.flatin94.workers.dev/r2-upload/:splat"
-  status = 200
-  force = true
-
-# Always serve comparison images from R2 via Cloudflare Worker
-[[redirects]]
-  from = "/images/comparisons/*"
-  to = "https://urbanparallax-worker.flatin94.workers.dev/images/comparisons/:splat"
-  status = 200
-  force = true
+# Image proxy removed — resolveImageUrl() in app.js/admin.js now points
+# directly to workers.dev, so no Netlify bandwidth is used for images.
+# Uploads in admin.js also go directly to workers.dev.
