@@ -14,6 +14,7 @@ const sbPublic = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const WORKER_ORIGIN = 'https://urbanparallax-worker.flatin94.workers.dev';
+const PLACEHOLDER   = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect width='400' height='300' fill='%231a1a1a'/%3E%3C/svg%3E";
 function resolveImageUrl(p) {
   if (!p || p.includes('placeholder')) return p;
   if (p.startsWith('http')) return p;
@@ -53,10 +54,10 @@ async function init() {
       right:        row.right_city || {},
       metadata:     row.metadata   || {},
     }));
-    // Resolve relative image paths → absolute worker URLs
+    // Resolve relative image paths → absolute worker URLs; drop placeholders
     comparisons.forEach(c => {
-      if (c.left?.image)  c.left.image  = resolveImageUrl(c.left.image);
-      if (c.right?.image) c.right.image = resolveImageUrl(c.right.image);
+      if (c.left?.image)  c.left.image  = c.left.image.includes('placeholder') ? '' : resolveImageUrl(c.left.image);
+      if (c.right?.image) c.right.image = c.right.image.includes('placeholder') ? '' : resolveImageUrl(c.right.image);
     });
   } catch (err) {
     document.getElementById('wheelStack').innerHTML =
@@ -91,8 +92,8 @@ function buildEntryHTML(c, idx) {
   // For the initial window, load eagerly. All others use data-src so the
   // browser doesn't fetch them until loadNearbyImages() promotes them.
   const eager    = idx < IMG_WINDOW;
-  const leftSrc  = esc(c.left?.image  || 'images/site/placeholder.svg');
-  const rightSrc = esc(c.right?.image || 'images/site/placeholder.svg');
+  const leftSrc  = esc(c.left?.image  || PLACEHOLDER);
+  const rightSrc = esc(c.right?.image || PLACEHOLDER);
 
   const imgAttr = (src) => eager
     ? `src="${src}" loading="eager"`
