@@ -600,8 +600,8 @@ function initEditor(userName) {
       const slug = document.getElementById('f-slug').value.trim() || 'untitled';
 
       let uploadBlob = file, mimeType = file.type, ext = file.name.split('.').pop().toLowerCase() || 'jpg';
-      if (file.type.startsWith('image/') && file.type !== 'image/gif') {
-        try { uploadBlob = await convertToJpeg(file); ext = 'jpg'; mimeType = 'image/jpeg'; } catch { /* keep original */ }
+      if (file.type !== 'image/gif') {
+        try { uploadBlob = await convertToJpeg(file); ext = 'jpg'; mimeType = 'image/jpeg'; } catch { alert('Could not convert this image, so it was not added. Originals can carry GPS data.'); e.target.value = ''; return; }
       }
 
       const r2Key     = `images/comparisons/${slug}/${side}.${ext}`;
@@ -887,7 +887,7 @@ async function handleExtraMediaFile(side, file) {
   else if (file.type === 'image/gif' || ext === 'gif') { type = 'gif'; }
   else {
     type = 'image';
-    try { uploadBlob = await convertToJpeg(file); ext = 'jpg'; mimeType = 'image/jpeg'; } catch { /* keep original */ }
+    try { uploadBlob = await convertToJpeg(file); ext = 'jpg'; mimeType = 'image/jpeg'; } catch { alert('Could not convert this image, so it was not added. Originals can carry GPS data.'); return; }
   }
 
   const path      = `images/comparisons/${slug}/${side}-extra-${idx}.${ext}`;

@@ -1,6 +1,6 @@
 [build]
   publish = "public"
-  command = "echo 'No build step — deploy public/ directly'"
+  command = "node scripts/strip-image-metadata.js public/images"
 
 [[headers]]
   for = "/data/*"
